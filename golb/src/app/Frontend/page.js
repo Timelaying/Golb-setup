@@ -1,3 +1,8 @@
 export default function Frontpage (){
-    return <h1>Input your Usename and Password</h1>
+    return <div>
+        <h1>Input your Username and Password</h1>
+        <div>
+            
+        </div>
+    </div> 
 }
