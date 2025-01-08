@@ -1,9 +1,8 @@
-//imports
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod"; // for setting Schema just for data to follow the structure
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,20 +16,38 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+// Schema for validation
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  password: z.string().min(8),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
 });
 
 export default function LoginForm() {
+  // Initialize the form using `useForm`
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
+  // Handle form submission
+  const onSubmit = (data) => {
+    console.log("Form Data:", data);
+  };
+
   return (
     <div>
       <h1>Input your Username and Password</h1>
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {/* Username Field */}
             <FormField
               control={form.control}
               name="username"
@@ -38,7 +55,7 @@ export default function LoginForm() {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="Enter your username" {...field} />
                   </FormControl>
                   <FormDescription>
                     This is your public display name.
@@ -48,15 +65,17 @@ export default function LoginForm() {
               )}
             />
 
+            {/* Password Field */}
             <FormField
               control={form.control}
-              name="username"
+              name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Kindly input your password"
+                      type="password"
+                      placeholder="Enter your password"
                       {...field}
                     />
                   </FormControl>
@@ -65,6 +84,7 @@ export default function LoginForm() {
               )}
             />
 
+            {/* Submit Button */}
             <Button type="submit">Submit</Button>
           </form>
         </Form>
