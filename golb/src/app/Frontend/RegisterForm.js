@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,9 +40,26 @@ export default function RegisterForm() {
   });
 
   // Handle form submission
-  const onSubmit = (data) => {
-    console.log("Registration Data:", data);
-    // Handle registration logic here (e.g., API call)
+  const onSubmit = async (data) => {
+    try {
+      // Make an API call to register the user
+      const response = await axios.post("http://localhost:5000/api/register", {
+        name: data.username,
+        email: data.email,
+        password: data.password,
+      });
+
+      // Handle success
+      alert("Registration successful! Welcome, " + response.data.user.name);
+      form.reset(); // Reset the form after successful registration
+    } catch (error) {
+      // Handle error
+      console.error("Registration failed:", error.response?.data || error.message);
+      alert(
+        "Registration failed: " +
+          (error.response?.data?.error || error.message)
+      );
+    }
   };
 
   return (
