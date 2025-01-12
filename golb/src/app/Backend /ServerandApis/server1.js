@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 
 app.get('/login', (req, res) => {
-    
+
 })
 
-app.listen(PORT || 3000)
+app.listen(process.env.PORT || 3000)
