@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,8 +38,19 @@ export default function LoginForm() {
   });
 
   // Handle form submission
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/login", {
+        username: data.username,
+        password: data.password,
+      });
+
+      // Handle success
+      alert(response.data.message);
+    } catch (error) {
+      const errorMessage = error.response?.data?.error || "Login failed.";
+      alert(errorMessage);
+    }
   };
 
   return (
