@@ -45,11 +45,15 @@ export default function LoginForm() {
         password: data.password,
       });
 
-      // Handle success
-      alert(response.data.message);
+      // Store the tokens in localStorage after successful login
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+
+      // Handle success (for example, redirect to the dashboard or home)
+      alert(response.data.message);  // This could be customized
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Login failed.";
-      alert(errorMessage);
+      alert(errorMessage); // Display error message if login fails
     }
   };
 
