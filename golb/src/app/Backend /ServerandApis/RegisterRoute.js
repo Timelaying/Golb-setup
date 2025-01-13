@@ -8,7 +8,7 @@ const pool = require("../Database/db");
 require("dotenv").config();
 
 // Route to handle form submission
-router.post('/api/register', async (req, res) => {
+router.post('/register', async (req, res) => {
     const { name, email, password } = req.body; // Expecting these fields from the form
   
     if (!name || !email || !password) {

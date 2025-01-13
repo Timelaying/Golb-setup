@@ -7,7 +7,7 @@ export default function Landingpage() {
       <h1>Welcome</h1>
       <div>
         <Link href="/Frontend"> 
-          <Button>Login</Button>
+          <Button>Want to get in on th gist?</Button>
         </Link>
       </div>
     </div>
