@@ -1,3 +1,6 @@
+// Environment variables for JWT secrets
+require("dotenv").config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const pool = require('../Database/db');
