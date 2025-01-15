@@ -12,7 +12,7 @@ export default function Frontpage (){    //<LoginForm renders the jsx
         <h1> New User ? Register</h1>
         <div>
         <Link href="Frontend/Forms/RegisterForm"> 
-          <Button>Login</Button>
+          <Button>Register</Button>
         </Link>
         </div>
     </div> 
