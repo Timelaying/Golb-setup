@@ -1,0 +1,1 @@
+the env file as to be in same directory it is required from
