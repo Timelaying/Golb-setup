@@ -25,4 +25,7 @@ pool.query(createTableQuery)
   .then(() => console.log('Users table is ready.'))
   .catch((err) => console.error('Error creating users table:', err.message));
 
+//Checking if DB is connected
+console.log('Connecting to database:', process.env.DB_NAME);
+
 module.exports = pool;
