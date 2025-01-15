@@ -1,11 +1,13 @@
+// Environment variables for JWT secrets
+require("dotenv").config();
+
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../Database/db");
 
-// Environment variables for JWT secrets
-require("dotenv").config();
+
 
 // Route to handle form submission
 router.post('/register', async (req, res) => {
