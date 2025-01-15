@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const pool = require('../Database/db');
+const pool = require('./db');
 const cors = require('cors');
 const bcrypt = require('bcrypt'); // Import bcrypt
 const authRoutes = require("./AuthRoute"); // Import the router module
