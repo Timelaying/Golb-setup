@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/router"; // Import Next.js router
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,7 +30,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
-  // Initialize the form using `useForm`
+  const router = useRouter(); // Initialize router
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,7 +39,6 @@ export default function LoginForm() {
     },
   });
 
-  // Handle form submission
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:5000/api/login", {
@@ -46,15 +46,16 @@ export default function LoginForm() {
         password: data.password,
       });
 
-      // Store the tokens in localStorage after successful login
+      // Store tokens in localStorage
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
-      // Handle success (for example, redirect to the dashboard or home)
-      alert(response.data.message);  // This could be customized
+      // Navigate to the feed page
+      alert(response.data.message); // Optional success alert
+      router.push("/feed"); // Redirect to the feed page
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Login failed.";
-      alert(errorMessage); // Display error message if login fails
+      alert(errorMessage); // Show error message on login failure
     }
   };
 
@@ -106,14 +107,14 @@ export default function LoginForm() {
           </form>
         </Form>
       </div>
-      <di>
-        <h1>Forgotten Password ?</h1>
+      <div>
+        <h1>Forgotten Password?</h1>
         <div>
-        <Link href="./ForgottenPassword"> 
-          <Button>Reset password</Button>
-        </Link>
+          <Link href="./ForgottenPassword">
+            <Button>Reset password</Button>
+          </Link>
         </div>
-      </di>
+      </div>
     </div>
   );
 }
