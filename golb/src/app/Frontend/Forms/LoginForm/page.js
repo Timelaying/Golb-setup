@@ -52,7 +52,7 @@ export default function LoginForm() {
 
       // Navigate to the feed page
       alert(response.data.message); // Optional success alert
-      router.push("/feed"); // Redirect to the feed page
+      router.push("../Feed"); // Redirect to the feed page
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Login failed.";
       alert(errorMessage); // Show error message on login failure
