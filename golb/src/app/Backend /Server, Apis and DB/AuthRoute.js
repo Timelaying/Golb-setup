@@ -1,4 +1,4 @@
-// Environment variables for JWT secrets
+// Environment variables for secrets
 require("dotenv").config();
 
 const express = require("express");
