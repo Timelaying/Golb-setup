@@ -109,7 +109,7 @@ export default function LoginForm() {
       <di>
         <h1>Forgotten Password ?</h1>
         <div>
-        <Link href="Frontend/Forms/ForgottenPassword"> 
+        <Link href="./ForgottenPassword"> 
           <Button>Reset password</Button>
         </Link>
         </div>

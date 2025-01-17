@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,15 @@ export default function ForgotPasswordForm() {
         />
         <Button type="submit">Send Reset Link</Button>
       </form>
+
+    <div>
+        <h1>Gotten Link?</h1>
+        <div>
+        <Link href="./ResetPassword"> 
+          <Button>Reset Password</Button>
+        </Link>
+        </div>
+    </div>
     </div>
   );
 }
