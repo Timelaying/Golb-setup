@@ -47,14 +47,7 @@ router.post("/login", async (req, res) => {
             user.id,
         ]);
 
-         // Set tokens as HTTP-only cookies (optional, more secure than localStorage)
-         res.cookie("accessToken", accessToken, { httpOnly: true, maxAge: 3600000 }); // 1 hour
-         res.cookie("refreshToken", refreshToken, { httpOnly: true, maxAge: 604800000 }); // 7 days
- 
-         // Redirect to the desired page
-         return res.redirect("/Frontend/Feeds"); // Replace with your front-end route
-
-        //res.status(200).json({ message: "Login successful!", accessToken, refreshToken }); //login message
+        res.status(200).json({ message: "Login successful!", accessToken, refreshToken });
     } catch (error) {
         console.error("Error during login:", error.message);
         res.status(500).json({ error: "Internal server error." });
