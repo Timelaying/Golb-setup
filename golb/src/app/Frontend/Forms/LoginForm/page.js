@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation"; // Use router from next/navigation
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Import Next.js router
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,8 +30,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
-  const router = useRouter(); // Initialize the router for navigation
-
+  const router = useRouter(); // Initialize router
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,7 +39,6 @@ export default function LoginForm() {
     },
   });
 
-  // Handle form submission
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:5000/api/login", {
@@ -47,18 +46,17 @@ export default function LoginForm() {
         password: data.password,
       });
 
-      // Store the tokens in localStorage after successful login
+      // Store tokens in localStorage
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
-      // No manual navigation needed; server handles redirection
-      console.log("Login successful!");
+      // Navigate to the feed page
+      //alert(response.data.message); // Optional success alert
 
-      // Navigate to the Feeds page upon successful login
-      //router.push("/Frontend/Feeds");
+      router.push("../Feeds"); // Redirect to the feed page
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Login failed.";
-      alert(errorMessage); // Display error message if login fails
+      alert(errorMessage); // Show error message on login failure
     }
   };
 
@@ -78,6 +76,9 @@ export default function LoginForm() {
                   <FormControl>
                     <Input placeholder="Enter your username" {...field} />
                   </FormControl>
+                  <FormDescription>
+                    This is your public display name.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
