@@ -51,7 +51,7 @@ export default function LoginForm() {
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
       // Navigate to the feed page
-      //alert(response.data.message); // Optional success alert
+      alert(response.data.message); // Optional success alert
 
       router.push("../Feeds"); // Redirect to the feed page
     } catch (error) {
@@ -65,7 +65,7 @@ export default function LoginForm() {
       <h1>Input your Username and Password</h1>
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" action="/Frontend/Feeds" method="GET">
             {/* Username Field */}
             <FormField
               control={form.control}
