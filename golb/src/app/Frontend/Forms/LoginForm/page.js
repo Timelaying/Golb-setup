@@ -65,7 +65,7 @@ export default function LoginForm() {
       <h1>Input your Username and Password</h1>
       <div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" action="/Frontend/Feeds" method="GET">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Username Field */}
             <FormField
               control={form.control}
