@@ -1,4 +1,4 @@
-"use client";
+"use client"; // This ensures this file is treated as a Client Component
 
 import Link from "next/link";
 import { useRouter } from "next/navigation"; 
@@ -8,7 +8,7 @@ import { z } from "zod";
 import { useState } from "react";
 import axios from "axios";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";  // Ensure Button is a Client Component
 import {
   Form,
   FormControl,
@@ -32,7 +32,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const router = useRouter();
-  const [message, setMessage] = useState(" Kindly login ");
+  const [message, setMessage] = useState("");
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
