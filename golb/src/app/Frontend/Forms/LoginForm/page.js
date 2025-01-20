@@ -51,8 +51,11 @@ export default function LoginForm() {
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
+      // No manual navigation needed; server handles redirection
+      console.log("Login successful!");
+
       // Navigate to the Feeds page upon successful login
-      router.push("/Frontend/Feeds");
+      //router.push("/Frontend/Feeds");
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Login failed.";
       alert(errorMessage); // Display error message if login fails
