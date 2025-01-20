@@ -51,8 +51,8 @@ export default function LoginForm() {
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
       // Navigate to the feed page
-      //alert(response.data.message); // Optional success alert
-      router.push("../Feeds"); // Redirect to the feed page
+      alert(response.data.message); // Optional success alert
+      window.location.href = "/Frontend/Feeds"; // Navigates to the feed page
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Login failed.";
       alert(errorMessage); // Show error message on login failure
