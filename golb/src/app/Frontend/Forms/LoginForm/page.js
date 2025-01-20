@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import Next.js router
+import { useRouter } from "next/navigation"; 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useState } from "react";
 import axios from "axios";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,8 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
+  const [message, setMessage] = useState(" Kindly login ");
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,23 +48,20 @@ export default function LoginForm() {
         password: data.password,
       });
 
-      // Store tokens in localStorage
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
-      // Navigate to the feed page
-      alert(response.data.message); // Optional success alert
-
-      router.push("../Feeds"); // Redirect to the feed page
+      setMessage("Login successful! Redirecting...");
+      router.push("../Feeds");
     } catch (error) {
-      const errorMessage = error.response?.data?.error || "Login failed.";
-      alert(errorMessage); // Show error message on login failure
+      setMessage(error.response?.data?.error || "Login failed.");
     }
   };
 
   return (
     <div>
       <h1>Input your Username and Password</h1>
+      {message && <p>{message}</p>}
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
