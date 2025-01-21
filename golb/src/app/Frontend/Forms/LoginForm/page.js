@@ -138,6 +138,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
+  const router = useRouter(); // For navigation/redirect
   const [message, setMessage] = useState(""); // To store error/success message
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -155,9 +156,14 @@ export default function LoginForm() {
         password: data.password,
       });
 
-      // You can remove this logic if you don't need it
-      setMessage("Login successful!"); // Simple success message
+      // Store tokens if needed (you can add this back if required)
+      // localStorage.setItem("accessToken", response.data.accessToken);
+      // localStorage.setItem("refreshToken", response.data.refreshToken);
 
+      setMessage("Login successful! Redirecting...");
+
+      // Redirect to another page after successful login
+      router.push("/Frontend/Feeds");
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed.");
     }
