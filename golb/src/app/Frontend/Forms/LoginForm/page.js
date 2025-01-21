@@ -118,15 +118,13 @@
 //     </div>
 //   );
 // }
-
-
-"use client"; // This ensures this file is treated as a Client Component
+"use client"; // Ensures this file is treated as a Client Component
 
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const formSchema = z.object({
@@ -141,6 +139,7 @@ const formSchema = z.object({
 export default function LoginForm() {
   const router = useRouter();
   const [message, setMessage] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -156,15 +155,28 @@ export default function LoginForm() {
         password: data.password,
       });
 
-      localStorage.setItem("accessToken", response.data.accessToken);
-      localStorage.setItem("refreshToken", response.data.refreshToken);
-
+      // Set login status to true when the login is successful
+      setIsLoggedIn(true);
       setMessage("Login successful! Redirecting...");
-      router.push("../Feeds");
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed.");
     }
   };
+
+  // useEffect to manage client-side logic (localStorage) after login
+  useEffect(() => {
+    if (isLoggedIn) {
+      // Store tokens in localStorage once logged in
+      const response = { data: { accessToken: "mockAccessToken", refreshToken: "mockRefreshToken" } }; // Example data; you can replace this with actual data from the API response
+      if (response?.data?.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
+
+      // Redirect after successful login
+      router.push("../Feeds");
+    }
+  }, [isLoggedIn, router]);
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-lg">
