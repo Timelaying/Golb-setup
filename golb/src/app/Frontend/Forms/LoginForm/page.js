@@ -124,9 +124,10 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 
+// Define schema using Zod for form validation
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -137,9 +138,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
-  const router = useRouter();
-  const [message, setMessage] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [message, setMessage] = useState(""); // To store error/success message
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -148,6 +147,7 @@ export default function LoginForm() {
     },
   });
 
+  // Submit function for handling login
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:5000/api/login", {
@@ -155,28 +155,13 @@ export default function LoginForm() {
         password: data.password,
       });
 
-      // Set login status to true when the login is successful
-      setIsLoggedIn(true);
-      setMessage("Login successful! Redirecting...");
+      // You can remove this logic if you don't need it
+      setMessage("Login successful!"); // Simple success message
+
     } catch (error) {
       setMessage(error.response?.data?.error || "Login failed.");
     }
   };
-
-  // useEffect to manage client-side logic (localStorage) after login
-  useEffect(() => {
-    if (isLoggedIn) {
-      // Store tokens in localStorage once logged in
-      const response = { data: { accessToken: "mockAccessToken", refreshToken: "mockRefreshToken" } }; // Example data; you can replace this with actual data from the API response
-      if (response?.data?.accessToken) {
-        localStorage.setItem("accessToken", response.data.accessToken);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-      }
-
-      // Redirect after successful login
-      router.push("../Feeds");
-    }
-  }, [isLoggedIn, router]);
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-lg">
