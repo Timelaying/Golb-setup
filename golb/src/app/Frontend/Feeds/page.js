@@ -14,7 +14,7 @@ export default function FeedPage() {
           <button className="bg-gray-700 px-4 py-2 rounded">Menu</button>
           <ul className="absolute right-0 mt-2 bg-white border rounded shadow-lg">
             <li className="px-4 py-2 hover:bg-gray-100">
-              <Link href="/profile">Profile</Link>
+              <Link href="/Frontend/Profile">Profile</Link>
             </li>
             <li className="px-4 py-2 hover:bg-gray-100">
               <button
