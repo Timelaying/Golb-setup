@@ -26,6 +26,9 @@ export default function FeedPage() {
                 Logout
               </button>
             </li>
+            <li>
+                <Link href="/Frontend/CreatePost">Post</Link>
+            </li>
           </ul>
         </div>
       </header>
