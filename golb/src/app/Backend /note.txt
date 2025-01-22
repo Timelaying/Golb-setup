@@ -7,3 +7,18 @@ i included the refresh token manually  from the terminal
 
 
 look at the was the authentication token was exported to export const variables next time 
+
+DBpostgress terminal cmmands, remember i added the referesh token  column from th terminal
+
+postgres=# CREATE DATABASE Golb;
+ERROR:  database "golb" already exists
+postgres=# \c golb
+You are now connected to database "golb" as user "postgres".
+golb=# \dt
+         List of relations
+ Schema | Name  | Type  |  Owner   
+--------+-------+-------+----------
+ public | users | table | postgres
+(1 row)
+
+golb=# SELECT * FROM users;
