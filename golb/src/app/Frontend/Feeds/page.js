@@ -12,7 +12,7 @@ export default function FeedPage() {
         <h1>Feed</h1>
         <div className="relative">
           <button className="bg-gray-700 px-4 py-2 rounded">Menu</button>
-          <ul className="absolute right-0 mt-2 bg-white border rounded shadow-lg">
+          <ul className="absolute right-0 mt-2 bg-black border rounded shadow-lg">
             <li className="px-4 py-2 hover:bg-gray-100">
               <Link href="/Frontend/Profile">Profile</Link>
             </li>
