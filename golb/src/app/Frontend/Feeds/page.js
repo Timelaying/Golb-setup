@@ -20,7 +20,7 @@ export default function FeedPage() {
               <button
                 onClick={() => {
                   localStorage.clear(); // Clear tokens on logout
-                  window.location.href = "/login";
+                  window.location.href = "/Frontend";
                 }}
               >
                 Logout
