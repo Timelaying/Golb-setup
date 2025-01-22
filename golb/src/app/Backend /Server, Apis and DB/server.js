@@ -7,8 +7,10 @@ const pool = require('./db');
 const cors = require('cors');
 const bcrypt = require('bcrypt'); // Import bcrypt
 const authRoutes = require("./AuthRoute"); // Import the router module
-const registerRoute = require("./RegisterRoute")
-const forgetandreset = require("./ForgetAndReset")
+const registerRoute = require("./RegisterRoute");
+const forgetandreset = require("./ForgetAndReset");
+const createPostRoute = require("./CreatePostRoute");
+
 
 const app = express();
 const PORT = 5000;
@@ -22,6 +24,8 @@ app.use(bodyParser.json());
 app.use("/api", registerRoute);
 app.use("/api", authRoutes);
 app.use("/api", forgetandreset);
+app.use("/api", createPostRoute); // Create post routes
+
 
 // Start the server
 app.listen(PORT, () => {
