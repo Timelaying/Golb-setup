@@ -29,7 +29,7 @@ export default function CreatePost() {
             );
 
             alert(response.data.message);
-            router.push("/posts"); // Redirect to the posts list page
+            router.push("/Frontend/PostList"); // Redirect to the posts list page
         } catch (error) {
             console.error("Error creating post:", error.response?.data?.error || error.message);
             alert(error.response?.data?.error || "Failed to create post.");
