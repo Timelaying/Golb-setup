@@ -10,12 +10,13 @@ const authRoutes = require("./AuthRoute"); // Import the router module
 const registerRoute = require("./RegisterRoute");
 const forgetandreset = require("./ForgetAndReset");
 const createPostRoute = require("./CreatePostRoute");
+const viewposts = require("./ViewPost");
 
 
 const app = express();
 const PORT = 5000;
 
-// Middleware
+
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -25,6 +26,7 @@ app.use("/api", registerRoute);
 app.use("/api", authRoutes);
 app.use("/api", forgetandreset);
 app.use("/api", createPostRoute); // Create post routes
+app.use("/api", viewposts)
 
 
 // Start the server
