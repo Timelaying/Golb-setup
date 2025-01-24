@@ -1,35 +1,75 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
-export default function Posts() {
-    const [posts, setPosts] = useState([]);
+export default function CreatePost() {
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+    const router = useRouter();
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const response = await axios.get("http://localhost:5000/api/posts");
-                setPosts(response.data);
-            } catch (error) {
-                console.error("Error fetching posts:", error.message);
-            }
-        };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-        fetchPosts();
-    }, []);
+        try {
+            const accessToken = localStorage.getItem("accessToken");
+
+            const response = await axios.post(
+                "http://localhost:5000/api/posts",
+                { title, content },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                }
+            );
+
+            alert(response.data.message);
+            router.push("/posts"); // Redirect to the posts list page
+        } catch (error) {
+            console.error("Error creating post:", error.response?.data?.error || error.message);
+            alert(error.response?.data?.error || "Failed to create post.");
+        }
+    };
 
     return (
-        <div className="max-w-3xl mx-auto mt-10">
-            <h1 className="text-2xl font-bold mb-5">Posts</h1>
-            <ul>
-                {posts.map((post) => (
-                    <li key={post.id} className="mb-4">
-                        <h2 className="text-xl font-semibold">{post.title}</h2>
-                        <p>{post.content}</p>
-                    </li>
-                ))}
-            </ul>
+        <div className="max-w-2xl mx-auto mt-10 p-5 border rounded">
+            <h1 className="text-2xl font-bold mb-5">Create a New Post</h1>
+            <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                    <label htmlFor="title" className="block font-medium mb-2">
+                        Title
+                    </label>
+                    <Input
+                        id="title"
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Enter post title"
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="content" className="block font-medium mb-2">
+                        Content
+                    </label>
+                    <Textarea
+                        id="content"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder="Enter post content"
+                        required
+                        rows={5}
+                    />
+                </div>
+                <Button type="submit" className="w-full">
+                    Create Post
+                </Button>
+            </form>
         </div>
     );
 }
