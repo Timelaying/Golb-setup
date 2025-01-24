@@ -1,3 +1,8 @@
+const express = require("express");
+const router = express.Router();
+const authenticateToken = require("./AuthenticateMiddleware");
+const pool = require("./db");
+
 // Fetch posts for a specific user
 router.get("/viewposts", authenticateToken, async (req, res) => {
     try {
