@@ -11,6 +11,7 @@ const registerRoute = require("./RegisterRoute");
 const forgetandreset = require("./ForgetAndReset");
 const createPostRoute = require("./CreatePostRoute");
 const viewposts = require("./ViewPost");
+const profilepageroute = require("./ProfilePageRoute");
 
 
 const app = express();
