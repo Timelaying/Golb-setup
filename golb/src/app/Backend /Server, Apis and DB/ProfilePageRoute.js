@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./db"); // Assuming you have a PostgreSQL connection pool
-const authenticateToken = require("./middleware/authenticateToken"); // Middleware to verify JWT
+const authenticateToken = require("./AuthenticateMiddleware"); // Middleware to verify JWT
 
 // Profile API
 router.get("/profile", authenticateToken, async (req, res) => {
