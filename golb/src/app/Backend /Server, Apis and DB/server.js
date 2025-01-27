@@ -27,7 +27,8 @@ app.use("/api", registerRoute);
 app.use("/api", authRoutes);
 app.use("/api", forgetandreset);
 app.use("/api", createPostRoute); // Create post routes
-app.use("/api", viewposts)
+app.use("/api", viewposts);
+app.use("/api", profilepageroute);
 
 
 // Start the server
