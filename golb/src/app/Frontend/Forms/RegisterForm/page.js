@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-// Schema for validation
 const formSchema = z.object({
   username: z
     .string()
@@ -29,7 +28,6 @@ const formSchema = z.object({
 });
 
 export default function RegisterForm() {
-  // Initialize the form using `useForm`
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,21 +37,17 @@ export default function RegisterForm() {
     },
   });
 
-  // Handle form submission
   const onSubmit = async (data) => {
     try {
-      // Make an API call to register the user
       const response = await axios.post("http://localhost:5000/api/register", {
         name: data.username,
         email: data.email,
         password: data.password,
       });
 
-      // Handle success
       alert("Registration successful! Welcome, " + response.data.user.name);
-      form.reset(); // Reset the form after successful registration
+      form.reset();
     } catch (error) {
-      // Handle error
       console.error("Registration failed:", error.response?.data || error.message);
       alert(
         "Registration failed: " +
@@ -63,20 +57,31 @@ export default function RegisterForm() {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      <div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+      <div className="max-w-lg w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
+        <h1 className="text-3xl font-bold text-center text-gray-50">Create Your Account</h1>
+        <p className="text-sm text-gray-400 text-center">
+          Enter your details to get started!
+        </p>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6"
+          >
             {/* Username Field */}
             <FormField
               control={form.control}
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel className="text-sm text-gray-400">Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your username" {...field} />
+                    <Input
+                      placeholder="Enter your username"
+                      {...field}
+                      className="bg-gray-700 text-gray-100"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -89,12 +94,13 @@ export default function RegisterForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-sm text-gray-400">Email</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
                       placeholder="Enter your email address"
                       {...field}
+                      className="bg-gray-700 text-gray-100"
                     />
                   </FormControl>
                   <FormMessage />
@@ -108,12 +114,13 @@ export default function RegisterForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-sm text-gray-400">Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       placeholder="Enter a strong password"
                       {...field}
+                      className="bg-gray-700 text-gray-100"
                     />
                   </FormControl>
                   <FormMessage />
@@ -122,7 +129,12 @@ export default function RegisterForm() {
             />
 
             {/* Submit Button */}
-            <Button type="submit">Register</Button>
+            <Button
+              type="submit"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300"
+            >
+              Register
+            </Button>
           </form>
         </Form>
       </div>
