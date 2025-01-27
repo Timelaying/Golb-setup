@@ -22,3 +22,8 @@ golb=# \dt
 (1 row)
 
 golb=# SELECT * FROM users;
+
+
+If your React frontend is running on http://localhost:3000 
+and your Express backend is running on http://localhost:5000, your frontend might face a CORS error when trying to make requests to the backend because the origins don't match. 
+Adding app.use(cors()); fixes this issue.
