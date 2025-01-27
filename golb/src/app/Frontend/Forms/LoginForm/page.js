@@ -1,14 +1,14 @@
 "use client"; // This ensures this file is treated as a Client Component
 
 import Link from "next/link";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
 import axios from "axios";
 
-import { Button } from "@/components/ui/button";  // Ensure Button is a Client Component
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-// Schema for validation
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -59,25 +58,39 @@ export default function LoginForm() {
   };
 
   return (
-    <div>
-      <h1>Input your Username and Password</h1>
-      {message && <p>{message}</p>}
-      <div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+      <div className="max-w-md w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
+        <h1 className="text-2xl font-bold text-center text-gray-50">
+          Welcome Back
+        </h1>
+        <p className="text-sm text-gray-400 text-center">
+          Enter your credentials to access your account.
+        </p>
+
+        {message && (
+          <div className="text-sm text-center text-red-500">{message}</div>
+        )}
+
+        {/* Login Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 text-gray-50"
+          >
             {/* Username Field */}
             <FormField
               control={form.control}
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel className="text-sm text-gray-400">Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your username" {...field} />
+                    <Input
+                      placeholder="Enter your username"
+                      {...field}
+                      className="bg-gray-700 text-gray-100"
+                    />
                   </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -89,12 +102,13 @@ export default function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-sm text-gray-400">Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       placeholder="Enter your password"
                       {...field}
+                      className="bg-gray-700 text-gray-100"
                     />
                   </FormControl>
                   <FormMessage />
@@ -103,15 +117,22 @@ export default function LoginForm() {
             />
 
             {/* Submit Button */}
-            <Button type="submit">Submit</Button>
+            <Button
+              type="submit"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300"
+            >
+              Login
+            </Button>
           </form>
         </Form>
-      </div>
-      <div>
-        <h1>Forgotten Password?</h1>
-        <div>
+
+        {/* Reset Password Section */}
+        <div className="text-center">
+          <h2 className="text-sm text-gray-400">Forgot your password?</h2>
           <Link href="./ForgottenPassword">
-            <Button>Reset password</Button>
+            <Button className="mt-2 bg-green-600 hover:bg-green-500 focus:ring focus:ring-green-300">
+              Reset Password
+            </Button>
           </Link>
         </div>
       </div>
