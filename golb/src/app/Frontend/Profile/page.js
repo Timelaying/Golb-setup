@@ -1,4 +1,3 @@
-// Frontend: Profile Page using React and Next.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,18 +9,26 @@ import { Avatar } from "@/components/ui/avatar";
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+          throw new Error("Access token not found.");
+        }
+
         const response = await axios.get("http://localhost:5000/api/profile", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
+
         setProfile(response.data);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+      } catch (err) {
+        console.error("Error fetching profile:", err.message);
+        setError("Failed to load profile data.");
       } finally {
         setIsLoading(false);
       }
@@ -32,16 +39,16 @@ export default function ProfilePage() {
 
   if (isLoading) return <p>Loading profile...</p>;
 
-  if (!profile) return <p>Failed to load profile data.</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <Card className="mb-6">
         <CardHeader>
           <div className="flex items-center space-x-4">
-            <Avatar src={profile.profilePicture} alt="Profile Picture" />
+            <Avatar src={profile.profile_picture} alt="Profile Picture" />
             <div>
-              <CardTitle>{profile.fullName}</CardTitle>
+              <CardTitle>{profile.full_name}</CardTitle>
               <p>@{profile.username}</p>
             </div>
           </div>
