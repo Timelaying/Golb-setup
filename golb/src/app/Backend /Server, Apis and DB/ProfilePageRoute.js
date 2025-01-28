@@ -1,15 +1,14 @@
-// Backend: Express route for profile data
 const express = require("express");
 const router = express.Router();
-const pool = require("./db"); // Assuming you have a PostgreSQL connection pool
-const authenticateToken = require("./AuthenticateMiddleware"); // Middleware to verify JWT
+const pool = require("./db");
+const authenticateToken = require("./AuthenticateMiddleware");
 
-// Profile API
+// Profile API: Fetch user data
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.id; // Extract user ID from the authenticated token
+    const userId = req.user.id; // Extract user ID from token
 
-    // Fetch user data
+    // Fetch user details
     const userResult = await pool.query(
       "SELECT id, full_name, username, email, location, bio, profile_picture FROM users WHERE id = $1",
       [userId]
