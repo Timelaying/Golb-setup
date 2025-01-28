@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require("pg");
+require("dotenv").config();
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -9,33 +9,43 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-//Creating table to store users credentials 
+// Create tables for users and posts
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    full_name VARCHAR(255),
+    username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    location VARCHAR(255),
+    bio TEXT,
+    profile_picture TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    refresh_token TEXT
   );
 
-  CREATE TABLE posts (
+  CREATE TABLE IF NOT EXISTS posts (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
-);
+  );
 
+  CREATE TABLE IF NOT EXISTS followers (
+    id SERIAL PRIMARY KEY,
+    follower_id INT NOT NULL,
+    following_id INT NOT NULL,
+    FOREIGN KEY (follower_id) REFERENCES users(id),
+    FOREIGN KEY (following_id) REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
 `;
 
-// Automatically create the table if it doesn't exist
+// Automatically create tables if they don't exist
 pool.query(createTableQuery)
-  .then(() => console.log('Users table is ready.'))
-  .catch((err) => console.error('Error creating users table:', err.message));
-
-//Checking if DB is connected
-console.log('Connecting to database:', process.env.DB_NAME);
+  .then(() => console.log("Database tables are ready."))
+  .catch((err) => console.error("Error creating tables:", err.message));
 
 module.exports = pool;
