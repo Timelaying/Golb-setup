@@ -20,7 +20,7 @@ const createTableQuery = `
     location VARCHAR(255),
     bio TEXT,
     profile_picture TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     refresh_token TEXT
   );
 
