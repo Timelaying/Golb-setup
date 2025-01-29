@@ -2,14 +2,20 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -36,6 +42,20 @@ export default function ProfilePage() {
 
     fetchProfile();
   }, []);
+
+  const onSubmit = async (data) => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      await axios.put("http://localhost:5000/api/update-profile", { ...data, userId: profile.id }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setProfile((prev) => ({ ...prev, ...data }));
+      setIsEditing(false);
+    } catch (error) {
+      alert("Failed to update profile.");
+    }
+  };
 
   if (isLoading) return <p>Loading profile...</p>;
 
@@ -74,7 +94,25 @@ export default function ProfilePage() {
       </Card>
 
       <div className="mt-6">
-        <Button onClick={() => alert("Edit Profile coming soon!")}>Edit Profile</Button>
+        {isEditing ? (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <label>Location:</label>
+            <Input {...register("location")} defaultValue={profile.location} />
+
+            <label>Bio:</label>
+            <Textarea {...register("bio")} defaultValue={profile.bio} />
+
+            <label>Profile Picture URL:</label>
+            <Input {...register("profile_picture")} defaultValue={profile.profile_picture} />
+
+            <div className="flex space-x-4">
+              <Button type="submit">Save Changes</Button>
+              <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            </div>
+          </form>
+        ) : (
+          <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+        )}
       </div>
     </div>
   );
