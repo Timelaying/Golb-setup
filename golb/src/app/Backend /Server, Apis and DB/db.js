@@ -13,7 +13,7 @@ const pool = new Pool({
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    full_name VARCHAR(255),
+    name VARCHAR(255),
     username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
