@@ -1,51 +1,49 @@
-// Environment variables for secrets
 require("dotenv").config();
 
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer"); // For sending emails
+const nodemailer = require("nodemailer");
 const pool = require("./db");
 
 // Email configuration using nodemailer
 const transporter = nodemailer.createTransport({
-  service: "gmail", // You can replace this with another service
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER, // Your email address
-    pass: process.env.EMAIL_PASS, // Your email password or app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
-// Route to handle form submission
+// User registration route
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body; // Expecting these fields from the form
+  const { name, username, email, password } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !username || !email || !password) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
   try {
     // Check if the user already exists
     const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
-
     if (userCheck.rows.length > 0) {
       return res.status(200).json({ message: "You are already registered!" });
     }
 
-    // Hash the password before storing it
-    const saltRounds = 10; // The cost factor (higher is more secure but slower)
+    // Hash the password
+    const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert the user into the database with the hashed password
+    // Insert the new user
     const result = await pool.query(
-      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-      [name, email, hashedPassword]
+      "INSERT INTO users (name, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, name, username, email, created_at",
+      [name, username, email, hashedPassword]
     );
 
     const newUser = result.rows[0];
 
-    // Send a welcome email to the new user
+    // Send welcome email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: newUser.email,
@@ -53,11 +51,9 @@ router.post("/register", async (req, res) => {
       text: `Hi ${newUser.name},\n\nThank you for registering on our platform. We are excited to have you on board!\n\nBest regards,\nYour Company`,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, (error) => {
       if (error) {
         console.error("Error sending email:", error);
-      } else {
-        console.log("Email sent:", info.response);
       }
     });
 
@@ -67,15 +63,42 @@ router.post("/register", async (req, res) => {
     });
   } catch (err) {
     console.error("Error inserting user:", err.message);
-
-    // Handle unique constraint violation (e.g., duplicate email)
     if (err.code === "23505") {
       return res.status(400).json({ error: "Email already exists." });
     }
-
     res.status(500).json({ error: "Failed to register user." });
   }
 });
 
-// Export the router to be used in the main app
+// Route to update profile information
+router.put("/update-profile", async (req, res) => {
+  const { userId, location, bio, profile_picture } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required." });
+  }
+
+  try {
+    const updateQuery = `
+      UPDATE users SET 
+        location = COALESCE($1, location), 
+        bio = COALESCE($2, bio), 
+        profile_picture = COALESCE($3, profile_picture)
+      WHERE id = $4
+      RETURNING id, name, username, email, location, bio, profile_picture;
+    `;
+
+    const result = await pool.query(updateQuery, [location, bio, profile_picture, userId]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.json({ message: "Profile updated successfully.", user: result.rows[0] });
+  } catch (err) {
+    console.error("Error updating profile:", err.message);
+    res.status(500).json({ error: "Failed to update profile." });
+  }
+});
+
 module.exports = router;
