@@ -43,7 +43,7 @@ export default function RegisterForm() {
         password: data.password,
       });
 
-      alert("Registration successful! Welcome, " + response.data.name);
+      alert("Registration successful! Welcome, " + (response.data.name || "user"));
       form.reset();
     } catch (error) {
       console.error("Registration failed:", error.response?.data || error.message);
