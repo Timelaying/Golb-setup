@@ -10,7 +10,7 @@ router.get("/profile", authenticateToken, async (req, res) => {
 
     // Fetch user details
     const userResult = await pool.query(
-      "SELECT id, full_name, username, email, location, bio, profile_picture FROM users WHERE id = $1",
+      "SELECT id, name, username, email, location, bio, profile_picture FROM users WHERE id = $1",
       [userId]
     );
 
