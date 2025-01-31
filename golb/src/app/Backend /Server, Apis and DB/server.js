@@ -12,6 +12,7 @@ const forgetandreset = require("./ForgetAndReset");
 const createPostRoute = require("./CreatePostRoute");
 const viewposts = require("./ViewPost");
 const profilepageroute = require("./ProfilePageRoute");
+const updateprofile = require("./UpdateProfile")
 
 
 const app = express();
