@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -18,19 +17,17 @@ import {
 import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
-  username: z
-    .string()
-    .min(2, { message: "Username must be at least 2 characters long." }),
+  name: z.string().min(2, { message: "Name must be at least 2 characters long." }),
+  username: z.string().min(2, { message: "Username must be at least 2 characters long." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters long." }),
 });
 
 export default function RegisterForm() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       username: "",
       email: "",
       password: "",
@@ -40,19 +37,17 @@ export default function RegisterForm() {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post("http://localhost:5000/api/register", {
-        name: data.username,
+        name: data.name,
+        username: data.username,
         email: data.email,
         password: data.password,
       });
 
-      alert("Registration successful! Welcome, " + response.data.user.name);
+      alert("Registration successful! Welcome, " + response.data.name);
       form.reset();
     } catch (error) {
       console.error("Registration failed:", error.response?.data || error.message);
-      alert(
-        "Registration failed: " +
-          (error.response?.data?.error || error.message)
-      );
+      alert("Registration failed: " + (error.response?.data?.error || error.message));
     }
   };
 
@@ -65,10 +60,26 @@ export default function RegisterForm() {
         </p>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Name Field */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm text-gray-400">Full Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter your full name"
+                      {...field}
+                      className="bg-gray-700 text-gray-100"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Username Field */}
             <FormField
               control={form.control}
@@ -129,10 +140,7 @@ export default function RegisterForm() {
             />
 
             {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300"
-            >
+            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300">
               Register
             </Button>
           </form>
