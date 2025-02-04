@@ -36,6 +36,7 @@ export default function PostsList() {
     }
 
     return (
+        <div>
         <div className="max-w-3xl mx-auto mt-10">
             <h1 className="text-2xl font-bold mb-5">My Posts</h1>
             <p className="mb-4">
@@ -50,11 +51,16 @@ export default function PostsList() {
                     </li>
                 ))}
             </ul>
-            <Link href="/Frontend/Feeds">
+            
+        </div>
+
+        <Link href="/Frontend/Feeds">
                 <Button>
                     Back to Feeds
                 </Button>
             </Link>
+
         </div>
+        
     );
 }
