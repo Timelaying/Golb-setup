@@ -38,6 +38,7 @@ export default function CreatePost() {
     };
 
     return (
+        <div>
         <div className="max-w-2xl mx-auto mt-10 p-5 border rounded">
             <h1 className="text-2xl font-bold mb-5">Create a New Post</h1>
             <form onSubmit={handleSubmit}>
@@ -74,6 +75,12 @@ export default function CreatePost() {
             <Link href="/Frontend/Feeds">
                 <Button>
                     Back to Feeds
+                </Button>
+            </Link>
+        </div>
+        <Link href="/Frontend/ViewPost">
+                <Button>
+                    View Past Posts
                 </Button>
             </Link>
         </div>
