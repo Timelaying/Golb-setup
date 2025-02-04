@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 export default function CreatePost() {
     const [title, setTitle] = useState("");
@@ -70,6 +71,11 @@ export default function CreatePost() {
                     Create Post
                 </Button>
             </form>
+            <Link href="/Frontend/Feeds">
+                <Button>
+                    Back to Feeds
+                </Button>
+            </Link>
         </div>
     );
 }
