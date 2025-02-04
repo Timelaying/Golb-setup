@@ -1,1 +1,1 @@
-renderfing or usinf client resources like storage requires "use client";
+rendering or using client resources like storage requires "use client";
