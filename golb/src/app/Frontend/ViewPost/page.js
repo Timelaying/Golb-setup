@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link";
 
 export default function PostsList() {
     const [posts, setPosts] = useState([]);
@@ -54,11 +55,11 @@ export default function PostsList() {
             
         </div>
 
-        <Link href="/Frontend/Feeds">
+        {/* <Link href="/Frontend/Feeds">
                 <Button>
                     Back to Feeds
                 </Button>
-            </Link>
+            </Link> */}
 
         </div>
         
