@@ -38,51 +38,53 @@ export default function CreatePost() {
     };
 
     return (
-        <div>
-        <div className="max-w-2xl mx-auto mt-10 p-5 border rounded">
-            <h1 className="text-2xl font-bold mb-5">Create a New Post</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="title" className="block font-medium mb-2">
-                        Title
-                    </label>
-                    <Input
-                        id="title"
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Enter post title"
-                        required
-                    />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 px-4">
+            <div className="max-w-2xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
+                <h1 className="text-3xl font-semibold text-center mb-6">Create a New Post</h1>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                        <label htmlFor="title" className="block font-medium mb-2 text-gray-300">
+                            Title
+                        </label>
+                        <Input
+                            id="title"
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Enter post title"
+                            required
+                            className="text-black"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="content" className="block font-medium mb-2 text-gray-300">
+                            Content
+                        </label>
+                        <Textarea
+                            id="content"
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            placeholder="Enter post content"
+                            required
+                            rows={5}
+                            className="text-black"
+                        />
+                    </div>
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 transition">
+                        Create Post
+                    </Button>
+                </form>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between mt-6">
+                    <Link href="/Frontend/Feeds">
+                        <Button className="bg-gray-700 hover:bg-gray-600">Back to Feeds</Button>
+                    </Link>
+                    <Link href="/Frontend/ViewPost">
+                        <Button className="bg-green-600 hover:bg-green-700">View Past Posts</Button>
+                    </Link>
                 </div>
-                <div className="mb-4">
-                    <label htmlFor="content" className="block font-medium mb-2">
-                        Content
-                    </label>
-                    <Textarea
-                        id="content"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Enter post content"
-                        required
-                        rows={5}
-                    />
-                </div>
-                <Button type="submit" className="w-full">
-                    Create Post
-                </Button>
-            </form>
-            <Link href="/Frontend/Feeds">
-                <Button>
-                    Back to Feeds
-                </Button>
-            </Link>
-        </div>
-        <Link href="/Frontend/ViewPost">
-                <Button>
-                    View Past Posts
-                </Button>
-            </Link>
+            </div>
         </div>
     );
 }
