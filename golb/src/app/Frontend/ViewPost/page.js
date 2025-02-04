@@ -50,6 +50,11 @@ export default function PostsList() {
                     </li>
                 ))}
             </ul>
+            <Link href="/Frontend/Feeds">
+                <Button>
+                    Back to Feeds
+                </Button>
+            </Link>
         </div>
     );
 }
