@@ -14,7 +14,7 @@ const viewposts = require("./ViewPost");
 const profilepageroute = require("./ProfilePageRoute");
 const updateprofile = require("./UpdateProfile");
 const search = require("./Search");
-const feed =
+const feed = require("./Feed");
 
 const app = express();
 const PORT = 5000;
