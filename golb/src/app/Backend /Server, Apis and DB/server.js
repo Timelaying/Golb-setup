@@ -12,7 +12,8 @@ const forgetandreset = require("./ForgetAndReset");
 const createPostRoute = require("./CreatePostRoute");
 const viewposts = require("./ViewPost");
 const profilepageroute = require("./ProfilePageRoute");
-const updateprofile = require("./UpdateProfile")
+const updateprofile = require("./UpdateProfile");
+const search = require("./Search")
 
 
 const app = express();
@@ -30,7 +31,7 @@ app.use("/api", forgetandreset);
 app.use("/api", createPostRoute); // Create post routes
 app.use("/api", viewposts);
 app.use("/api", profilepageroute);
-
+app.use("/api", search);
 
 // Start the server
 app.listen(PORT, () => {
