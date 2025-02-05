@@ -30,6 +30,7 @@ app.use("/api", createPostRoute); // Create post routes
 app.use("/api", viewposts);
 app.use("/api", profilepageroute);
 app.use("/api", search);
+app.use("api", feed);
 
 // Start the server
 app.listen(PORT, () => {
