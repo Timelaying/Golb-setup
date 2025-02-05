@@ -1,11 +1,11 @@
 // Environment variables for secrets
 require("dotenv").config();
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const pool = require('./db');
-const cors = require('cors');
-const bcrypt = require('bcrypt'); // Import bcrypt
+const express = require("express");
+const bodyParser = require("body-parser");
+const pool = require("./db");
+const cors = require("cors");
+const bcrypt = require("bcrypt"); // Import bcrypt
 const authRoutes = require("./AuthRoute"); // Import the router module
 const registerRoute = require("./RegisterRoute");
 const forgetandreset = require("./ForgetAndReset");
@@ -13,16 +13,13 @@ const createPostRoute = require("./CreatePostRoute");
 const viewposts = require("./ViewPost");
 const profilepageroute = require("./ProfilePageRoute");
 const updateprofile = require("./UpdateProfile");
-const search = require("./Search")
-
+const search = require("./Search");
 
 const app = express();
 const PORT = 5000;
 
-
 app.use(cors());
 app.use(bodyParser.json());
-
 
 // Mount the auth routes on the `/api` path
 app.use("/api", registerRoute);
