@@ -32,6 +32,7 @@ app.use("/api", viewposts);
 app.use("/api", profilepageroute);
 app.use("/api", search);
 app.use("api", feed);
+app.use("/api", follow);
 
 // Start the server
 app.listen(PORT, () => {
