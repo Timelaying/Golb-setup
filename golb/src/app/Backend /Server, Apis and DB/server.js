@@ -15,6 +15,7 @@ const profilepageroute = require("./ProfilePageRoute");
 const updateprofile = require("./UpdateProfile");
 const search = require("./Search");
 const feed = require("./Feed");
+const follow = require("./Follow");
 
 const app = express();
 const PORT = 5000;
