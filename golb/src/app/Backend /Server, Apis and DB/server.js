@@ -16,6 +16,7 @@ const updateprofile = require("./UpdateProfile");
 const search = require("./Search");
 const feed = require("./Feed");
 const follow = require("./Follow");
+const likeunlike = require("./LikeUnlike");
 
 const app = express();
 const PORT = 5000;
@@ -33,6 +34,7 @@ app.use("/api", profilepageroute);
 app.use("/api", search);
 app.use("api", feed);
 app.use("/api", follow);
+app.use("api", likeunlike);
 
 // Start the server
 app.listen(PORT, () => {
