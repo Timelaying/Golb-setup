@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const pool = require("./db");
 const cors = require("cors");
 const bcrypt = require("bcrypt"); // Import bcrypt
+
 const authRoutes = require("./AuthRoute"); // Import the router module
 const registerRoute = require("./RegisterRoute");
 const forgetandreset = require("./ForgetAndReset");
@@ -17,6 +18,7 @@ const search = require("./Search");
 const feed = require("./Feed");
 const follow = require("./Follow");
 const likeunlike = require("./LikeUnlike");
+const comment = require("./Comment");
 
 const app = express();
 const PORT = 5000;
@@ -35,6 +37,7 @@ app.use("/api", search);
 app.use("api", feed);
 app.use("/api", follow);
 app.use("api", likeunlike);
+app.use("api", comment);
 
 // Start the server
 app.listen(PORT, () => {
