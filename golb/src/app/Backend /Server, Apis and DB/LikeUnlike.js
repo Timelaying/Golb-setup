@@ -36,3 +36,4 @@ router.post("/like", async (req, res) => {
     }
 });
 
+module.exports = router;
