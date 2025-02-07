@@ -55,22 +55,21 @@ export default function FeedPage() {
     }
   };
 
-  //handles comment 
+  //handles comment
   const handleComment = async (postId) => {
     try {
-        await axios.post("http://localhost:5000/api/comment", {
-            userId: currentUserId,
-            postId: postId,
-            content: comment,
-        });
-        fetchPosts();
+      await axios.post("http://localhost:5000/api/comment", {
+        userId: currentUserId,
+        postId: postId,
+        content: comment,
+      });
+      fetchPosts();
     } catch (error) {
-        console.error("Comment error:", error);
+      console.error("Comment error:", error);
     }
-};
+  };
 
-
-  //const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
+  const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
@@ -125,6 +124,16 @@ export default function FeedPage() {
       <Button onClick={() => handleLike(post.id)}>
         {post.isLiked ? "Unlike" : "Like"}
       </Button>
+
+
+      {/*text area for comment*/}
+      <textarea
+        placeholder="Write a comment..."
+        className="border rounded p-2"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+      ></textarea>
+      <Button onClick={() => handleComment(post.id)}>Comment</Button>
 
       <main className="flex-1 p-4 overflow-y-auto">
         {feedItems.map((item, index) => (
