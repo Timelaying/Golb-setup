@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function FeedPage() {
-  const handleSearch = async () => {
+  const handleSearch = async () => { // handles search
     try {
       const response = await axios.get(
         `http://localhost:5000/api/search?query=${searchQuery}`
@@ -16,7 +16,17 @@ export default function FeedPage() {
     }
   };
 
-  const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
+  const fetchFeed = async () => { //handles feed
+    try {
+        const response = await axios.get(`http://localhost:5000/api/feed/${userId}`);
+        setPosts(response.data);
+    } catch (error) {
+        console.error("Error fetching feed:", error);
+    }
+};
+
+
+  //const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
