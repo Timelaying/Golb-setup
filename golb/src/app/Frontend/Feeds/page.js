@@ -101,12 +101,18 @@ export default function FeedPage() {
       />
       <Button onClick={handleSearch}>Search</Button>
 
-      {/*follow and in follow button*/}
+      {/*follow and unfollow button*/}
       <Button onClick={() => handleFollow(user.id)}>
         {user.isFollowing ? "Unfollow" : "Follow"}
       </Button>
 
-      {/* Scrollable Feed */}
+      {/* like and unlike button */}
+      <Button onClick={() => handleLike(post.id)}>
+    {post.isLiked ? "Unlike" : "Like"}
+</Button>
+
+
+      
       <main className="flex-1 p-4 overflow-y-auto">
         {feedItems.map((item, index) => (
           <div
