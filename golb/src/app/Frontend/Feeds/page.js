@@ -6,15 +6,14 @@ import { Input } from "@/components/ui/input";
 export default function FeedPage() {
   const handleSearch = async () => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/search?query=${searchQuery}`);
-        setPosts(response.data);
+      const response = await axios.get(
+        `http://localhost:5000/api/search?query=${searchQuery}`
+      );
+      setPosts(response.data);
     } catch (error) {
-        console.error("Search error:", error);
+      console.error("Search error:", error);
     }
-};
-
-
-
+  };
 
   const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
 
@@ -53,6 +52,14 @@ export default function FeedPage() {
         </div>
       </header>
 
+      <input
+        type="text"
+        placeholder="Search posts..."
+        className="border rounded p-2"
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <Button onClick={handleSearch}>Search</Button>
+
       {/* Scrollable Feed */}
       <main className="flex-1 p-4 overflow-y-auto">
         {feedItems.map((item, index) => (
@@ -61,7 +68,9 @@ export default function FeedPage() {
             className="border-b border-gray-700 p-4 bg-gray-800 rounded-lg shadow mb-4"
           >
             <h2 className="text-lg font-semibold">{item}</h2>
-            <p className="text-sm text-gray-400">This is a description of {item}.</p>
+            <p className="text-sm text-gray-400">
+              This is a description of {item}.
+            </p>
           </div>
         ))}
       </main>
