@@ -55,6 +55,21 @@ export default function FeedPage() {
     }
   };
 
+  //handles comment 
+  const handleComment = async (postId) => {
+    try {
+        await axios.post("http://localhost:5000/api/comment", {
+            userId: currentUserId,
+            postId: postId,
+            content: comment,
+        });
+        fetchPosts();
+    } catch (error) {
+        console.error("Comment error:", error);
+    }
+};
+
+
   //const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
 
   return (
