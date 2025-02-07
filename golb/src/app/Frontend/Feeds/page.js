@@ -25,6 +25,19 @@ export default function FeedPage() {
     }
 };
 
+const handleFollow = async (userId) => { //handles follow
+  try {
+      await axios.post("http://localhost:5000/api/follow", {
+          followerId: currentUserId,
+          followingId: userId,
+      });
+      fetchUsers(); // Refresh user list
+  } catch (error) {
+      console.error("Follow/unfollow error:", error);
+  }
+};
+
+
 
   //const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
 
