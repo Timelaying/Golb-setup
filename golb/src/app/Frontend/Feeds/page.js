@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function FeedPage() {
+  // handles search
   const handleSearch = async () => {
-    // handles search
     try {
       const response = await axios.get(
         `http://localhost:5000/api/search?query=${searchQuery}`
@@ -17,8 +17,8 @@ export default function FeedPage() {
     }
   };
 
+  //handles feed
   const fetchFeed = async () => {
-    //handles feed
     try {
       const response = await axios.get(
         `http://localhost:5000/api/feed/${userId}`
@@ -29,8 +29,8 @@ export default function FeedPage() {
     }
   };
 
+  //handles follow
   const handleFollow = async (userId) => {
-    //handles follow
     try {
       await axios.post("http://localhost:5000/api/follow", {
         followerId: currentUserId,
@@ -39,6 +39,19 @@ export default function FeedPage() {
       fetchUsers(); // Refresh user list
     } catch (error) {
       console.error("Follow/unfollow error:", error);
+    }
+  };
+
+  //handle like and unlike
+  const handleLike = async (postId) => {
+    try {
+      await axios.post("http://localhost:5000/api/like", {
+        userId: currentUserId,
+        postId: postId,
+      });
+      fetchPosts();
+    } catch (error) {
+      console.error("Like/unlike error:", error);
     }
   };
 
