@@ -79,7 +79,7 @@ export default function FeedPage() {
         </div>
       </header>
 
-      {/*}
+      {/* input */}
       <input
         type="text"
         placeholder="Search posts..."
@@ -88,6 +88,7 @@ export default function FeedPage() {
       />
       <Button onClick={handleSearch}>Search</Button>
 
+      {/*follow and in follow button*/}
       <Button onClick={() => handleFollow(user.id)}>
         {user.isFollowing ? "Unfollow" : "Follow"}
       </Button>
