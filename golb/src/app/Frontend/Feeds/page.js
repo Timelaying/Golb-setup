@@ -108,11 +108,9 @@ export default function FeedPage() {
 
       {/* like and unlike button */}
       <Button onClick={() => handleLike(post.id)}>
-    {post.isLiked ? "Unlike" : "Like"}
-</Button>
+        {post.isLiked ? "Unlike" : "Like"}
+      </Button>
 
-
-      
       <main className="flex-1 p-4 overflow-y-auto">
         {feedItems.map((item, index) => (
           <div
