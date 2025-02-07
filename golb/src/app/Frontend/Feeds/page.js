@@ -79,6 +79,7 @@ export default function FeedPage() {
         </div>
       </header>
 
+      {/*}
       <input
         type="text"
         placeholder="Search posts..."
