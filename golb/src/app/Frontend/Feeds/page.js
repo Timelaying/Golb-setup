@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function FeedPage() {
-  const handleSearch = async () => { // handles search
+  const handleSearch = async () => {
+    // handles search
     try {
       const response = await axios.get(
         `http://localhost:5000/api/search?query=${searchQuery}`
@@ -16,28 +17,30 @@ export default function FeedPage() {
     }
   };
 
-  const fetchFeed = async () => { //handles feed
+  const fetchFeed = async () => {
+    //handles feed
     try {
-        const response = await axios.get(`http://localhost:5000/api/feed/${userId}`);
-        setPosts(response.data);
+      const response = await axios.get(
+        `http://localhost:5000/api/feed/${userId}`
+      );
+      setPosts(response.data);
     } catch (error) {
-        console.error("Error fetching feed:", error);
+      console.error("Error fetching feed:", error);
     }
-};
+  };
 
-const handleFollow = async (userId) => { //handles follow
-  try {
+  const handleFollow = async (userId) => {
+    //handles follow
+    try {
       await axios.post("http://localhost:5000/api/follow", {
-          followerId: currentUserId,
-          followingId: userId,
+        followerId: currentUserId,
+        followingId: userId,
       });
       fetchUsers(); // Refresh user list
-  } catch (error) {
+    } catch (error) {
       console.error("Follow/unfollow error:", error);
-  }
-};
-
-
+    }
+  };
 
   //const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
 
@@ -83,6 +86,10 @@ const handleFollow = async (userId) => { //handles follow
         onChange={(e) => setSearchQuery(e.target.value)}
       />
       <Button onClick={handleSearch}>Search</Button>
+
+      <Button onClick={() => handleFollow(user.id)}>
+        {user.isFollowing ? "Unfollow" : "Follow"}
+      </Button>
 
       {/* Scrollable Feed */}
       <main className="flex-1 p-4 overflow-y-auto">
