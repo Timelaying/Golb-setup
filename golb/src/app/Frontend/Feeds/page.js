@@ -3,6 +3,17 @@
 import Link from "next/link";
 
 export default function FeedPage() {
+  const handleSearch = async () => {
+    try {
+        const response = await axios.get(`http://localhost:5000/api/search?query=${searchQuery}`);
+        setPosts(response.data);
+    } catch (error) {
+        console.error("Search error:", error);
+    }
+};
+
+
+
   const feedItems = Array.from({ length: 20 }, (_, i) => `Post #${i + 1}`); // Mock feed data
 
   return (
