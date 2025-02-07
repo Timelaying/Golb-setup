@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
 
 export default function FeedPage() {
   const handleSearch = async () => {
@@ -11,6 +12,7 @@ export default function FeedPage() {
         console.error("Search error:", error);
     }
 };
+
 
 
 
