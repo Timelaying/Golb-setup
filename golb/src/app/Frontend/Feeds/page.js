@@ -125,7 +125,6 @@ export default function FeedPage() {
         {post.isLiked ? "Unlike" : "Like"}
       </Button>
 
-
       {/*text area for comment*/}
       <textarea
         placeholder="Write a comment..."
@@ -135,6 +134,8 @@ export default function FeedPage() {
       ></textarea>
       <Button onClick={() => handleComment(post.id)}>Comment</Button>
 
+
+      {/* mock list of feeed */}
       <main className="flex-1 p-4 overflow-y-auto">
         {feedItems.map((item, index) => (
           <div
