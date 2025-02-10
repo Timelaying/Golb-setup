@@ -25,11 +25,13 @@ export default function SearchBar({ onSearchResults }) {
       <Input
         type="text"
         placeholder="Search posts..."
-        className="border rounded p-2 w-full"
+        className="border rounded p-2 w-full text-gray-900 bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <Button onClick={handleSearch}>Search</Button>
+      <Button onClick={handleSearch} className="bg-blue-600 hover:bg-blue-500 text-white">
+        Search
+      </Button>
     </div>
   );
 }
