@@ -4,9 +4,9 @@ import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import SearchBar from "@/app/Components/SearchBar";
-import FollowButton from "@/components/FollowButton";
-import LikeButton from "@/components/LikeButton";
-import CommentBox from "@/components/CommentBox";
+import FollowButton from "@/app/components/FollowButton";
+import LikeButton from "@/app/components/LikeButton";
+import CommentBox from "@/app/components/CommentBox";
 
 export default function FeedPage() {
   const [posts, setPosts] = useState([]);
