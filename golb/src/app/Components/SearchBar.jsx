@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function SearchBar({ onSearchResults }) {
@@ -22,16 +21,20 @@ export default function SearchBar({ onSearchResults }) {
 
   return (
     <div className="flex space-x-2 p-4">
-      <Input
+      {/* Replacing UI component with a standard input */}
+      <input
         type="text"
         placeholder="Search posts..."
-        className="border rounded p-2 w-full text-gray-900 bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        className="border border-gray-500 rounded p-2 w-full bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <Button onClick={handleSearch} className="bg-blue-600 hover:bg-blue-500 text-white">
+      <button 
+        onClick={handleSearch} 
+        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded"
+      >
         Search
-      </Button>
+      </button>
     </div>
   );
 }

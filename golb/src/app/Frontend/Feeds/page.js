@@ -27,7 +27,7 @@ export default function FeedPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-500">
       {/* Header */}
       <header className="flex justify-between items-center px-6 py-4 bg-gray-800 shadow-md relative z-20">
         <h1 className="text-2xl font-bold">Feed</h1>
