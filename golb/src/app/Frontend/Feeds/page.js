@@ -10,6 +10,7 @@ import CommentBox from "@/app/components/CommentBox";
 
 export default function FeedPage() {
   const [feed, setFeed] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchFeed();
@@ -31,34 +32,39 @@ export default function FeedPage() {
       <header className="flex justify-between items-center px-6 py-4 bg-gray-800 shadow-md relative z-20">
         <h1 className="text-2xl font-bold">Feed</h1>
 
-        {/* Menu Dropdown */}
+        {/* Menu Dropdown (Click-to-Toggle) */}
         <div className="relative">
-          <button className="bg-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+          <button
+            className="bg-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
             Menu
           </button>
-          <ul className="absolute right-0 mt-2 w-40 bg-gray-700 border border-gray-600 rounded-lg shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-300 z-30">
-            <li className="px-4 py-2 hover:bg-gray-600 rounded-t">
-              <Link href="/Frontend/Profile" className="block text-sm">
-                Profile
-              </Link>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-600">
-              <button
-                onClick={() => {
-                  localStorage.clear();
-                  window.location.href = "/Frontend";
-                }}
-                className="block text-sm w-full text-left"
-              >
-                Logout
-              </button>
-            </li>
-            <li className="px-4 py-2 hover:bg-gray-600 rounded-b">
-              <Link href="/Frontend/CreatePost" className="block text-sm">
-                Create Post
-              </Link>
-            </li>
-          </ul>
+          {menuOpen && (
+            <ul className="absolute right-0 mt-2 w-40 bg-gray-700 border border-gray-600 rounded-lg shadow-lg z-30">
+              <li className="px-4 py-2 hover:bg-gray-600 rounded-t">
+                <Link href="/Frontend/Profile" className="block text-sm">
+                  Profile
+                </Link>
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-600">
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    window.location.href = "/Frontend";
+                  }}
+                  className="block text-sm w-full text-left"
+                >
+                  Logout
+                </button>
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-600 rounded-b">
+                <Link href="/Frontend/CreatePost" className="block text-sm">
+                  Create Post
+                </Link>
+              </li>
+            </ul>
+          )}
         </div>
       </header>
 
