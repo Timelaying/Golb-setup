@@ -8,16 +8,19 @@ export default function SearchBar({ onSearchResults }) {
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-
+  
     try {
+      console.log("Searching for:", searchQuery); // Debugging log
       const response = await axios.get(
         `http://localhost:5000/api/search?query=${searchQuery}`
       );
+      console.log("Search results:", response.data); // Log results
       onSearchResults(response.data);
     } catch (error) {
       console.error("Search error:", error);
     }
   };
+  
 
   return (
     <div className="flex space-x-2 p-4">
