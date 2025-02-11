@@ -3,11 +3,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-//import SearchBar from "@/app/components/SearchBar";
 import SearchBar from "@/app/Components/SearchBar";
-import FollowButton from "@/app/components/FollowButton";
-import LikeButton from "@/app/components/LikeButton";
-import CommentBox from "@/app/components/CommentBox";
+import FollowButton from "@/app/Components/FollowButton";
+import LikeButton from "@/app/Components/LikeButton";
+import CommentBox from "@/app/Components/CommentBox";
 
 export default function FeedPage() {
   const [feed, setFeed] = useState([]);
