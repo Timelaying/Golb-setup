@@ -11,22 +11,20 @@ export default function SearchBar({ onSearchResults }) {
       console.log("Empty search query, exiting.");
       return;
     }
-  
+
     console.log("Search button clicked, querying:", searchQuery);
-  
+
     try {
       const response = await axios.get(
         `http://localhost:5000/api/search?query=${searchQuery}`
       );
       console.log("Search API response:", response.data);
-  
+
       onSearchResults(response.data);
     } catch (error) {
       console.error("Search error:", error);
     }
   };
-  
-  
 
   return (
     <div className="flex space-x-2 p-4">
@@ -38,8 +36,8 @@ export default function SearchBar({ onSearchResults }) {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <button 
-        onClick={handleSearch} 
+      <button
+        onClick={handleSearch}
         className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded"
       >
         Search
