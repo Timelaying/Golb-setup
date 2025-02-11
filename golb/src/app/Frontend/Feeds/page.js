@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import SearchBar from "@/app/components/SearchBar";
+//import SearchBar from "@/app/components/SearchBar";
+import SearchBar from "@/app/Components/SearchBar";
 import FollowButton from "@/app/components/FollowButton";
 import LikeButton from "@/app/components/LikeButton";
 import CommentBox from "@/app/components/CommentBox";
@@ -72,6 +73,8 @@ export default function FeedPage() {
       <div className="relative z-10 px-6 py-2">
         <SearchBar onSearchResults={setFeed} />
       </div>
+
+      
 
       {/* Feed List */}
       <main className="flex-1 p-4 overflow-y-auto">
