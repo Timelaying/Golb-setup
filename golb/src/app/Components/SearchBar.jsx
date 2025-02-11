@@ -28,7 +28,7 @@ export default function SearchBar({ onSearchResults }) {
 
   return (
     <div className="flex space-x-2 p-4">
-      {/* Replacing UI component with a standard input */}
+        <div>
       <input
         type="text"
         placeholder="Search posts..."
@@ -36,12 +36,15 @@ export default function SearchBar({ onSearchResults }) {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
+      </div>
+      <div>
       <button
         onClick={handleSearch}
         className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded"
       >
         Search
       </button>
+      </div>
     </div>
   );
 }
