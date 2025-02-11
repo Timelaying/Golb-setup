@@ -7,19 +7,25 @@ export default function SearchBar({ onSearchResults }) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      console.log("Empty search query, exiting.");
+      return;
+    }
+  
+    console.log("Search button clicked, querying:", searchQuery);
   
     try {
-      console.log("Searching for:", searchQuery); // Debugging log
       const response = await axios.get(
         `http://localhost:5000/api/search?query=${searchQuery}`
       );
-      console.log("Search results:", response.data); // Log results
+      console.log("Search API response:", response.data);
+  
       onSearchResults(response.data);
     } catch (error) {
       console.error("Search error:", error);
     }
   };
+  
   
 
   return (
