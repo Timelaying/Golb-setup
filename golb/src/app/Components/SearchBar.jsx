@@ -28,23 +28,29 @@ export default function SearchBar({ onSearchResults }) {
 
   return (
     <div className="flex space-x-2 p-4">
-        <div>
-      <input
-        type="text"
-        placeholder="Search posts..."
-        className="border border-gray-500 rounded p-2 w-full bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      </div>
-      <div>
-      <button
-        onClick={handleSearch}
-        className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Search
-      </button>
-      </div>
-    </div>
+    <input
+      type="text"
+      placeholder="Search posts..."
+      className="border border-gray-500 rounded p-2 w-full bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+    
+    <button
+      onClick={handleSearch}
+      className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded"
+    >
+      Search
+    </button>
+  
+    {/* Test Button - Should now be visible */}
+    <button 
+      onClick={() => alert("Button clicked!")} 
+      className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded"
+    >
+      Test Click
+    </button>
+  </div>
+  
   );
 }
