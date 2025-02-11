@@ -43,13 +43,6 @@ export default function SearchBar({ onSearchResults }) {
       Search
     </button>
   
-    {/* Test Button - Should now be visible */}
-    <button 
-      onClick={() => alert("Button clicked!")} 
-      className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded"
-    >
-      Test Click
-    </button>
   </div>
   
   );
