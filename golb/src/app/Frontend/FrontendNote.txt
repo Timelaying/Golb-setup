@@ -2,4 +2,4 @@ rendering or using client resources like storage requires "use client";
 
 cant be jsx if int has functionalities, jsx is only used for resuabel component and renedering
 
-tailwind css with class
+cs
