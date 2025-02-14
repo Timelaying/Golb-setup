@@ -46,7 +46,7 @@ export default function SearchBar() {
             <div
               key={user.id}
               className="flex items-center space-x-4 p-2 border-b border-gray-600 cursor-pointer hover:bg-gray-700"
-              onClick={() => router.push(`/profile/${user.username}`)} // Navigate to user profile
+              onClick={() => router.push("../Frontend/Profile/${user.username}")} // Navigate to user profile
             >
               <img
                 src={user.profile_picture || "/default-avatar.png"}
