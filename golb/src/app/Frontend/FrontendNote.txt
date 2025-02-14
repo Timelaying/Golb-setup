@@ -3,3 +3,10 @@ rendering or using client resources like storage requires "use client";
 cant be jsx if int has functionalities, jsx is only used for resuabel component and renedering
 
 the use of Dynamic routing is important
+example
+
+Frontend
+ ├── Profile
+ │   ├── [username]
+ │   │   ├── page.js  <-- This becomes the dynamic profile page
+ │   ├── page.js       <-- Keep this if you still want `/profile` for the logged-in user
