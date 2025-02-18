@@ -3,17 +3,20 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link"; // Import Link for navigation
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter(); // Initialize router
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -93,7 +96,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-4">
         {isEditing ? (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <label>Location:</label>
@@ -113,6 +116,11 @@ export default function ProfilePage() {
         ) : (
           <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
         )}
+
+        {/* Back to Feeds Button */}
+        <Link href="/Frontend/Feeds">
+          <Button variant="outline" className="w-full">Back to Feeds</Button>
+        </Link>
       </div>
     </div>
   );
