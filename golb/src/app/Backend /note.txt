@@ -29,3 +29,7 @@ and your Express backend is running on http://localhost:5000, your frontend migh
 Adding app.use(cors()); fixes this issue.
 
 we also need a dynamic route at the backend for the front end
+
+
+
+couldbe that th esma roure for the back end is causing issues ream eit later 
