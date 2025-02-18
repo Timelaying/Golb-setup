@@ -10,7 +10,12 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   
   const router = useRouter();
-  const { username } = router.query; // Get the dynamic username from URL
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    if (!router.query?.username) return;
+    setUsername(router.query.username);
+  }, [router.query]);
 
   useEffect(() => {
     if (!username) return;
