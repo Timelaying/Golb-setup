@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation"; // Import Next.js router
+import { useRouter } from "next/navigation";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]); // Store users
+  const [searchResults, setSearchResults] = useState([]);
   const router = useRouter();
 
   const handleSearch = async () => {
@@ -15,7 +15,7 @@ export default function SearchBar() {
       const response = await axios.get(
         `http://localhost:5000/api/search?query=${searchQuery}`
       );
-      setSearchResults(response.data); // Update state with search results
+      setSearchResults(response.data);
     } catch (error) {
       console.error("Search error:", error);
     }
@@ -46,7 +46,7 @@ export default function SearchBar() {
             <div
               key={user.id}
               className="flex items-center space-x-4 p-2 border-b border-gray-600 cursor-pointer hover:bg-gray-700"
-              onClick={() => router.push("../Frontend/Profile/${user.username}")} // Navigate to user profile
+              onClick={() => router.push(`/Frontend/Profile/${user.username}`)} // Fixed
             >
               <img
                 src={user.profile_picture || "/default-avatar.png"}
