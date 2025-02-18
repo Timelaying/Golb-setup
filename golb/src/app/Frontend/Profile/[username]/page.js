@@ -23,7 +23,11 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        if (!token) throw new Error("Access token not found.");
+        if (!token) {
+          setError("Access token not found. Please log in.");
+          setIsLoading(false);
+          return;
+        }
 
         const response = await axios.get(`http://localhost:5000/api/profile/${username}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -43,6 +47,7 @@ export default function ProfilePage() {
 
   if (isLoading) return <p>Loading profile...</p>;
   if (error) return <p>{error}</p>;
+  if (!profile) return <p>No profile data available.</p>;
 
   return (
     <div>
