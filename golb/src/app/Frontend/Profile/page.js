@@ -65,61 +65,61 @@ export default function ProfilePage() {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-6 max-w-3xl mx-auto">
       <Card className="mb-6">
         <CardHeader>
           <div className="flex items-center space-x-4">
             <Avatar src={profile.profile_picture} alt="Profile Picture" />
             <div>
-              <CardTitle>{profile.full_name}</CardTitle>
-              <p>@{profile.username}</p>
+              <CardTitle className="text-xl font-bold">{profile.full_name}</CardTitle>
+              <p className="text-gray-500">@{profile.username}</p>
             </div>
           </div>
         </CardHeader>
       </Card>
 
-      <Card className="mb-6">
+      <Card className="mb-6 p-4">
         <CardContent>
-          <h2 className="text-xl font-semibold">About Me</h2>
-          <p>{profile.bio}</p>
-          <p>Email: {profile.email}</p>
-          <p>Location: {profile.location}</p>
+          <h2 className="text-lg font-semibold">About Me</h2>
+          <p className="text-gray-700">{profile.bio}</p>
+          <p className="text-gray-600">📧 {profile.email}</p>
+          <p className="text-gray-600">📍 {profile.location}</p>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="p-4">
         <CardContent>
-          <h2 className="text-xl font-semibold">My Stats</h2>
-          <p>Posts: {profile.postCount}</p>
-          <p>Followers: {profile.followersCount}</p>
-          <p>Following: {profile.followingCount}</p>
+          <h2 className="text-lg font-semibold">My Stats</h2>
+          <p className="text-gray-700">📝 Posts: {profile.postCount}</p>
+          <p className="text-gray-700">👥 Followers: {profile.followersCount}</p>
+          <p className="text-gray-700">📌 Following: {profile.followingCount}</p>
         </CardContent>
       </Card>
 
       <div className="mt-6 space-y-4">
         {isEditing ? (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <label>Location:</label>
+            <label className="block font-medium">Location:</label>
             <Input {...register("location")} defaultValue={profile.location} />
 
-            <label>Bio:</label>
-            <Textarea {...register("bio")} defaultValue={profile.bio} />
+            <label className="block font-medium">Bio:</label>
+            <Textarea {...register("bio")} defaultValue={profile.bio} rows={3} />
 
-            <label>Profile Picture URL:</label>
+            <label className="block font-medium">Profile Picture URL:</label>
             <Input {...register("profile_picture")} defaultValue={profile.profile_picture} />
 
             <div className="flex space-x-4">
-              <Button type="submit">Save Changes</Button>
-              <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+              <Button type="submit" className="w-full">Save Changes</Button>
+              <Button variant="outline" onClick={() => setIsEditing(false)} className="w-full">Cancel</Button>
             </div>
           </form>
         ) : (
-          <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+          <Button onClick={() => setIsEditing(true)} className="w-full">Edit Profile</Button>
         )}
 
-        {/* Back to Feeds Button */}
+        {/* Back to Feeds Button with consistent styling */}
         <Link href="/Frontend/Feeds">
-          <Button variant="outline" className="w-full">Back to Feeds</Button>
+          <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">Back to Feeds</Button>
         </Link>
       </div>
     </div>
