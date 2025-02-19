@@ -32,4 +32,4 @@ we also need a dynamic route at the backend for the front end
 
 
 
-profile picture, back button on user pfrofile
+profile picture, back button on user pfrofile, users can follow each other and seee each other follow
