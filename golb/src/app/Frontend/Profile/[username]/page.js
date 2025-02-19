@@ -29,7 +29,7 @@ export default function ProfilePage() {
           return;
         }
 
-        const response = await axios.get(`http://localhost:5000/api/profile/${username}`, {
+        const response = await axios.get(`http://localhost:5000/api/users/${username}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
