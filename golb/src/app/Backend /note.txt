@@ -32,4 +32,4 @@ we also need a dynamic route at the backend for the front end
 
 
 
-profile picture
+profile picture, back button on user pfrofile
