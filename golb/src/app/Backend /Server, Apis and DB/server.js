@@ -39,7 +39,7 @@ app.use("api", feed);
 app.use("/api", follow);
 app.use("api", likeunlike);
 app.use("api", comment);
-app.use("api", dynamicprofile);
+app.use("/api", dynamicprofile);
 
 // Start the server
 app.listen(PORT, () => {
