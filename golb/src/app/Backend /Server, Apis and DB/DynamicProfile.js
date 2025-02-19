@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("./db"); // Import PostgreSQL pool
 
-router.get("/profile/:username", async (req, res) => {
+router.get("/users/:username", async (req, res) => {
   try {
     const { username } = req.params;
 
