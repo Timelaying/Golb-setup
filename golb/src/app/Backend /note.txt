@@ -32,4 +32,4 @@ we also need a dynamic route at the backend for the front end
 
 
 
-couldbe that th esma roure for the back end is causing issues ream eit later 
+profile picture
