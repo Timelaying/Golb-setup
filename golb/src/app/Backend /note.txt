@@ -35,3 +35,38 @@ we also need a dynamic route at the backend for the front end
 profile picture, back button on user pfrofile, 
 users can follow each other and seee each other follow and unfollow, 
 can see search user post(likes and comment on these post as well(one at a time)), feed page 
+
+
+
+Read about Pooling in postgres db
+downsides and advantages of each
+singleton connections
+Pooling
+
+
+manage application configuration in one module
+pass configuration around application
+
+Use models folder for database related operations
+// model
+users.model.js
+findUserById
+findUserByUsername
+
+
+likes.model.js
+
+
+CORS - limit your requests to your api domain
+Group APIs - /api/users /api/admin etc
+
+Start server on a separate function, make it accept multiple ports for tests
+
+Make model functions reusable by using options
+function findByUserId(userId, options = { orderBy, sortby }) {
+    return pool.query(
+        "SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
+        [userId]
+    );
+}
+
