@@ -27,6 +27,9 @@ const PORT = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Serve static files from the "uploads" folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Mount the auth routes on the `/api` path
 app.use("/api", registerRoute);
 app.use("/api", authRoutes);
