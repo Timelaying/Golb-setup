@@ -47,11 +47,22 @@ export default function ProfilePage() {
     const onSubmit = async (data) => {
         try {
             const token = localStorage.getItem("accessToken");
+            const formData = new FormData();
+            formData.append("userId", profile.id);
+            formData.append("location", data.location);
+            formData.append("bio", data.bio);
+            if (data.profile_picture[0]) {
+                formData.append("profile_picture", data.profile_picture[0]);
+            }
+
             await axios.put(
                 "http://localhost:5000/api/update-profile",
-                { ...data, userId: profile.id },
+                formData,
                 {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
                 }
             );
 
@@ -103,7 +114,7 @@ export default function ProfilePage() {
                     </div>
                 ) : (
                     // Edit Profile Form
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" encType="multipart/form-data">
                         <div>
                             <label className="block font-medium mb-2 text-gray-300">Location</label>
                             <Input {...register("location")} defaultValue={profile.location} className="text-black" />
@@ -115,8 +126,8 @@ export default function ProfilePage() {
                         </div>
 
                         <div>
-                            <label className="block font-medium mb-2 text-gray-300">Profile Picture URL</label>
-                            <Input {...register("profile_picture")} defaultValue={profile.profile_picture} className="text-black" />
+                            <label className="block font-medium mb-2 text-gray-300">Profile Picture</label>
+                            <Input type="file" {...register("profile_picture")} className="text-black" />
                         </div>
 
                         <div className="flex space-x-4">
