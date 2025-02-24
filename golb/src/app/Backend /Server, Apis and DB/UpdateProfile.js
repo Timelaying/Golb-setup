@@ -31,6 +31,10 @@ const upload = multer({
 
 // Route to update profile information
 router.put("/update-profile", upload.single('profile_picture'), async (req, res) => {
+  if (req.fileValidationError) {
+    return res.status(400).json({ error: req.fileValidationError });
+  }
+
   const { userId, location, bio } = req.body;
   const profile_picture = req.file ? req.file.path : null;
 
