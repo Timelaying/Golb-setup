@@ -14,8 +14,20 @@ const storage = multer.diskStorage({
   }
 });
 
-// Initialize upload variable
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file type. Only JPEG, PNG, and GIF are allowed.'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
+  fileFilter: fileFilter
+});
 
 // Route to update profile information
 router.put("/update-profile", upload.single('profile_picture'), async (req, res) => {
