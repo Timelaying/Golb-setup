@@ -46,37 +46,33 @@ export default function ProfilePage() {
 
     const onSubmit = async (data) => {
         try {
-          const token = localStorage.getItem("accessToken");
-          const formData = new FormData();
-          formData.append("userId", profile.id);
-          formData.append("location", data.location);
-          formData.append("bio", data.bio);
-          if (data.profile_picture[0]) {
-            formData.append("profile_picture", data.profile_picture[0]);
-          }
-      
-          console.log("Form Data:", formData);
-      
-          const response = await axios.put(
-            "http://localhost:5000/api/update-profile",
-            formData,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
-              },
+            const token = localStorage.getItem("accessToken");
+            const formData = new FormData();
+            formData.append("userId", profile.id);
+            formData.append("location", data.location);
+            formData.append("bio", data.bio);
+            if (data.profile_picture[0]) {
+                formData.append("profile_picture", data.profile_picture[0]);
             }
-          );
-      
-          console.log("Response:", response.data);
-      
-          setProfile((prev) => ({ ...prev, ...data }));
-          setIsEditing(false);
+
+            const response = await axios.put(
+                "http://localhost:5000/api/update-profile",
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            setProfile((prev) => ({ ...prev, ...data }));
+            setIsEditing(false);
         } catch (error) {
-          console.error("Error updating profile:", error);
-          alert(error.response?.data?.error || "Failed to update profile.");
+            console.error("Error updating profile:", error);
+            alert(error.response?.data?.error || "Failed to update profile.");
         }
-      };
+    };
 
     if (isLoading) return <p className="text-gray-300 text-center">Loading profile...</p>;
     if (error) return <p className="text-red-500 text-center">{error}</p>;
