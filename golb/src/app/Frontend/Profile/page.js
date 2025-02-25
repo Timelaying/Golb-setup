@@ -15,6 +15,7 @@ export default function ProfilePage() {
     const [error, setError] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const router = useRouter();
+
     const { register, handleSubmit } = useForm();
 
     useEffect(() => {
@@ -26,7 +27,9 @@ export default function ProfilePage() {
                 }
 
                 const response = await axios.get("http://localhost:5000/api/profile", {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
 
                 setProfile(response.data);
@@ -43,62 +46,114 @@ export default function ProfilePage() {
 
     const onSubmit = async (data) => {
         try {
-            const token = localStorage.getItem("accessToken");
-            const formData = new FormData();
-            formData.append("userId", profile.id);
-            formData.append("location", data.location);
-            formData.append("bio", data.bio);
-            if (data.profile_picture[0]) {
-                formData.append("profile_picture", data.profile_picture[0]);
+          const token = localStorage.getItem("accessToken");
+          const formData = new FormData();
+          formData.append("userId", profile.id);
+          formData.append("location", data.location);
+          formData.append("bio", data.bio);
+          if (data.profile_picture[0]) {
+            formData.append("profile_picture", data.profile_picture[0]);
+          }
+      
+          console.log("Form Data:", formData); // Log the form data
+      
+          const response = await axios.put(
+            "http://localhost:5000/api/update-profile",
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
+              },
             }
-
-            const response = await axios.put("http://localhost:5000/api/update-profile", formData, {
-                headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
-            });
-
-            setProfile(response.data.user);
-            setIsEditing(false);
+          );
+      
+          console.log("Response:", response.data); // Log the response
+      
+          setProfile((prev) => ({ ...prev, ...data }));
+          setIsEditing(false);
         } catch (error) {
-            console.error("Error updating profile:", error);
-            alert(error.response?.data?.error || "Failed to update profile.");
+          console.error("Error updating profile:", error);
+          alert(error.response?.data?.error || "Failed to update profile.");
         }
-    };
+      };
 
     if (isLoading) return <p className="text-gray-300 text-center">Loading profile...</p>;
     if (error) return <p className="text-red-500 text-center">{error}</p>;
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 px-4">
-            <div className="max-w-md w-full bg-gray-800 p-6 rounded-lg shadow-md">
-                <h1 className="text-2xl font-semibold text-center mb-4">My Profile</h1>
-                <div className="text-center">
-                    <img
-                        src={`http://localhost:5000${profile.profile_picture}`}
-                        alt="Profile"
-                        className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
-                    />
-                    <h2 className="text-lg font-bold">{profile.name}</h2>
-                    <p className="text-sm text-gray-400">@{profile.username}</p>
-                </div>
-                <div className="mt-4">
-                    <p className="text-sm"><strong>Location:</strong> {profile.location || "Not specified"}</p>
-                    <p className="text-sm"><strong>Bio:</strong> {profile.bio || "No bio available."}</p>
-                </div>
+            <div className="max-w-2xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
+                <h1 className="text-3xl font-semibold text-center mb-6">Profile</h1>
+
+                {/* Display Profile Information */}
                 {!isEditing ? (
-                    <Button className="w-full mt-4" onClick={() => setIsEditing(true)}>Edit Profile</Button>
+                    <div className="space-y-4">
+                        <div className="text-center">
+                            <img
+                                src={profile.profile_picture}
+                                alt="Profile"
+                                className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
+                            />
+                            <h2 className="text-xl font-bold">{profile.full_name}</h2>
+                            <p className="text-gray-400">@{profile.username}</p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-300">About Me</h3>
+                            <p className="text-gray-400">{profile.bio}</p>
+                            <p className="text-gray-400">📧 {profile.email}</p>
+                            <p className="text-gray-400">📍 {profile.location}</p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-300">Stats</h3>
+                            <p className="text-gray-400">📝 Posts: {profile.postCount}</p>
+                            <p className="text-gray-400">👥 Followers: {profile.followersCount}</p>
+                            <p className="text-gray-400">📌 Following: {profile.followingCount}</p>
+                        </div>
+
+                        <Button onClick={() => setIsEditing(true)} className="w-full bg-blue-600 hover:bg-blue-700 transition">
+                            Edit Profile
+                        </Button>
+                    </div>
                 ) : (
-                    <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-                        <Input type="text" {...register("location")} placeholder="Location" defaultValue={profile.location} />
-                        <Textarea {...register("bio")} placeholder="Bio" defaultValue={profile.bio} className="mt-2" />
-                        <Input type="file" {...register("profile_picture")} className="mt-2" />
-                        <div className="flex gap-2 mt-4">
-                            <Button type="submit">Save</Button>
-                            <Button variant="secondary" onClick={() => setIsEditing(false)}>Cancel</Button>
+                    // Edit Profile Form
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" encType="multipart/form-data">
+                        <div>
+                            <label className="block font-medium mb-2 text-gray-300">Location</label>
+                            <Input {...register("location")} defaultValue={profile.location} className="text-black" />
+                        </div>
+
+                        <div>
+                            <label className="block font-medium mb-2 text-gray-300">Bio</label>
+                            <Textarea {...register("bio")} defaultValue={profile.bio} rows={3} className="text-black" />
+                        </div>
+
+                        <div>
+                            <label className="block font-medium mb-2 text-gray-300">Profile Picture</label>
+                            <Input type="file" {...register("profile_picture")} className="text-black" />
+                        </div>
+
+                        <div className="flex space-x-4">
+                            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 transition">
+                                Save Changes
+                            </Button>
+                            <Button variant="outline" onClick={() => setIsEditing(false)} className="w-full bg-gray-700 hover:bg-gray-600">
+                                Cancel
+                            </Button>
                         </div>
                     </form>
                 )}
-                <div className="mt-4 text-center">
-                    <Link href="/feed" className="text-blue-400 hover:underline">Back to Feed</Link>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between mt-6">
+                    <Link href="/Frontend/Feeds">
+                        <Button className="bg-gray-700 hover:bg-gray-600">Back to Feeds</Button>
+                    </Link>
+                    <Link href="/Frontend/ViewPost">
+                        <Button className="bg-blue-600 hover:bg-blue-700">View Posts</Button>
+                    </Link>
                 </div>
             </div>
         </div>
