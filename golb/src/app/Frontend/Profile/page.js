@@ -69,30 +69,37 @@ export default function ProfilePage() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 px-4">
-            <div className="max-w-2xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
-                <h1 className="text-3xl font-semibold text-center mb-6">Profile</h1>
-
+            <div className="max-w-md w-full bg-gray-800 p-6 rounded-lg shadow-md">
+                <h1 className="text-2xl font-semibold text-center mb-4">My Profile</h1>
+                <div className="text-center">
+                    <img
+                        src={`http://localhost:5000${profile.profile_picture}`}
+                        alt="Profile"
+                        className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
+                    />
+                    <h2 className="text-lg font-bold">{profile.name}</h2>
+                    <p className="text-sm text-gray-400">@{profile.username}</p>
+                </div>
+                <div className="mt-4">
+                    <p className="text-sm"><strong>Location:</strong> {profile.location || "Not specified"}</p>
+                    <p className="text-sm"><strong>Bio:</strong> {profile.bio || "No bio available."}</p>
+                </div>
                 {!isEditing ? (
-                    <div className="space-y-4">
-                        <div className="text-center">
-                            <img
-                                src={`http://localhost:5000${profile.profile_picture}`}
-                                alt="Profile"
-                                className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
-                            />
-                            <h2 className="text-xl font-bold">{profile.name}</h2>
-                        </div>
-                        <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
-                    </div>
+                    <Button className="w-full mt-4" onClick={() => setIsEditing(true)}>Edit Profile</Button>
                 ) : (
-                    <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-                        <Input type="text" {...register("location")} defaultValue={profile.location} />
-                        <Textarea {...register("bio")} defaultValue={profile.bio} />
-                        <Input type="file" {...register("profile_picture")} />
-                        <Button type="submit">Save</Button>
-                        <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+                    <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+                        <Input type="text" {...register("location")} placeholder="Location" defaultValue={profile.location} />
+                        <Textarea {...register("bio")} placeholder="Bio" defaultValue={profile.bio} className="mt-2" />
+                        <Input type="file" {...register("profile_picture")} className="mt-2" />
+                        <div className="flex gap-2 mt-4">
+                            <Button type="submit">Save</Button>
+                            <Button variant="secondary" onClick={() => setIsEditing(false)}>Cancel</Button>
+                        </div>
                     </form>
                 )}
+                <div className="mt-4 text-center">
+                    <Link href="/feed" className="text-blue-400 hover:underline">Back to Feed</Link>
+                </div>
             </div>
         </div>
     );
