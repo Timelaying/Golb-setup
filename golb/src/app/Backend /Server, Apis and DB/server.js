@@ -1,13 +1,12 @@
-// Environment variables for secrets
 require("dotenv").config();
-
 const express = require("express");
 const bodyParser = require("body-parser");
-const pool = require("./db");
 const cors = require("cors");
-const bcrypt = require("bcrypt"); // Import bcrypt
+const path = require("path");
 
-const authRoutes = require("./AuthRoute"); // Import the router module
+// Import database and routes
+const pool = require("./db");
+const authRoutes = require("./AuthRoute");
 const registerRoute = require("./RegisterRoute");
 const forgetandreset = require("./ForgetAndReset");
 const createPostRoute = require("./CreatePostRoute");
@@ -27,21 +26,23 @@ const PORT = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Serve uploaded files statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-
-// Mount the auth routes on the `/api` path
+// Mount API routes
 app.use("/api", registerRoute);
 app.use("/api", authRoutes);
 app.use("/api", forgetandreset);
-app.use("/api", createPostRoute); // Create post routes
+app.use("/api", createPostRoute);
 app.use("/api", viewposts);
 app.use("/api", profilepageroute);
+app.use("/api", updateprofile);
 app.use("/api", search);
-app.use("api", feed);
+app.use("/api", feed);
 app.use("/api", follow);
-app.use("api", likeunlike);
-app.use("api", comment);
-app.use("api", dynamicprofile);
+app.use("/api", likeunlike);
+app.use("/api", comment);
+app.use("/api", dynamicprofile);
 
 // Start the server
 app.listen(PORT, () => {
