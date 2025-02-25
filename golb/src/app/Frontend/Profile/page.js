@@ -55,7 +55,7 @@ export default function ProfilePage() {
             formData.append("profile_picture", data.profile_picture[0]);
           }
       
-          console.log("Form Data:", formData); // Log the form data
+          console.log("Form Data:", formData);
       
           const response = await axios.put(
             "http://localhost:5000/api/update-profile",
@@ -68,7 +68,7 @@ export default function ProfilePage() {
             }
           );
       
-          console.log("Response:", response.data); // Log the response
+          console.log("Response:", response.data);
       
           setProfile((prev) => ({ ...prev, ...data }));
           setIsEditing(false);
@@ -86,7 +86,6 @@ export default function ProfilePage() {
             <div className="max-w-2xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
                 <h1 className="text-3xl font-semibold text-center mb-6">Profile</h1>
 
-                {/* Display Profile Information */}
                 {!isEditing ? (
                     <div className="space-y-4">
                         <div className="text-center">
@@ -118,7 +117,6 @@ export default function ProfilePage() {
                         </Button>
                     </div>
                 ) : (
-                    // Edit Profile Form
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" encType="multipart/form-data">
                         <div>
                             <label className="block font-medium mb-2 text-gray-300">Location</label>
@@ -146,7 +144,6 @@ export default function ProfilePage() {
                     </form>
                 )}
 
-                {/* Navigation Buttons */}
                 <div className="flex justify-between mt-6">
                     <Link href="/Frontend/Feeds">
                         <Button className="bg-gray-700 hover:bg-gray-600">Back to Feeds</Button>
