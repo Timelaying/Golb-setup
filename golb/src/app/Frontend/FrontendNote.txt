@@ -12,4 +12,4 @@ Frontend
  │   ├── page.js       <-- Keep this if you still want `/profile` for the logged-in user
 
 
-we need to cretae componets
+we need to cretae componets for front end
