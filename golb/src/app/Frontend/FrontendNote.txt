@@ -12,5 +12,5 @@ Frontend
  │   ├── page.js       <-- Keep this if you still want `/profile` for the logged-in user
 
 
-we need to cretae componets for front end
+we need to create components  for front end
 create models for frontend
