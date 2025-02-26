@@ -74,4 +74,3 @@ function findByUserId(userId, options = { orderBy, sortby }) {
 destructing variables
 need to create some tables 
 
-eejfibaiubrf.a
