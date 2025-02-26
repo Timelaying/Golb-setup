@@ -71,4 +71,4 @@ function findByUserId(userId, options = { orderBy, sortby }) {
 }
 
 
-destructing variable
+destructing variables
