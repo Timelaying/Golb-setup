@@ -68,6 +68,4 @@ function findByUserId(userId, options = { orderBy, sortby }) {
         "SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
         [userId]
     );
-}
-
-uysgkgkcj`kuwc
+}bueargbuiaeb
