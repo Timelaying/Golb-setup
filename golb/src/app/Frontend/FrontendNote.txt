@@ -13,4 +13,4 @@ Frontend
 
 
 we need to cretae componets for front end
-creste modeles fro 
+create models for frontend
