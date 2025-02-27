@@ -8,7 +8,14 @@ const nodemailer = require("nodemailer");
 const pool = require("./db");
 
 router.get("/feed/:userId", async (req, res) => {
-    const { userId } = req.params;
+    let { userId } = req.params;
+
+    // Check if userId is missing or invalid
+    if (!userId || isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    userId = parseInt(userId, 10); // Convert to integer
 
     try {
         const posts = await pool.query(`
@@ -24,6 +31,4 @@ router.get("/feed/:userId", async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
-
-module.exports = router;
 
