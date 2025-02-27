@@ -1,73 +1,52 @@
 const express = require("express");
-const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const pool = require("./db");
 const fs = require("fs");
 
-// Ensure 'uploads' directory exists
-const uploadDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
-
-// Set up storage engine for Multer
+// Configure Multer for file uploads
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+    destination: "./uploads/profile_pictures",
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    },
 });
+const upload = multer({ storage });
 
-// File filter to allow only specific image formats
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only JPEG, PNG, and GIF are allowed."), false);
-  }
-};
-
-// Multer configuration
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
-  fileFilter: fileFilter,
-});
-
-// Route to update profile information
+// Update Profile API
 router.put("/update-profile", upload.single("profile_picture"), async (req, res) => {
-  const { userId, location, bio } = req.body;
-  const profile_picture = req.file ? `/uploads/${req.file.filename}` : null;
+    try {
+        const { userId, location, bio } = req.body;
+        let profilePictureUrl = null;
 
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required." });
-  }
+        if (req.file) {
+            profilePictureUrl = `/uploads/profile_pictures/${req.file.filename}`;
+        }
 
-  try {
-    const updateQuery = `
-      UPDATE users SET 
-        location = COALESCE($1, location), 
-        bio = COALESCE($2, bio), 
-        profile_picture = COALESCE($3, profile_picture)
-      WHERE id = $4
-      RETURNING id, name, username, email, location, bio, profile_picture;
-    `;
+        // Update user profile in the database
+        const updateQuery = `
+            UPDATE users 
+            SET location = $1, bio = $2, profile_picture = COALESCE($3, profile_picture)
+            WHERE id = $4 
+            RETURNING id, username, email, location, bio, profile_picture;
+        `;
 
-    const result = await pool.query(updateQuery, [location, bio, profile_picture, userId]);
+        const result = await pool.query(updateQuery, [
+            location,
+            bio,
+            profilePictureUrl,
+            userId,
+        ]);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "User not found." });
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        res.json(result.rows[0]); // Send updated profile back to frontend
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        res.status(500).json({ error: "Internal server error." });
     }
-
-    res.json({ message: "Profile updated successfully.", user: result.rows[0] });
-  } catch (err) {
-    console.error("Error updating profile:", err.message);
-    res.status(500).json({ error: "Failed to update profile." });
-  }
 });
 
 module.exports = router;
