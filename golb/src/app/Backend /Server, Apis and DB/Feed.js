@@ -21,9 +21,9 @@ router.get("/feed/:userId", async (req, res) => {
         const posts = await pool.query(`
             SELECT posts.* FROM posts 
             JOIN followers ON posts.user_id = followers.following_id
-            WHERE followers.follower_id = $1
+            WHERE followers.follower_id = COALESCE($1, followers.follower_id)
             ORDER BY posts.created_at DESC
-        `, [userId]);
+        `, [userId ? parseInt(userId, 10) : null]);
 
         res.json(posts.rows);
     } catch (error) {
