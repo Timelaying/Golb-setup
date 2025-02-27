@@ -54,7 +54,7 @@ export default function ProfilePage() {
             if (data.profile_picture[0]) {
                 formData.append("profile_picture", data.profile_picture[0]);
             }
-
+    
             const response = await axios.put(
                 "http://localhost:5000/api/update-profile",
                 formData,
@@ -65,14 +65,22 @@ export default function ProfilePage() {
                     },
                 }
             );
-
-            setProfile((prev) => ({ ...prev, ...data }));
+    
+            // Ensure the frontend gets the latest profile picture
+            setProfile((prev) => ({
+                ...prev,
+                location: data.location,
+                bio: data.bio,
+                profile_picture: response.data.profile_picture, // Use the updated picture URL
+            }));
+            
             setIsEditing(false);
         } catch (error) {
             console.error("Error updating profile:", error);
             alert(error.response?.data?.error || "Failed to update profile.");
         }
     };
+    
 
     if (isLoading) return <p className="text-gray-300 text-center">Loading profile...</p>;
     if (error) return <p className="text-red-500 text-center">{error}</p>;
