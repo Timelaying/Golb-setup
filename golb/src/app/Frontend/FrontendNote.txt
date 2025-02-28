@@ -15,4 +15,3 @@ Frontend
 we need to create components  for frontend
 create models for frontend
 
-DATA SENDINF FROM FRONT EN D
