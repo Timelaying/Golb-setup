@@ -15,7 +15,6 @@ export default function ProfilePage() {
     const [error, setError] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const router = useRouter();
-
     const { register, handleSubmit } = useForm();
 
     useEffect(() => {
@@ -54,7 +53,7 @@ export default function ProfilePage() {
             if (data.profile_picture[0]) {
                 formData.append("profile_picture", data.profile_picture[0]);
             }
-    
+
             const response = await axios.put(
                 "http://localhost:5000/api/update-profile",
                 formData,
@@ -65,22 +64,21 @@ export default function ProfilePage() {
                     },
                 }
             );
-    
-            // Ensure the frontend gets the latest profile picture
+
+            // Update profile state with the new profile picture
             setProfile((prev) => ({
                 ...prev,
                 location: data.location,
                 bio: data.bio,
-                profile_picture: response.data.profile_picture, // Use the updated picture URL
+                profile_picture: `${response.data.profile_picture}?t=${new Date().getTime()}`, // Prevent caching
             }));
-            
+
             setIsEditing(false);
         } catch (error) {
             console.error("Error updating profile:", error);
             alert(error.response?.data?.error || "Failed to update profile.");
         }
     };
-    
 
     if (isLoading) return <p className="text-gray-300 text-center">Loading profile...</p>;
     if (error) return <p className="text-red-500 text-center">{error}</p>;
@@ -94,7 +92,7 @@ export default function ProfilePage() {
                     <div className="space-y-4">
                         <div className="text-center">
                             <img
-                                src={profile.profile_picture}
+                                src={profile.profile_picture || "/default-profile.png"} // Fallback image
                                 alt="Profile"
                                 className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
                             />
@@ -107,13 +105,6 @@ export default function ProfilePage() {
                             <p className="text-gray-400">{profile.bio}</p>
                             <p className="text-gray-400">📧 {profile.email}</p>
                             <p className="text-gray-400">📍 {profile.location}</p>
-                        </div>
-
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-300">Stats</h3>
-                            <p className="text-gray-400">📝 Posts: {profile.postCount}</p>
-                            <p className="text-gray-400">👥 Followers: {profile.followersCount}</p>
-                            <p className="text-gray-400">📌 Following: {profile.followingCount}</p>
                         </div>
 
                         <Button onClick={() => setIsEditing(true)} className="w-full bg-blue-600 hover:bg-blue-700 transition">
