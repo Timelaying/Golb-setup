@@ -10,7 +10,9 @@ router.get("/profile", authenticateToken, async (req, res) => {
 
     // Fetch user details
     const userResult = await pool.query(
-      "SELECT id, name, username, email, location, bio, profile_picture FROM users WHERE id = $1",
+      `SELECT id, name, username, email, location, bio, profile_picture 
+       FROM users 
+       WHERE id = $1`,
       [userId]
     );
 
@@ -18,7 +20,12 @@ router.get("/profile", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    const user = userResult.rows[0];
+    let user = userResult.rows[0];
+
+    // Ensure the profile picture is served with a full URL
+    if (user.profile_picture) {
+      user.profile_picture = `http://localhost:5000${user.profile_picture}`;
+    }
 
     // Fetch user stats
     const statsResult = await pool.query(
