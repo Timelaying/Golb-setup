@@ -51,6 +51,8 @@ router.put("/update-profile", upload.single("profile_picture"), async (req, res)
             ...result.rows[0],
             profile_picture: `http://localhost:5000${result.rows[0].profile_picture}`, // Full URL
         });
+        console.log("Updating user:", { userId, location, bio, profilePictureUrl });
+
     } catch (error) {
         console.error("Error updating profile:", error);
         res.status(500).json({ error: "Internal server error." });
