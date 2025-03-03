@@ -107,6 +107,13 @@ export default function ProfilePage() {
                             <p className="text-gray-400">📍 {profile.location}</p>
                         </div>
 
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-300">Stats</h3>
+                            <p className="text-gray-400">📝 Posts: {profile.postCount}</p>
+                            <p className="text-gray-400">👥 Followers: {profile.followersCount}</p>
+                            <p className="text-gray-400">📌 Following: {profile.followingCount}</p>
+                        </div>
+
                         <Button onClick={() => setIsEditing(true)} className="w-full bg-blue-600 hover:bg-blue-700 transition">
                             Edit Profile
                         </Button>
