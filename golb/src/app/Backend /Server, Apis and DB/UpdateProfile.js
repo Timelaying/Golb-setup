@@ -5,6 +5,9 @@ const path = require("path");
 const pool = require("./db");
 const fs = require("fs");
 
+// Serve static files for profile pictures
+router.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
     destination: "./uploads/profile_pictures",
@@ -43,7 +46,11 @@ router.put("/update-profile", upload.single("profile_picture"), async (req, res)
             return res.status(404).json({ error: "User not found." });
         }
 
-        res.json(result.rows[0]); // Send updated profile back to frontend
+        // Ensure Express serves the updated profile picture
+        res.json({
+            ...result.rows[0],
+            profile_picture: `http://localhost:5000${result.rows[0].profile_picture}`, // Full URL
+        });
     } catch (error) {
         console.error("Error updating profile:", error);
         res.status(500).json({ error: "Internal server error." });
