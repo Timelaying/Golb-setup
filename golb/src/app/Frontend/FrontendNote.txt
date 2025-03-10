@@ -16,3 +16,7 @@ we need to create components  for frontend
 create models for frontend
 
 
+1. posts of searched user are displayed below on visit
+2. ability to like and comment on these post
+3. ability to follow and unfollow searched user 
+4. consistent styling and css
