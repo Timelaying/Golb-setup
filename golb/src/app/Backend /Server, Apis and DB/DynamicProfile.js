@@ -6,14 +6,25 @@ router.get("/users/:username", async (req, res) => {
   try {
     const { username } = req.params;
 
-    // Query database for user
-    const result = await pool.query("SELECT name, username, bio, email FROM users WHERE username = $1", [username]);
+    // Fetch user details
+    const userResult = await pool.query(
+      "SELECT id, name, username, bio, email FROM users WHERE username = $1",
+      [username]
+    );
 
-    if (result.rows.length === 0) {
+    if (userResult.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json(result.rows[0]); // Return user data
+    const user = userResult.rows[0];
+
+    // Fetch user posts
+    const postsResult = await pool.query(
+      "SELECT id, title, content, image, created_at FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
+      [user.id]
+    );
+
+    res.json({ ...user, posts: postsResult.rows });
   } catch (error) {
     console.error("Error fetching profile:", error);
     res.status(500).json({ message: "Server error" });
