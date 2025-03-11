@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 
 export default function ProfilePage() {
-  const { username } = useParams(); // Correct way to get dynamic route param
+  const { username } = useParams();
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,6 +37,22 @@ export default function ProfilePage() {
       <h1>{profile.name} (@{profile.username})</h1>
       <p>{profile.bio || "No bio available"}</p>
       <p>Email: {profile.email}</p>
+
+      <h2>Posts</h2>
+      {profile.posts.length === 0 ? (
+        <p>No posts available.</p>
+      ) : (
+        <ul>
+          {profile.posts.map((post) => (
+            <li key={post.id} style={{ border: "1px solid #ddd", padding: "10px", marginBottom: "10px" }}>
+              <h3>{post.title}</h3>
+              <p>{post.content}</p>
+              {post.image && <img src={post.image} alt="Post" style={{ width: "100%", maxWidth: "400px" }} />}
+              <p><small>{new Date(post.created_at).toLocaleString()}</small></p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
