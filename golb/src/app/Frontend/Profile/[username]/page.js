@@ -50,6 +50,9 @@ export default function ProfilePage() {
     );
 }
 
+<Post post={post} userId={loggedInUserId} />
+
+
       <h2>Posts</h2>
       {profile.posts.length === 0 ? (
         <p>No posts available.</p>
