@@ -1,12 +1,8 @@
-require("dotenv").config();
-
 const express = require("express");
+const pool = require("../db");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-const pool = require("./db");
 
+// Add a comment
 router.post("/comment", async (req, res) => {
     const { userId, postId, content } = req.body;
 
@@ -15,12 +11,25 @@ router.post("/comment", async (req, res) => {
             "INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3)",
             [userId, postId, content]
         );
-        res.json({ message: "Comment added successfully" });
+        res.status(201).json({ message: "Comment added successfully" });
     } catch (error) {
-        console.error("Error adding comment:", error);
-        res.status(500).json({ error: "Server error" });
+        res.status(500).json({ error: "Error adding comment" });
     }
 });
 
+// Fetch all comments for a post
+router.get("/comments/:postId", async (req, res) => {
+    const { postId } = req.params;
+
+    try {
+        const result = await pool.query(
+            "SELECT c.id, c.content, c.created_at, u.username FROM comments c JOIN users u ON c.user_id = u.id WHERE c.post_id = $1 ORDER BY c.created_at DESC",
+            [postId]
+        );
+        res.status(200).json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: "Error fetching comments" });
+    }
+});
 
 module.exports = router;
