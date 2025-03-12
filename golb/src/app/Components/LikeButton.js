@@ -1,46 +1,56 @@
 import { useState, useEffect } from "react";
+import { Heart } from "lucide-react";
+import { motion } from "framer-motion";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
 
-const LikeButton = ({ postId, userId }) => {
-    const [liked, setLiked] = useState(false);
-    const [likeCount, setLikeCount] = useState(0);
+export default function LikeButton({ postId, userId }) {
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
 
-    // Fetch the current like status
-    useEffect(() => {
-        const fetchLikes = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/likes/${postId}`);
-                setLikeCount(response.data.count);
-                setLiked(response.data.likedByUser);
-            } catch (error) {
-                console.error("Error fetching like status", error);
-            }
-        };
+  useEffect(() => {
+    // Fetch initial like state and count
+    axios.get(`/api/posts/${postId}/likes`).then((res) => {
+      setLikeCount(res.data.likeCount);
+    });
+    axios.get(`/api/posts/${postId}/likes/${userId}`).then((res) => {
+      setLiked(res.data.liked);
+    });
+  }, [postId, userId]);
 
-        fetchLikes();
-    }, [postId, userId]);
+  const handleLike = async () => {
+    try {
+      const res = await axios.post(`/api/posts/${postId}/like`, { userId });
+      setLiked(res.data.liked);
+      setLikeCount(res.data.likeCount);
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 1500);
+    } catch (error) {
+      console.error("Error liking post", error);
+    }
+  };
 
-    // Handle Like/Unlike
-    const toggleLike = async () => {
-        try {
-            if (liked) {
-                await axios.delete(`http://localhost:5000/api/unlike/${postId}`, { data: { userId } });
-                setLikeCount((prev) => prev - 1);
-            } else {
-                await axios.post("http://localhost:5000/api/like", { userId, postId });
-                setLikeCount((prev) => prev + 1);
-            }
-            setLiked(!liked);
-        } catch (error) {
-            console.error("Error updating like", error);
-        }
-    };
+  return (
+    <div className="relative flex items-center space-x-2">
+      <Button
+        onClick={handleLike}
+        className="flex items-center space-x-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 px-4 py-2 rounded-lg"
+      >
+        <Heart className={liked ? "text-red-500 fill-red-500" : "text-gray-500"} size={20} />
+        <span>{likeCount}</span>
+      </Button>
 
-    return (
-        <button onClick={toggleLike} className="like-button">
-            {liked ? "❤️" : "🤍"} {likeCount}
-        </button>
-    );
-};
-
-export default LikeButton;
+      {showPopup && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="absolute top-[-40px] left-1/2 transform -translate-x-1/2 bg-black text-white text-sm px-3 py-2 rounded-lg shadow-lg"
+        >
+          {liked ? "Liked!" : "Unliked!"}
+        </motion.div>
+      )}
+    </div>
+  );
+}
