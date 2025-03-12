@@ -40,6 +40,16 @@ export default function ProfilePage() {
       <p>{profile.bio || "No bio available"}</p>
       <p>Email: {profile.email}</p>
 
+      const Post = ({ post, userId }) => {
+    (
+        <div className="post">
+            <h3>{post.title}</h3>
+            <p>{post.content}</p>
+            <LikeButton postId={post.id} userId={userId} />
+        </div>
+    );
+}
+
       <h2>Posts</h2>
       {profile.posts.length === 0 ? (
         <p>No posts available.</p>
