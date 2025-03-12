@@ -6,11 +6,12 @@ const Post = ({ post, userId }) => {
     const [showPopup, setShowPopup] = useState(false);
 
     return (
-        <div className="post">
-            <h3>{post.title}</h3>
-            <p>{post.content}</p>
-
-            <LikeButton postId={post.id} userId={userId} />
+        <div>
+        <div className="border p-4 rounded-lg shadow-md bg-white">
+        <h2 className="text-lg font-bold">{post.title}</h2>
+        <p>{post.content}</p>
+        <LikeButton postId={post.id} userId={userId} />
+      </div>
             <button onClick={() => setShowPopup(true)}>💬 Comment</button>
 
             {showPopup && <CommentPopup postId={post.id} userId={userId} onClose={() => setShowPopup(false)} />}
