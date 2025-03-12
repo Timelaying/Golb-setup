@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
-import LikeButton from "@/app/Components/LikeButton";
 
 
 export default function ProfilePage() {
