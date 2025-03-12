@@ -3,19 +3,33 @@ const pool = require("../db");  // Ensure this points to your database connectio
 const router = express.Router();
 
 // Like a post
-router.post("/like", async (req, res) => {
-    const { userId, postId } = req.body;
-    
+// Get like count and user like status
+router.get("/likes/:postId", async (req, res) => {
+    const { postId } = req.params;
+    const userId = req.query.userId; // Passed in query for checking if user liked
+
     try {
-        await pool.query(
-            "INSERT INTO likes (user_id, post_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
-            [userId, postId]
+        const likeCountResult = await pool.query(
+            "SELECT COUNT(*) FROM likes WHERE post_id = $1",
+            [postId]
         );
-        res.status(200).json({ message: "Post liked successfully" });
+        const likeCount = likeCountResult.rows[0].count;
+
+        let likedByUser = false;
+        if (userId) {
+            const userLikeResult = await pool.query(
+                "SELECT * FROM likes WHERE post_id = $1 AND user_id = $2",
+                [postId, userId]
+            );
+            likedByUser = userLikeResult.rows.length > 0;
+        }
+
+        res.json({ count: likeCount, likedByUser });
     } catch (error) {
-        res.status(500).json({ error: "Error liking post" });
+        res.status(500).json({ error: "Error fetching likes" });
     }
 });
+
 
 // Unlike a post
 router.delete("/unlike/:postId", async (req, res) => {
