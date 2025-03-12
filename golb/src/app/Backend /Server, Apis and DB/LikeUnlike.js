@@ -60,4 +60,20 @@ router.get("/likes/:postId", async (req, res) => {
     }
 });
 
+// Check if user has liked a post
+router.get("/user-likes/:userId/:postId", async (req, res) => {
+    const { userId, postId } = req.params;
+
+    try {
+        const query = "SELECT * FROM likes WHERE user_id = $1 AND post_id = $2";
+        const result = await pool.query(query, [userId, postId]);
+
+        res.json({ liked: result.rows.length > 0 });
+    } catch (err) {
+        console.error("Error checking like status:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
 module.exports = router;
