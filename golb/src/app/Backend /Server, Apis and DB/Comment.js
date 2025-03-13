@@ -1,5 +1,5 @@
 const express = require("express");
-const pool = require("../db"); // Import your PostgreSQL connection
+const pool = require("./db"); // Import your PostgreSQL connection
 const router = express.Router();
 
 // ✅ Add a comment
