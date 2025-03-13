@@ -1,5 +1,5 @@
 const express = require("express");
-const pool = require("../db"); // Your database connection
+const pool = require("./db"); // Your database connection
 const router = express.Router();
 
 // Like a post
