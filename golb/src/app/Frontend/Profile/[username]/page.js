@@ -29,26 +29,48 @@ export default function ProfilePage() {
     fetchProfile();
   }, [username]);
 
-  if (isLoading) return <p>Loading profile...</p>;
-  if (error) return <p>{error}</p>;
-  if (!profile) return <p>No profile data available.</p>;
+  if (isLoading) return <p className="text-gray-300 text-center">Loading profile...</p>;
+  if (error) return <p className="text-red-500 text-center">{error}</p>;
+  if (!profile) return <p className="text-gray-400 text-center">No profile data available.</p>;
 
   return (
-    <div>
-      <h1>{profile.name} (@{profile.username})</h1>
-      <p>{profile.bio || "No bio available"}</p>
-      <p>Email: {profile.email}</p>
-
-      <h2>Posts</h2>
-      {profile.posts.length === 0 ? (
-        <p>No posts available.</p>
-      ) : (
-        <div className="space-y-4">
-          {profile.posts.map((post) => (
-            <PostCard key={post.id} post={post} userId={profile.id} />
-          ))}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 px-4">
+      <div className="max-w-2xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
+        {/* Profile Header */}
+        <div className="text-center">
+          <img
+            src={profile.profile_picture || "/default-avatar.png"}
+            alt="Profile"
+            className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
+          />
+          <h1 className="text-3xl font-semibold">{profile.name}</h1>
+          <p className="text-gray-400">@{profile.username}</p>
+          <p className="text-gray-300 mt-2">{profile.bio || "No bio available"}</p>
+          <p className="text-gray-300">📧 {profile.email}</p>
         </div>
-      )}
+
+        {/* Profile Stats */}
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold text-gray-300">Stats</h2>
+          <p className="text-gray-400">📝 Posts: {profile.posts.length}</p>
+          <p className="text-gray-400">👥 Followers: {profile.followersCount || 0}</p>
+          <p className="text-gray-400">📌 Following: {profile.followingCount || 0}</p>
+        </div>
+
+        {/* Posts Section */}
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold text-gray-300 mb-3">Posts</h2>
+          {profile.posts.length === 0 ? (
+            <p className="text-gray-400">No posts available.</p>
+          ) : (
+            <div className="space-y-4">
+              {profile.posts.map((post) => (
+                <PostCard key={post.id} post={post} userId={profile.id} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
