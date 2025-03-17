@@ -19,4 +19,4 @@ create models for frontend
 4. consistent styling and css
 5. progile picture display
 6. minmizing comment and postion of likes
-7. 
+7. adding the following and unfollowing to the profile page
