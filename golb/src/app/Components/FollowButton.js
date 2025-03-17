@@ -5,21 +5,31 @@ const FollowButton = ({ userId, currentUserId }) => {
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
-    // Check if the current user is following the target user
-    axios
-      .get(`/api/users/${currentUserId}/following/${userId}`)
-      .then((response) => {
+    // ✅ Fetch follow status
+    const checkFollowStatus = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/follow/status/${currentUserId}/${userId}`);
         setIsFollowing(response.data.isFollowing);
-      })
-      .catch((error) => console.error("Error checking follow status:", error));
+      } catch (error) {
+        console.error("Error checking follow status:", error);
+      }
+    };
+
+    checkFollowStatus();
   }, [userId, currentUserId]);
 
   const handleFollow = async () => {
     try {
       if (isFollowing) {
-        await axios.delete(`/api/users/${currentUserId}/unfollow/${userId}`);
+        await axios.post(`http://localhost:5000/api/unfollow`, {
+          followerId: currentUserId,
+          followingId: userId,
+        });
       } else {
-        await axios.post(`/api/users/${currentUserId}/follow/${userId}`);
+        await axios.post(`http://localhost:5000/api/follow`, {
+          followerId: currentUserId,
+          followingId: userId,
+        });
       }
       setIsFollowing(!isFollowing);
     } catch (error) {
