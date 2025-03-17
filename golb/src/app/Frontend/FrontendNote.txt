@@ -21,3 +21,4 @@ create models for frontend
 6. minmizing comment and postion of likes
 7. adding the following and unfollowing to the profile page
 8. owner of post can see likes and comments on post.
+9. likes logic i broken, it dosent increase when a new person likes it instead it is the same and it unlikes when clicked by a different profile instead of adding a like 
