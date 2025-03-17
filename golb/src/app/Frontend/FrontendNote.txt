@@ -17,4 +17,6 @@ create models for frontend
 
 
 4. consistent styling and css
-5. progile picture displa
+5. progile picture display
+6. minmizing comment and postion of likes
+7. 
