@@ -10,7 +10,7 @@ const CommentSection = ({ postId, userId }) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await axios.get(`/api/comments/${postId}`);
+        const res = await axios.get(`http://localhost:5000/api/comments/${postId}`);
         setComments(res.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -26,7 +26,7 @@ const CommentSection = ({ postId, userId }) => {
     setLoading(true);
 
     try {
-      const res = await axios.post("/api/comment", {
+      const res = await axios.post("http://localhost:5000/api/comment", {
         userId,
         postId,
         content: newComment,
@@ -68,7 +68,7 @@ const CommentSection = ({ postId, userId }) => {
         {comments.length > 0 ? (
           comments.map((comment) => (
             <div key={comment.id} className="p-2 border-b">
-              <p className="font-bold">{comment.username}</p>
+              <p className="font-bold">{comment.username || "User"}</p>
               <p>{comment.content}</p>
             </div>
           ))
