@@ -6,13 +6,14 @@ const LikeButton = ({ postId, userId }) => {
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    // Fetch like count and check if the user has liked the post
     const fetchLikes = async () => {
       try {
-        const likeCountRes = await axios.get(`/api/likes/${postId}`);
+        // Fetch total likes for the post
+        const likeCountRes = await axios.get(`http://localhost:5000/api/likes/${postId}`);
         setLikes(likeCountRes.data.likes);
 
-        const userLikeRes = await axios.get(`/api/user-likes/${userId}/${postId}`);
+        // Check if the user has liked the post
+        const userLikeRes = await axios.get(`http://localhost:5000/api/user-likes/${userId}/${postId}`);
         setLiked(userLikeRes.data.liked);
       } catch (error) {
         console.error("Error fetching likes:", error);
@@ -25,22 +26,22 @@ const LikeButton = ({ postId, userId }) => {
   const handleLike = async () => {
     try {
       if (liked) {
-        await axios.post("/api/unlike", { userId, postId });
-        setLikes((prev) => prev - 1);
+        await axios.post("http://localhost:5000/api/unlike", { userId, postId });
+        setLikes((prev) => Math.max(0, prev - 1)); // Prevent negative values
       } else {
-        await axios.post("/api/like", { userId, postId });
+        await axios.post("http://localhost:5000/api/like", { userId, postId });
         setLikes((prev) => prev + 1);
       }
       setLiked(!liked);
     } catch (error) {
-      console.error("Error liking post:", error);
+      console.error("Error updating like status:", error);
     }
   };
 
   return (
     <button
       onClick={handleLike}
-      className={`px-4 py-2 rounded-md ${
+      className={`px-4 py-2 rounded-md transition ${
         liked ? "bg-red-500 text-white" : "bg-gray-300 text-black"
       }`}
     >
