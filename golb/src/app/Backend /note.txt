@@ -32,9 +32,6 @@ we also need a dynamic route at the backend for the front end
 
 
 
-profile picture and dynamic profilefile pucture upload per useri.e thet have ther own folder for file on the backend , back button on user pfrofile, 
-users can follow each other and seee each other follow and unfollow, 
-posts of searched user are displayed below on visit ( likes and comment on these post as well as follow searched user (one at a time)), feed page 
 
 
 
