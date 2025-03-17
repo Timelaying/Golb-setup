@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import PostCard from "@/app/Components/PostCard";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function ProfilePage() {
   const { username } = useParams();
@@ -69,6 +71,13 @@ export default function ProfilePage() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Back to Feeds Button */}
+        <div className="mt-6 flex justify-center">
+          <Link href="/Frontend/Feeds">
+            <Button className="bg-gray-700 hover:bg-gray-600">⬅ Back to Feeds</Button>
+          </Link>
         </div>
       </div>
     </div>
