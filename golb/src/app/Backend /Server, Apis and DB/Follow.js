@@ -33,6 +33,7 @@ router.post("/follow/:userId", authenticateUser, async (req, res) => {
         );
 
         res.status(200).json({ message: "User followed successfully." });
+        console.log(req.user.id, req.params.userId);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
