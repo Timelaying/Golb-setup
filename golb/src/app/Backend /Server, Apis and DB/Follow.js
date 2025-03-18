@@ -79,19 +79,27 @@ router.get("/followers/:userId", async (req, res) => {
     }
 });
 
-// Get users a user is following
-router.get("/following/:userId", async (req, res) => {
+// Get follow status (Check if user is following another user)
+router.get("/following/:userId", authenticateUser, async (req, res) => {
     const { userId } = req.params;
+    const followerId = req.user.id; // The authenticated user
+
     try {
         const following = await pool.query(
-            "SELECT users.id, users.username, users.profile_picture FROM followers JOIN users ON followers.following_id = users.id WHERE followers.follower_id = $1",
-            [userId]
+            "SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2",
+            [followerId, userId]
         );
-        res.status(200).json(following.rows);
+
+        if (following.rows.length > 0) {
+            return res.status(200).json({ isFollowing: true });
+        } else {
+            return res.status(200).json({ isFollowing: false });
+        }
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
 
 module.exports = router;
 
