@@ -14,12 +14,13 @@ const FollowButton = ({ userId }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/follow/status/${userId}`,
+          `http://localhost:5000/api/following/${userId}`, // ✅ API to check if following
           { headers: { Authorization: `Bearer ${accessToken}` } }
         );
-        setIsFollowing(response.data.isFollowing);
+
+        setIsFollowing(response.data.some(user => user.id === userId)); // ✅ If user is in the following list, set to true
       } catch (error) {
-        console.error("Error checking follow status:", error);
+        console.error("Error checking follow status:", error.response?.data || error.message);
       }
     };
 
@@ -36,12 +37,12 @@ const FollowButton = ({ userId }) => {
       const endpoint = isFollowing ? "/unfollow" : "/follow";
       const response = await axios.post(
         `http://localhost:5000/api${endpoint}/${userId}`,
-        {}, // ✅ Ensure body is sent (if required)
+        {}, // ✅ Ensure empty body is sent (if required)
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
       console.log("✅ Follow action successful:", response.data);
-      setIsFollowing(!isFollowing);
+      setIsFollowing(!isFollowing); // ✅ Toggle button state
     } catch (error) {
       console.error("❌ Error updating follow status:", error.response?.data || error.message);
     }
