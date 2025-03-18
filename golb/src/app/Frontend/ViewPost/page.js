@@ -59,14 +59,17 @@ export default function PostsList() {
         ) : (
           <ul className="space-y-5">
             {posts.map((post) => (
-              <li key={post.id} className="p-4 border border-gray-700 rounded-lg bg-gray-700 shadow">
-                <h2 className="text-xl font-semibold text-white">{post.title}</h2>
-                <p className="text-gray-300">{post.content}</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  Created on: {new Date(post.created_at).toLocaleString()}
-                </p>
-              </li>
-            ))}
+    <li key={post.id} className="p-4 border border-gray-700 rounded-lg bg-gray-700 shadow">
+        <h2 className="text-xl font-semibold text-white">{post.title}</h2>
+        <p className="text-gray-300">{post.content}</p>
+        <p className="text-sm text-gray-500 mt-2">
+            Created on: {new Date(post.created_at).toLocaleString()}
+        </p>
+        {/* Show likes and comments count */}
+        <p className="text-gray-400">👍 {post.like_count} Likes | 💬 {post.comment_count} Comments</p>
+    </li>
+))}
+
           </ul>
         )}
 
