@@ -30,41 +30,36 @@ const FollowButton = ({ userId, currentUserId }) => {
   }, [userId, currentUserId]);
 
   const handleFollow = async () => {
-    console.log("Follow button clicked!"); // ✅ Check if the click event is triggered
-    if (loading) return;
-    setLoading(true);
+    console.log("Follow button clicked!");
+  
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("❌ No auth token found in localStorage");
+      alert("Authentication error: Please log in again.");
+      return;
+    }
   
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No auth token found");
-      }
-  
       console.log("Sending request to:", isFollowing 
-        ? "http://localhost:5000/api/unfollow/${userId}" 
-        : "http://localhost:5000/api/follow/${userId}"
-      ); // ✅ Check the URL being called
+        ? `http://localhost:5000/api/unfollow/${userId}` 
+        : `http://localhost:5000/api/follow/${userId}`
+      );
+  
+      const headers = { Authorization: `Bearer ${token}` };
   
       if (isFollowing) {
-        await axios.delete("http://localhost:5000/api/unfollow/${userId}", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(`http://localhost:5000/api/unfollow/${userId}`, { headers });
       } else {
-        await axios.post(
-          "http://localhost:5000/api/follow/${userId}",
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.post(`http://localhost:5000/api/follow/${userId}`, {}, { headers });
       }
   
-      console.log("Follow/unfollow request successful"); // ✅ Check if API responds
+      console.log("✅ Follow/unfollow request successful");
       setIsFollowing(!isFollowing);
     } catch (error) {
-      console.error("Error updating follow status:", error.response?.data || error.message);
-    } finally {
-      setLoading(false);
+      console.error("❌ Error updating follow status:", error.response?.data || error.message);
     }
   };
+  
   
 
   return (
