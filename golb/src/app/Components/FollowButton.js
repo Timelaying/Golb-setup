@@ -32,21 +32,24 @@ const FollowButton = ({ userId }) => {
       console.error("❌ No access token found. Please log in.");
       return;
     }
-
+  
     try {
-      const endpoint = isFollowing ? "unfollow" : "follow";
-      const response = await axios.post(
-        `http://localhost:5000/api/${endpoint}/${userId}`,
-        {}, // ✅ Ensure empty body if required
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
-
+      const endpoint = isFollowing ? `/unfollow/${userId}` : `/follow/${userId}`;
+      const method = isFollowing ? "delete" : "post"; // ✅ Use DELETE for unfollow
+  
+      const response = await axios({
+        method,
+        url: `http://localhost:5000/api${endpoint}`,
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+  
       console.log("✅ Follow action successful:", response.data);
       setIsFollowing(!isFollowing); // ✅ Toggle button state
     } catch (error) {
       console.error("❌ Error updating follow status:", error.response?.data || error.message);
     }
   };
+  
 
   return (
     <button
