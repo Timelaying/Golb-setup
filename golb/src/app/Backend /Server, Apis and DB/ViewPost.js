@@ -4,27 +4,24 @@ const authenticateToken = require("./AuthenticateMiddleware");
 const pool = require("./db");
 
 // Fetch posts for a specific user
-router.get("/viewposts", authenticateToken, async (req, res) => {
+router.get("/viewposts", async (req, res) => {
     try {
-        const userId = req.user.id; // Assuming `authenticateToken` attaches user info to `req.user`
+        const postsQuery = `
+            SELECT posts.*, 
+                   (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count,
+                   (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count
+            FROM posts
+            WHERE posts.user_id = $1
+            ORDER BY posts.created_at DESC
+        `;
 
-        // Fetch posts and count for the logged-in user
-        const result = await pool.query(
-            "SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
-            [userId]
-        );
-
-        const count = result.rowCount;
-
-        res.status(200).json({
-            message: "Posts fetched successfully!",
-            posts: result.rows,
-            count,
-        });
-    } catch (error) {
-        console.error("Error fetching posts:", error.message);
-        res.status(500).json({ error: "Internal server error." });
+        const result = await pool.query(postsQuery, [req.user.id]); // Assuming req.user.id is the owner
+        res.json({ posts: result.rows, count: result.rows.length });
+    } catch (err) {
+        console.error("Error fetching posts:", err);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
+
 
 module.exports = router;
