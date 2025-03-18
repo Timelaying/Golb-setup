@@ -45,7 +45,8 @@ export default function PostsList() {
       <div className="max-w-3xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-semibold text-center mb-4">My Posts</h1>
         <p className="text-gray-400 text-center mb-6">
-          You have created <span className="font-bold text-white">{postCount}</span> post(s).
+          You have created{" "}
+          <span className="font-bold text-white">{postCount}</span> post(s).
         </p>
 
         {loading ? (
@@ -55,27 +56,37 @@ export default function PostsList() {
             <Skeleton className="h-4 w-2/3 mx-auto" />
           </div>
         ) : postCount === 0 ? (
-          <p className="text-center text-gray-400">You haven’t created any posts yet.</p>
+          <p className="text-center text-gray-400">
+            You haven’t created any posts yet.
+          </p>
         ) : (
           <ul className="space-y-5">
             {posts.map((post) => (
-    <li key={post.id} className="p-4 border border-gray-700 rounded-lg bg-gray-700 shadow">
-        <h2 className="text-xl font-semibold text-white">{post.title}</h2>
-        <p className="text-gray-300">{post.content}</p>
-        <p className="text-sm text-gray-500 mt-2">
-            Created on: {new Date(post.created_at).toLocaleString()}
-        </p>
-        {/* Show likes and comments count */}
-        <p className="text-gray-400">👍 {post.like_count} Likes | 💬 {post.comment_count} Comments</p>
-    </li>
-))}
-
+              <li
+                key={post.id}
+                className="p-4 border border-gray-700 rounded-lg bg-gray-700 shadow"
+              >
+                <h2 className="text-xl font-semibold text-white">
+                  {post.title}
+                </h2>
+                <p className="text-gray-300">{post.content}</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Created on: {new Date(post.created_at).toLocaleString()}
+                </p>
+                {/* Show likes and comments count */}
+                <p className="text-gray-400">
+                  👍 {post.like_count} Likes | 💬 {post.comment_count} Comments
+                </p>
+              </li>
+            ))}
           </ul>
         )}
 
         <div className="mt-6 flex justify-center">
           <Link href="/Frontend/Feeds">
-            <Button className="bg-blue-600 hover:bg-blue-700 transition">Back to Feeds</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 transition">
+              Back to Feeds
+            </Button>
           </Link>
         </div>
       </div>
