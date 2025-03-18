@@ -30,15 +30,21 @@ const FollowButton = ({ userId, currentUserId }) => {
   }, [userId, currentUserId]);
 
   const handleFollow = async () => {
+    console.log("Follow button clicked!"); // ✅ Check if the click event is triggered
     if (loading) return;
     setLoading(true);
-
+  
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("No auth token found");
       }
-
+  
+      console.log("Sending request to:", isFollowing 
+        ? `http://localhost:5000/api/unfollow/${userId}` 
+        : `http://localhost:5000/api/follow/${userId}`
+      ); // ✅ Check the URL being called
+  
       if (isFollowing) {
         await axios.delete(`http://localhost:5000/api/unfollow/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -50,14 +56,16 @@ const FollowButton = ({ userId, currentUserId }) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
-
-      setIsFollowing(!isFollowing); // Update UI only after successful API response
+  
+      console.log("Follow/unfollow request successful"); // ✅ Check if API responds
+      setIsFollowing(!isFollowing);
     } catch (error) {
       console.error("Error updating follow status:", error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <button
