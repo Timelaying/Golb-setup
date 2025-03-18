@@ -1,23 +1,22 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const FollowButton = ({ userId, currentUserId }) => {
+const FollowButton = ({ userId }) => {
   const [isFollowing, setIsFollowing] = useState(false);
+  const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
     const checkFollowStatus = async () => {
+      if (!accessToken) {
+        console.error("❌ No access token found. Please log in.");
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("accessToken"); // ✅ Get access token
-        if (!token) {
-          console.error("❌ No access token found. Please log in.");
-          return;
-        }
-
         const response = await axios.get(
-          `http://localhost:5000/api/follow/status/${currentUserId}/${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } } // ✅ Include token
+          `http://localhost:5000/api/follow/status/${userId}`,
+          { headers: { Authorization: `Bearer ${accessToken}` } }
         );
-
         setIsFollowing(response.data.isFollowing);
       } catch (error) {
         console.error("Error checking follow status:", error);
@@ -25,26 +24,26 @@ const FollowButton = ({ userId, currentUserId }) => {
     };
 
     checkFollowStatus();
-  }, [userId, currentUserId]);
+  }, [userId, accessToken]);
 
   const handleFollow = async () => {
-    try {
-      const token = localStorage.getItem("accessToken"); // ✅ Get access token
-      if (!token) {
-        console.error("❌ No access token found. Please log in.");
-        return;
-      }
+    if (!accessToken) {
+      console.error("❌ No access token found. Please log in.");
+      return;
+    }
 
+    try {
       const endpoint = isFollowing ? "/unfollow" : "/follow";
-      await axios.post(
+      const response = await axios.post(
         `http://localhost:5000/api${endpoint}/${userId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } } // ✅ Include token
+        {}, // ✅ Ensure body is sent (if required)
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
+      console.log("✅ Follow action successful:", response.data);
       setIsFollowing(!isFollowing);
     } catch (error) {
-      console.error("Error updating follow status:", error);
+      console.error("❌ Error updating follow status:", error.response?.data || error.message);
     }
   };
 
