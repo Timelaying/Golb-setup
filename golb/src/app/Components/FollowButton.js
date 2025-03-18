@@ -8,13 +8,18 @@ const FollowButton = ({ userId, currentUserId }) => {
   useEffect(() => {
     const checkFollowStatus = async () => {
       try {
-        const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No auth token found");
+          return;
+        }
+
         const response = await axios.get(
           `http://localhost:5000/api/follow/status/${currentUserId}/${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }, // Include token in request
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
+
+        console.log("Follow status fetched:", response.data);
         setIsFollowing(response.data.isFollowing);
       } catch (error) {
         console.error("Error checking follow status:", error.response?.data || error.message);
@@ -25,28 +30,30 @@ const FollowButton = ({ userId, currentUserId }) => {
   }, [userId, currentUserId]);
 
   const handleFollow = async () => {
-    if (loading) return; // Prevent multiple requests
+    if (loading) return;
     setLoading(true);
-
-    const newFollowState = !isFollowing;
-    setIsFollowing(newFollowState); // Optimistic UI update
 
     try {
       const token = localStorage.getItem("token");
-      const endpoint = newFollowState ? "follow" : "unfollow";
-      await axios.post(
-        `http://localhost:5000/api/${endpoint}`,
-        {
-          followerId: currentUserId,
-          followingId: userId,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }, // Secure the request
-        }
-      );
+      if (!token) {
+        throw new Error("No auth token found");
+      }
+
+      if (isFollowing) {
+        await axios.delete(`http://localhost:5000/api/unfollow/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        await axios.post(
+          `http://localhost:5000/api/follow/${userId}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+
+      setIsFollowing(!isFollowing); // Update UI only after successful API response
     } catch (error) {
       console.error("Error updating follow status:", error.response?.data || error.message);
-      setIsFollowing(!newFollowState); // Revert UI update on failure
     } finally {
       setLoading(false);
     }
