@@ -6,10 +6,12 @@ import axios from "axios";
 import PostCard from "@/app/Components/PostCard";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import FollowButton from "@/app/Components/FollowButton"; // Import FollowButton
 
 export default function ProfilePage() {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null); // Store logged-in user info
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -28,7 +30,18 @@ export default function ProfilePage() {
       }
     };
 
+    // Fetch logged-in user details (Modify this based on your authentication logic)
+    const fetchCurrentUser = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/auth/current-user`);
+        setCurrentUser(res.data);
+      } catch (err) {
+        console.error("Error fetching current user:", err);
+      }
+    };
+
     fetchProfile();
+    fetchCurrentUser();
   }, [username]);
 
   if (isLoading) return <p className="text-gray-300 text-center">Loading profile...</p>;
@@ -49,6 +62,13 @@ export default function ProfilePage() {
           <p className="text-gray-400">@{profile.username}</p>
           <p className="text-gray-300 mt-2">{profile.bio || "No bio available"}</p>
           <p className="text-gray-300">📧 {profile.email}</p>
+
+          {/* Follow Button (Only show if the user is NOT viewing their own profile) */}
+          {currentUser && currentUser.id !== profile.id && (
+            <div className="mt-4">
+              <FollowButton userId={profile.id} currentUserId={currentUser.id} />
+            </div>
+          )}
         </div>
 
         {/* Profile Stats */}
