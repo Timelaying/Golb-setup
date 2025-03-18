@@ -41,17 +41,17 @@ const FollowButton = ({ userId, currentUserId }) => {
       }
   
       console.log("Sending request to:", isFollowing 
-        ? `http://localhost:5000/api/unfollow/${userId}` 
-        : `http://localhost:5000/api/follow/${userId}`
+        ? "http://localhost:5000/api/unfollow/${userId}" 
+        : "http://localhost:5000/api/follow/${userId}"
       ); // ✅ Check the URL being called
   
       if (isFollowing) {
-        await axios.delete(`http://localhost:5000/api/unfollow/${userId}`, {
+        await axios.delete("http://localhost:5000/api/unfollow/${userId}", {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
         await axios.post(
-          `http://localhost:5000/api/follow/${userId}`,
+          "http://localhost:5000/api/follow/${userId}",
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
