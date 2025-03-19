@@ -101,7 +101,8 @@ export default function PostsList() {
   const renderComments = (postId, commentsList) => {
     return commentsList.map((comment) => (
       <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
-        <strong>{comment.username}</strong>: {comment.text}
+       <strong>{comment.username}</strong>: {comment.content}
+
 
         {/* Reply input */}
         <div className="ml-4 mt-2">
