@@ -76,16 +76,18 @@ export default function PostsList() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/addcomment",
+        "http://localhost:5000/api/addcomment", // ✅ Ensure correct API path
         {
+          userId: localStorage.getItem("userId"), // ✅ Ensure this exists
           postId,
-          text: replyText[parentCommentId],
+          content: replyText[parentCommentId], 
           parentCommentId,
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         }
       );
+      
 
       if (response.status === 200) {
         setReplyText({}); // Clear input after submission
