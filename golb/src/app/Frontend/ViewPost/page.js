@@ -46,11 +46,12 @@ export default function PostsList() {
   const fetchComments = async (postId) => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/viewcomments/${postId}",
+        `http://localhost:5000/api/viewcomments/${postId}`, // ✅ Correct API path
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         }
       );
+      
       setComments((prev) => ({ ...prev, [postId]: response.data.comments }));
     } catch (error) {
       console.error("Error fetching comments:", error);
