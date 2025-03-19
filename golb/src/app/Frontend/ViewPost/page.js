@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton for loading effect
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PostsList() {
   const [posts, setPosts] = useState([]);
   const [postCount, setPostCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [expandedPostId, setExpandedPostId] = useState(null);
+  const [comments, setComments] = useState({});
+  const [replyText, setReplyText] = useState({});
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -39,6 +42,90 @@ export default function PostsList() {
 
     fetchPosts();
   }, []);
+
+  const fetchComments = async (postId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/viewcomments/${postId}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        }
+      );
+      setComments((prev) => ({ ...prev, [postId]: response.data.comments }));
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  const toggleComments = (postId) => {
+    if (expandedPostId === postId) {
+      setExpandedPostId(null); // Collapse if already open
+    } else {
+      setExpandedPostId(postId);
+      if (!comments[postId]) fetchComments(postId);
+    }
+  };
+
+  const handleReplyChange = (commentId, text) => {
+    setReplyText((prev) => ({ ...prev, [commentId]: text }));
+  };
+
+  const submitReply = async (postId, parentCommentId) => {
+    if (!replyText[parentCommentId]) return;
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/addcomment",
+        {
+          postId,
+          text: replyText[parentCommentId],
+          parentCommentId,
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        }
+      );
+
+      if (response.status === 200) {
+        setReplyText({}); // Clear input after submission
+        fetchComments(postId); // Reload comments
+      }
+    } catch (error) {
+      console.error("Error submitting reply:", error);
+    }
+  };
+
+  const renderComments = (postId, commentsList) => {
+    return commentsList.map((comment) => (
+      <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
+        <strong>{comment.username}</strong>: {comment.text}
+
+        {/* Reply input */}
+        <div className="ml-4 mt-2">
+          <input
+            type="text"
+            value={replyText[comment.id] || ""}
+            onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+            className="border p-1 w-full"
+            placeholder="Reply..."
+          />
+          <button
+            onClick={() => submitReply(postId, comment.id)}
+            className="bg-blue-500 text-white px-2 py-1 mt-1"
+          >
+            Reply
+          </button>
+        </div>
+
+        {/* Render replies */}
+        {comment.replies.length > 0 && (
+          <div className="ml-6 border-l pl-2 mt-2">
+            {renderComments(postId, comment.replies)}
+          </div>
+        )}
+      </div>
+    ));
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 px-4">
@@ -77,6 +164,26 @@ export default function PostsList() {
                 <p className="text-gray-400">
                   👍 {post.like_count} Likes | 💬 {post.comment_count} Comments
                 </p>
+
+                {/* Toggle Comments Button */}
+                <button
+                  onClick={() => toggleComments(post.id)}
+                  className="text-blue-400 hover:underline mt-2"
+                >
+                  {expandedPostId === post.id ? "Hide Comments" : "View Comments"}
+                </button>
+
+                {/* Comments Section */}
+                {expandedPostId === post.id && (
+                  <div className="mt-4 bg-gray-600 p-3 rounded">
+                    <h3 className="text-white font-semibold">Comments</h3>
+                    {comments[post.id] && comments[post.id].length > 0 ? (
+                      renderComments(post.id, comments[post.id])
+                    ) : (
+                      <p className="text-gray-300">No comments yet.</p>
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
