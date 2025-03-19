@@ -23,3 +23,4 @@ create models for frontend
 9. likes logic i broken, it dosent increase when a new person likes it instead it is the same and it unlikes when clicked by a different profile instead of adding a like 
 10. login in user sesing their own profile from the search
 11. view comments from view post
+12. delete comment (poster only)
