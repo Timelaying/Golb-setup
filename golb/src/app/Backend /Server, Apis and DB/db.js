@@ -58,10 +58,13 @@ const createTableQuery = `
     user_id INT NOT NULL,
     post_id INT NOT NULL,
     content TEXT NOT NULL,
+    parent_comment_id INT DEFAULT NULL, -- ✅ Add parent_comment_id for replies
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
-  );
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE -- ✅ Self-referencing FK
+);
+
 `;
 
 // Create tables if they don't exist
