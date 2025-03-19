@@ -44,19 +44,18 @@ export default function PostsList() {
   }, []);
 
   const fetchComments = async (postId) => {
+    console.log("Fetching comments for post:", postId); // ✅ Debugging log
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/viewcomments/${postId}`, // ✅ Correct API path
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
-        }
-      );
-      
+      const response = await axios.get(`http://localhost:5000/api/viewcomments/${postId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      });
+      console.log("Fetched comments:", response.data); // ✅ Log fetched data
       setComments((prev) => ({ ...prev, [postId]: response.data.comments }));
     } catch (error) {
-      console.error("Error fetching comments:", error);
+      console.error("Error fetching comments:", error.response?.data || error.message);
     }
   };
+  
 
   const toggleComments = (postId) => {
     if (expandedPostId === postId) {
