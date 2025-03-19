@@ -19,6 +19,7 @@ const follow = require("./Follow");
 const likeunlike = require("./LikeUnlike");
 const comment = require("./Comment");
 const dynamicprofile = require("./DynamicProfile");
+const viewcomments = require("./ViewComment");
 
 const app = express();
 const PORT = 5000;
@@ -43,6 +44,7 @@ app.use("/api", follow);
 app.use("/api", likeunlike);
 app.use("/api", comment);
 app.use("/api", dynamicprofile);
+app.use("/api", viewcomments)
 
 // Start the server
 app.listen(PORT, () => {
