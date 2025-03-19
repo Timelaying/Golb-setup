@@ -20,7 +20,7 @@ export default function ProfilePage() {
 
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${username}`);
+        const response = await axios.get("http://localhost:5000/api/users/${username}");
         setProfile(response.data);
       } catch (err) {
         console.error("Error fetching profile:", err);
