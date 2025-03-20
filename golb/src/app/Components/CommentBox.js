@@ -25,22 +25,25 @@ const CommentSection = ({ postId, userId }) => {
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
     setLoading(true);
-
+  
+    console.log("Posting comment with:", { userId, postId, content: newComment });
+  
     try {
       const res = await axios.post("http://localhost:5000/api/comment", {
-        userId,
+        userId,  // Ensure this is the logged-in user's ID
         postId,
         content: newComment,
       });
-
+  
       setComments([res.data, ...comments]); // Update UI with new comment
-      setNewComment("");
+      setNewComment(""); // Clear input field
     } catch (error) {
       console.error("Error adding comment:", error);
     }
-
+  
     setLoading(false);
   };
+  
 
   return (
     <div className="mt-4 border-t border-gray-700 pt-4">
