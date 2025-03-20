@@ -13,8 +13,9 @@ export default function SearchBar() {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/search?query=${searchQuery}`
+        `http://localhost:5000/api/search?query=${encodeURIComponent(searchQuery)}`
       );
+      
       setSearchResults(response.data);
     } catch (error) {
       console.error("Search error:", error);
