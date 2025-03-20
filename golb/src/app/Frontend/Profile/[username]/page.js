@@ -36,18 +36,19 @@ export default function ProfilePage() {
     };
 
     const fetchCurrentUser = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return; // Prevent request if no token
+    
       try {
         const res = await axios.get("http://localhost:5000/api/current-user", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-        
         setCurrentUser(res.data);
       } catch (err) {
         console.error("Error fetching current user:", err);
       }
     };
+    
 
     fetchProfile();
     fetchCurrentUser();
