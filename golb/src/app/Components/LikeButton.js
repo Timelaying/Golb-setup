@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+
 const LikeButton = ({ postId, userId }) => {
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);

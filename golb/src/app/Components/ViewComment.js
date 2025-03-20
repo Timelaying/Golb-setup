@@ -1,54 +1,96 @@
-const express = require("express");
-const router = express.Router();
-const authenticateToken = require("./AuthenticateMiddleware");
-const pool = require("./db");
+import { useEffect, useState } from "react";
 
-// Fetch comments and replies for a specific post
-router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
-    try {
-        const { postId } = req.params;
+const CommentsSection = ({ postId }) => {
+    const [comments, setComments] = useState([]);
+    const [replyText, setReplyText] = useState({});
+    
+    useEffect(() => {
+        fetchComments();
+    }, []);
 
-        if (!postId) {
-            return res.status(400).json({ error: "Post ID is required" });
+    const fetchComments = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/viewcomments/${postId}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`, // If using auth
+                },
+            });
+            const data = await response.json();
+            setComments(data.comments || []);
+        } catch (error) {
+            console.error("Error fetching comments:", error);
         }
+    };
 
-        const commentsQuery = `
-            SELECT comments.*, users.username 
-            FROM comments 
-            JOIN users ON comments.user_id = users.id 
-            WHERE comments.post_id = $1 
-            ORDER BY comments.created_at ASC
-        `;
+    const handleReplyChange = (commentId, text) => {
+        setReplyText((prev) => ({ ...prev, [commentId]: text }));
+    };
 
-        const result = await pool.query(commentsQuery, [postId]);
+    const submitReply = async (parentCommentId) => {
+        if (!replyText[parentCommentId]) return;
 
-        // Organize comments into a tree structure
-        const commentMap = {};
-        const rootComments = [];
+        try {
+            const response = await fetch(`http://localhost:5000/addcomment`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    postId,
+                    text: replyText[parentCommentId],
+                    parentCommentId, // Attach parent comment ID
+                }),
+            });
 
-        result.rows.forEach((comment) => {
-            comment.replies = []; // Initialize an empty replies array
-            commentMap[comment.id] = comment; // Store by ID
-
-            if (comment.parent_comment_id) {
-                // If it's a reply, push it under its parent
-                if (commentMap[comment.parent_comment_id]) {
-                    commentMap[comment.parent_comment_id].replies.push(comment);
-                }
-            } else {
-                // If it's a top-level comment, add to root
-                rootComments.push(comment);
+            if (response.ok) {
+                setReplyText({}); // Clear input after submission
+                fetchComments(); // Reload comments
             }
-        });
+        } catch (error) {
+            console.error("Error submitting reply:", error);
+        }
+    };
 
-        res.status(200).json({
-            message: "Comments fetched successfully!",
-            comments: rootComments,
-        });
-    } catch (err) {
-        console.error("Error fetching comments:", err.message);
-        res.status(500).json({ error: "Internal server error." });
-    }
-});
+    const renderComments = (commentsList) => {
+        return commentsList.map((comment) => (
+            <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
+                <strong>{comment.username}</strong>: {comment.text}
+                
+                {/* Reply input */}
+                <div className="ml-4 mt-2">
+                    <input
+                        type="text"
+                        value={replyText[comment.id] || ""}
+                        onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+                        className="border p-1 w-full"
+                        placeholder="Reply..."
+                    />
+                    <button
+                        onClick={() => submitReply(comment.id)}
+                        className="bg-blue-500 text-white px-2 py-1 mt-1"
+                    >
+                        Reply
+                    </button>
+                </div>
 
-module.exports = router;
+                {/* Render replies */}
+                {comment.replies.length > 0 && (
+                    <div className="ml-6 border-l pl-2 mt-2">
+                        {renderComments(comment.replies)}
+                    </div>
+                )}
+            </div>
+        ));
+    };
+
+    return (
+        <div>
+            <h2 className="text-xl font-bold">Comments</h2>
+            {comments.length > 0 ? renderComments(comments) : <p>No comments yet.</p>}
+        </div>
+    );
+};
+
+export default CommentsSection;
