@@ -10,15 +10,21 @@ router.post("/comment", async (req, res) => {
     return res.status(400).json({ message: "All fields are required." });
   }
 
+  console.log("Received comment data:", { userId, postId, content });
+
   try {
     const query = "INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3) RETURNING *";
     const result = await pool.query(query, [userId, postId, content]);
+
+    console.log("Inserted comment:", result.rows[0]);
+
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Error adding comment:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 // ✅ Get all comments for a post
 router.get("/comments/:postId", async (req, res) => {
