@@ -42,6 +42,7 @@ export default function ProfilePage() {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         });
+        
         setCurrentUser(res.data);
       } catch (err) {
         console.error("Error fetching current user:", err);
