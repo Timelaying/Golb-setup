@@ -26,12 +26,13 @@ router.get("/comments/:postId", async (req, res) => {
 
   try {
     const query = `
-      SELECT comments.*, users.username, users.profile_picture 
+      SELECT comments.id, comments.content, comments.created_at, users.username 
       FROM comments 
-      JOIN users ON comments.user_id = users.id
-      WHERE post_id = $1 
-      ORDER BY created_at DESC;
+      JOIN users ON comments.user_id = users.id  
+      WHERE comments.post_id = $1 
+      ORDER BY comments.created_at DESC;
     `;
+
     const result = await pool.query(query, [postId]);
     res.json(result.rows);
   } catch (err) {
@@ -39,6 +40,7 @@ router.get("/comments/:postId", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 
 // ✅ (Optional) Delete a comment
