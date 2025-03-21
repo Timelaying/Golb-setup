@@ -5,38 +5,42 @@ const LikeButton = ({ postId, userId }) => {
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
 
+  const fetchLikeData = async () => {
+    try {
+      const [likeCountRes, userLikeRes] = await Promise.all([
+        axios.get(`http://localhost:5000/api/likes/${postId}`),
+        axios.get(`http://localhost:5000/api/user-likes/${userId}/${postId}`),
+      ]);
+
+      setLikes(likeCountRes.data.likes);
+      setLiked(userLikeRes.data.liked);
+    } catch (err) {
+      console.error("Error fetching like data:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchLikes = async () => {
-      try {
-        const likeCountRes = await axios.get(`http://localhost:5000/api/likes/${postId}`);
-        setLikes(likeCountRes.data.likes);
-
-        const userLikeRes = await axios.get(`http://localhost:5000/api/user-likes/${userId}/${postId}`);
-        setLiked(userLikeRes.data.liked);
-      } catch (error) {
-        console.error("Error fetching likes:", error);
-      }
-    };
-
-    fetchLikes();
+    fetchLikeData();
   }, [postId, userId]);
 
-  const handleLike = async () => {
+  const handleLikeToggle = async () => {
     try {
-      const res = liked
-        ? await axios.post("http://localhost:5000/api/unlike", { userId, postId })
-        : await axios.post("http://localhost:5000/api/like", { userId, postId });
+      const endpoint = liked ? "unlike" : "like";
+      const response = await axios.post(`http://localhost:5000/api/${endpoint}`, {
+        userId,
+        postId,
+      });
 
-      setLikes(res.data.likes); // Update likes with correct count
+      setLikes(response.data.likes);
       setLiked(!liked);
-    } catch (error) {
-      console.error("Error updating like status:", error);
+    } catch (err) {
+      console.error("Error updating like:", err);
     }
   };
 
   return (
     <button
-      onClick={handleLike}
+      onClick={handleLikeToggle}
       className={`px-4 py-2 rounded-md transition ${
         liked ? "bg-red-500 text-white" : "bg-gray-300 text-black"
       }`}
