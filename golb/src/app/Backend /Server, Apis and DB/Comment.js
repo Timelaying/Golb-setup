@@ -31,20 +31,40 @@ router.post("/comment", async (req, res) => {
 
 // Get comments for a post
 router.get("/comments/:postId", async (req, res) => {
+  const { postId } = req.params;
+
   try {
-    const result = await pool.query(
-      `SELECT comments.*, users.username 
-       FROM comments 
-       JOIN users ON comments.user_id = users.id 
-       WHERE post_id = $1 
-       ORDER BY created_at ASC`,
-      [req.params.postId]
-    );
-    res.json(result.rows);
+    const query = `
+      SELECT comments.*, users.username
+      FROM comments
+      JOIN users ON comments.user_id = users.id
+      WHERE comments.post_id = $1
+      ORDER BY comments.created_at ASC;
+    `;
+    const result = await pool.query(query, [postId]);
+
+    const commentMap = {};
+    const topLevelComments = [];
+
+    result.rows.forEach((comment) => {
+      comment.replies = [];
+      commentMap[comment.id] = comment;
+
+      if (comment.parent_comment_id) {
+        if (commentMap[comment.parent_comment_id]) {
+          commentMap[comment.parent_comment_id].replies.push(comment);
+        }
+      } else {
+        topLevelComments.push(comment);
+      }
+    });
+
+    res.status(200).json(topLevelComments);
   } catch (err) {
     console.error("Error fetching comments:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 module.exports = router;

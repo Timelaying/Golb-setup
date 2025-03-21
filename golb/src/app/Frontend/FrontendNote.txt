@@ -24,3 +24,4 @@ create models for frontend
 10. login in user sesing their own profile from the search
 11. view comments from view post
 12. delete comment (poster only)
+13. dosent show the correct foller and following when searched
