@@ -17,9 +17,10 @@ Frontend
 we need to create components  for frontend
 create models for frontend
 
-
+3. profile showing the post well
 4. consistent styling and css
 5. progile picture display and correct fetching in DB/ folder
+15. the feeeds page should be populated randomly like a social media website
+16. fixing the error from next
 6. minmizing comment and postion of likes
-13. dosent show the correct foller and following when searched
 14. refactoring and commenting code 
