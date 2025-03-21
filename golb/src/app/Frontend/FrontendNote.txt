@@ -22,3 +22,4 @@ create models for frontend
 5. progile picture display and correct fetching in DB/ folder
 6. minmizing comment and postion of likes
 13. dosent show the correct foller and following when searched
+14. refactoring and commenting code 
