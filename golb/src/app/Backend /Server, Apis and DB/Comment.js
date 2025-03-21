@@ -26,42 +26,45 @@ router.post("/comment", async (req, res) => {
 });
 
 
-// Get comments for a post
+// ✅ Get all comments and nested replies for a post
 router.get("/comments/:postId", async (req, res) => {
   const { postId } = req.params;
 
   try {
     const query = `
-      SELECT comments.*, users.username
+      SELECT comments.id, comments.content, comments.created_at, 
+             comments.parent_comment_id, users.username, users.id AS user_id
       FROM comments
       JOIN users ON comments.user_id = users.id
       WHERE comments.post_id = $1
       ORDER BY comments.created_at ASC;
     `;
+
     const result = await pool.query(query, [postId]);
+    const flatComments = result.rows;
 
+    // 🌳 Build tree
     const commentMap = {};
-    const topLevelComments = [];
+    const rootComments = [];
 
-    result.rows.forEach((comment) => {
+    flatComments.forEach(comment => {
       comment.replies = [];
       commentMap[comment.id] = comment;
 
       if (comment.parent_comment_id) {
-        if (commentMap[comment.parent_comment_id]) {
-          commentMap[comment.parent_comment_id].replies.push(comment);
-        }
+        commentMap[comment.parent_comment_id]?.replies.push(comment);
       } else {
-        topLevelComments.push(comment);
+        rootComments.push(comment);
       }
     });
 
-    res.status(200).json(topLevelComments);
+    res.json(rootComments);
   } catch (err) {
-    console.error("Error fetching comments:", err);
+    console.error("Error fetching nested comments:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 
 module.exports = router;
