@@ -81,6 +81,23 @@ router.put("/comment/:commentId", async (req, res) => {
   }
 });
 
+// ✅ Delete a comment
+router.delete("/comment/:commentId", async (req, res) => {
+  const { commentId } = req.params;
+
+  try {
+    const result = await pool.query("DELETE FROM comments WHERE id = $1 RETURNING *", [commentId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    res.status(200).json({ message: "Comment deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 
 // ✅ Get all comments and nested replies for a post
