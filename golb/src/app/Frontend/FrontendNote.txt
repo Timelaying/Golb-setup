@@ -5,6 +5,8 @@ cant be jsx if int has functionalities, jsx is only used for resuabel component 
 the use of Dynamic routing is important
 example
 
+remember to create a utils to keep current user session
+
 Frontend
  ├── Profile
  │   ├── [username]

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import useCurrentUser from "../utils/useCurrentUser";
 
-const CommentBox = ({ postId, userId }) => {
+const CommentBox = ({ postId }) => {
+  const currentUser = useCurrentUser();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [replyText, setReplyText] = useState({});
-  const [showComments, setShowComments] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   const fetchComments = async () => {
     try {
@@ -19,15 +21,15 @@ const CommentBox = ({ postId, userId }) => {
 
   useEffect(() => {
     if (showComments) fetchComments();
-  }, [showComments]);
+  }, [showComments, postId]);
 
   const handleAddComment = async () => {
-    if (!newComment.trim()) return;
-    setLoading(true);
+    if (!newComment.trim() || !currentUser) return;
 
+    setLoading(true);
     try {
       const res = await axios.post("http://localhost:5000/api/comment", {
-        userId,
+        userId: currentUser.id,
         postId,
         content: newComment,
       });
@@ -36,72 +38,32 @@ const CommentBox = ({ postId, userId }) => {
       setNewComment("");
     } catch (error) {
       console.error("Error adding comment:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
+  const handleReplyChange = (commentId, text) => {
+    setReplyText((prev) => ({ ...prev, [commentId]: text }));
   };
 
   const handleReplySubmit = async (parentCommentId) => {
-    const content = replyText[parentCommentId];
-    if (!content?.trim()) return;
+    const reply = replyText[parentCommentId];
+    if (!reply || !currentUser) return;
 
     try {
       const res = await axios.post("http://localhost:5000/api/reply", {
-        userId,
+        userId: currentUser.id,
         postId,
-        content,
+        content: reply,
         parentCommentId,
       });
 
-      // Refresh comments after reply is added
       setReplyText((prev) => ({ ...prev, [parentCommentId]: "" }));
       fetchComments();
     } catch (error) {
       console.error("Error posting reply:", error);
     }
-  };
-
-  const renderReplies = (replies) => {
-    return (
-      <div className="ml-4 mt-2 space-y-2">
-        {replies.map((reply) => (
-          <div key={reply.id} className="bg-gray-700 p-2 rounded">
-            <p className="text-sm font-medium text-blue-300">{reply.username}</p>
-            <p className="text-gray-300">{reply.content}</p>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderComments = () => {
-    return comments.map((comment) => (
-      <div key={comment.id} className="bg-gray-800 border border-gray-700 rounded p-3 mb-2">
-        <p className="font-semibold text-gray-200">{comment.username}</p>
-        <p className="text-gray-300">{comment.content}</p>
-
-        {/* Reply input */}
-        <div className="mt-2">
-          <input
-            type="text"
-            placeholder="Write a reply..."
-            value={replyText[comment.id] || ""}
-            onChange={(e) =>
-              setReplyText((prev) => ({ ...prev, [comment.id]: e.target.value }))
-            }
-            className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded"
-          />
-          <button
-            onClick={() => handleReplySubmit(comment.id)}
-            className="mt-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Reply
-          </button>
-        </div>
-
-        {comment.replies && renderReplies(comment.replies)}
-      </div>
-    ));
   };
 
   return (
@@ -115,16 +77,13 @@ const CommentBox = ({ postId, userId }) => {
 
       {showComments && (
         <>
-          <h3 className="font-semibold text-lg text-gray-200 mt-3">Comments</h3>
-
-          {/* Input for new comment */}
           <div className="flex items-center space-x-2 mt-2">
             <input
               type="text"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Write a comment..."
-              className="w-full p-2 bg-gray-800 text-gray-100 border border-gray-600 rounded-md"
+              className="w-full p-2 bg-gray-800 text-gray-100 border border-gray-600 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               onClick={handleAddComment}
@@ -135,9 +94,51 @@ const CommentBox = ({ postId, userId }) => {
             </button>
           </div>
 
-          {/* Comment List */}
           <div className="mt-4">
-            {comments.length > 0 ? renderComments() : (
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <div
+                  key={comment.id}
+                  className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2"
+                >
+                  <p className="font-semibold text-gray-300">
+                    {comment.username}
+                  </p>
+                  <p className="text-gray-400">{comment.content}</p>
+
+                  {/* ✅ Reply input */}
+                  <div className="mt-2 ml-4">
+                    <input
+                      type="text"
+                      value={replyText[comment.id] || ""}
+                      onChange={(e) =>
+                        handleReplyChange(comment.id, e.target.value)
+                      }
+                      placeholder="Write a reply..."
+                      className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded-md placeholder-gray-400"
+                    />
+                    <button
+                      onClick={() => handleReplySubmit(comment.id)}
+                      className="mt-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Reply
+                    </button>
+                  </div>
+
+                  {/* ✅ Replies */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="mt-3 ml-6 border-l border-gray-600 pl-4">
+                      {comment.replies.map((reply) => (
+                        <div key={reply.id} className="mb-2">
+                          <p className="text-sm text-gray-300 font-medium">{reply.username}</p>
+                          <p className="text-sm text-gray-400">{reply.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
               <p className="text-gray-500">No comments yet.</p>
             )}
           </div>
