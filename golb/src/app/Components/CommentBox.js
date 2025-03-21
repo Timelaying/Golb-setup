@@ -6,10 +6,11 @@ const CommentBox = ({ postId }) => {
   const currentUser = useCurrentUser();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+  const [replyText, setReplyText] = useState({});
   const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editContent, setEditContent] = useState("");
+  const [editedText, setEditedText] = useState("");
+  const [showComments, setShowComments] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchComments = async () => {
     try {
@@ -26,8 +27,8 @@ const CommentBox = ({ postId }) => {
 
   const handleAddComment = async () => {
     if (!newComment.trim() || !currentUser) return;
-
     setLoading(true);
+
     try {
       const res = await axios.post("http://localhost:5000/api/comment", {
         userId: currentUser.id,
@@ -44,37 +45,126 @@ const CommentBox = ({ postId }) => {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
+  const handleReplySubmit = async (parentId) => {
+    const reply = replyText[parentId];
+    if (!reply || !currentUser) return;
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/reply", {
+        userId: currentUser.id,
+        postId,
+        content: reply,
+        parentCommentId: parentId,
+      });
+
+      setReplyText({ ...replyText, [parentId]: "" });
+      fetchComments();
+    } catch (error) {
+      console.error("Error posting reply:", error);
+    }
+  };
+
+  const handleDelete = async (commentId) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+
     try {
       await axios.delete(`http://localhost:5000/api/comment/${commentId}`);
-      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      setComments(comments.filter((c) => c.id !== commentId));
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
   };
 
-  const handleEditClick = (comment) => {
-    setEditingCommentId(comment.id);
-    setEditContent(comment.content);
-  };
+  const handleEdit = async (commentId) => {
+    if (!editedText.trim()) return;
 
-  const handleUpdateComment = async () => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/comment/${editingCommentId}`, {
-        userId: currentUser.id,
-        content: editContent,
+      const res = await axios.put(`http://localhost:5000/api/comment/${commentId}`, {
+        content: editedText,
       });
 
-      setComments((prev) =>
-        prev.map((c) => (c.id === editingCommentId ? res.data.comment : c))
+      const updated = comments.map((c) =>
+        c.id === commentId ? { ...c, content: res.data.updatedComment.content } : c
       );
-
+      setComments(updated);
       setEditingCommentId(null);
-      setEditContent("");
     } catch (error) {
       console.error("Error updating comment:", error);
     }
   };
+
+  const renderComment = (comment) => (
+    <div key={comment.id} className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2">
+      <p className="font-semibold text-gray-300">{comment.username}</p>
+
+      {editingCommentId === comment.id ? (
+        <>
+          <input
+            type="text"
+            value={editedText}
+            onChange={(e) => setEditedText(e.target.value)}
+            className="w-full p-1 rounded bg-gray-700 text-white"
+          />
+          <div className="flex gap-2 mt-1">
+            <button
+              onClick={() => handleEdit(comment.id)}
+              className="text-green-400 hover:underline"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setEditingCommentId(null)}
+              className="text-red-400 hover:underline"
+            >
+              Cancel
+            </button>
+          </div>
+        </>
+      ) : (
+        <p className="text-gray-400">{comment.content}</p>
+      )}
+
+      {/* Edit/Delete Buttons (Only for author) */}
+      {currentUser?.id === comment.user_id && (
+        <div className="flex gap-3 mt-1">
+          <button
+            onClick={() => {
+              setEditingCommentId(comment.id);
+              setEditedText(comment.content);
+            }}
+            className="text-yellow-400 text-sm hover:underline"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDelete(comment.id)}
+            className="text-red-400 text-sm hover:underline"
+          >
+            Delete
+          </button>
+        </div>
+      )}
+
+      {/* Reply Input */}
+      <div className="mt-2 ml-3">
+        <input
+          type="text"
+          value={replyText[comment.id] || ""}
+          onChange={(e) =>
+            setReplyText((prev) => ({ ...prev, [comment.id]: e.target.value }))
+          }
+          placeholder="Write a reply..."
+          className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded-md"
+        />
+        <button
+          onClick={() => handleReplySubmit(comment.id)}
+          className="mt-1 text-blue-400 text-sm hover:underline"
+        >
+          Reply
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="mt-4 border-t border-gray-700 pt-4">
@@ -106,60 +196,7 @@ const CommentBox = ({ postId }) => {
 
           <div className="mt-4">
             {comments.length > 0 ? (
-              comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2"
-                >
-                  <p className="font-semibold text-gray-300">
-                    {comment.username}
-                  </p>
-
-                  {editingCommentId === comment.id ? (
-                    <>
-                      <textarea
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        className="w-full bg-gray-900 text-white p-2 rounded mt-2 border border-gray-600"
-                      />
-                      <div className="flex space-x-2 mt-2">
-                        <button
-                          onClick={handleUpdateComment}
-                          className="bg-green-600 text-white px-3 py-1 rounded"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingCommentId(null)}
-                          className="bg-gray-600 text-white px-3 py-1 rounded"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="text-gray-400 mt-1">{comment.content}</p>
-                  )}
-
-                  {/* Only show edit/delete if it's the user's own comment */}
-                  {currentUser && comment.username === currentUser.username && (
-                    <div className="flex space-x-4 mt-2">
-                      <button
-                        onClick={() => handleEditClick(comment)}
-                        className="text-sm text-yellow-400 hover:underline"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        className="text-sm text-red-400 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))
+              comments.map(renderComment)
             ) : (
               <p className="text-gray-500">No comments yet.</p>
             )}
