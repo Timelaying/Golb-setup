@@ -6,9 +6,10 @@ const CommentBox = ({ postId }) => {
   const currentUser = useCurrentUser();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [replyText, setReplyText] = useState({});
   const [loading, setLoading] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editContent, setEditContent] = useState("");
 
   const fetchComments = async () => {
     try {
@@ -43,26 +44,35 @@ const CommentBox = ({ postId }) => {
     }
   };
 
-  const handleReplyChange = (commentId, text) => {
-    setReplyText((prev) => ({ ...prev, [commentId]: text }));
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/comment/${commentId}`);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
   };
 
-  const handleReplySubmit = async (parentCommentId) => {
-    const reply = replyText[parentCommentId];
-    if (!reply || !currentUser) return;
+  const handleEditClick = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditContent(comment.content);
+  };
 
+  const handleUpdateComment = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/reply", {
+      const res = await axios.put(`http://localhost:5000/api/comment/${editingCommentId}`, {
         userId: currentUser.id,
-        postId,
-        content: reply,
-        parentCommentId,
+        content: editContent,
       });
 
-      setReplyText((prev) => ({ ...prev, [parentCommentId]: "" }));
-      fetchComments();
+      setComments((prev) =>
+        prev.map((c) => (c.id === editingCommentId ? res.data.comment : c))
+      );
+
+      setEditingCommentId(null);
+      setEditContent("");
     } catch (error) {
-      console.error("Error posting reply:", error);
+      console.error("Error updating comment:", error);
     }
   };
 
@@ -104,36 +114,48 @@ const CommentBox = ({ postId }) => {
                   <p className="font-semibold text-gray-300">
                     {comment.username}
                   </p>
-                  <p className="text-gray-400">{comment.content}</p>
 
-                  {/* ✅ Reply input */}
-                  <div className="mt-2 ml-4">
-                    <input
-                      type="text"
-                      value={replyText[comment.id] || ""}
-                      onChange={(e) =>
-                        handleReplyChange(comment.id, e.target.value)
-                      }
-                      placeholder="Write a reply..."
-                      className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded-md placeholder-gray-400"
-                    />
-                    <button
-                      onClick={() => handleReplySubmit(comment.id)}
-                      className="mt-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Reply
-                    </button>
-                  </div>
+                  {editingCommentId === comment.id ? (
+                    <>
+                      <textarea
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        className="w-full bg-gray-900 text-white p-2 rounded mt-2 border border-gray-600"
+                      />
+                      <div className="flex space-x-2 mt-2">
+                        <button
+                          onClick={handleUpdateComment}
+                          className="bg-green-600 text-white px-3 py-1 rounded"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingCommentId(null)}
+                          className="bg-gray-600 text-white px-3 py-1 rounded"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-gray-400 mt-1">{comment.content}</p>
+                  )}
 
-                  {/* ✅ Replies */}
-                  {comment.replies && comment.replies.length > 0 && (
-                    <div className="mt-3 ml-6 border-l border-gray-600 pl-4">
-                      {comment.replies.map((reply) => (
-                        <div key={reply.id} className="mb-2">
-                          <p className="text-sm text-gray-300 font-medium">{reply.username}</p>
-                          <p className="text-sm text-gray-400">{reply.content}</p>
-                        </div>
-                      ))}
+                  {/* Only show edit/delete if it's the user's own comment */}
+                  {currentUser && comment.username === currentUser.username && (
+                    <div className="flex space-x-4 mt-2">
+                      <button
+                        onClick={() => handleEditClick(comment)}
+                        className="text-sm text-yellow-400 hover:underline"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteComment(comment.id)}
+                        className="text-sm text-red-400 hover:underline"
+                      >
+                        Delete
+                      </button>
                     </div>
                   )}
                 </div>
