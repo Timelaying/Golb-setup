@@ -11,10 +11,13 @@ const CommentBox = ({ postId }) => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [editingContent, setEditingContent] = useState({});
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/${postId}`);
+      const res = await axios.get(
+        `http://localhost:5000/api/comments/${postId}`
+      );
       setComments(res.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -80,20 +83,22 @@ const CommentBox = ({ postId }) => {
   const handleSaveEdit = async (commentId) => {
     const newContent = editingContent[commentId];
     if (!newContent || !currentUser) return;
-  
+
     try {
-      const res = await axios.put(`http://localhost:5000/api/comment/${commentId}`, {
-        userId: currentUser.id, // ✅ Add userId
-        content: newContent,
-      });
-  
+      const res = await axios.put(
+        `http://localhost:5000/api/comment/${commentId}`,
+        {
+          userId: currentUser.id, // ✅ Add userId
+          content: newContent,
+        }
+      );
+
       fetchComments();
       setEditingCommentId(null);
     } catch (error) {
       console.error("Error updating comment:", error);
     }
   };
-  
 
   const handleDeleteComment = async (commentId) => {
     try {
@@ -139,25 +144,33 @@ const CommentBox = ({ postId }) => {
                   key={comment.id}
                   className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2"
                 >
-                  <p className="font-semibold text-gray-300">{comment.username}</p>
+                  <p className="font-semibold text-gray-300">
+                    {comment.username}
+                  </p>
 
                   {editingCommentId === comment.id ? (
                     <>
-                      <textarea
-                        className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded"
-                        value={editText[comment.id] || ""}
-                        onChange={(e) => handleEditChange(comment.id, e.target.value)}
+                      <input
+                        type="text"
+                        value={editingContent[comment.id] || ""}
+                        onChange={(e) =>
+                          setEditingContent((prev) => ({
+                            ...prev,
+                            [comment.id]: e.target.value,
+                          }))
+                        }
+                        className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded-md placeholder-gray-400"
                       />
-                      <div className="mt-1 flex space-x-2">
+                      <div className="flex space-x-2 mt-1">
                         <button
                           onClick={() => handleSaveEdit(comment.id)}
-                          className="bg-green-500 text-white px-3 py-1 rounded"
+                          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingCommentId(null)}
-                          className="bg-gray-500 text-white px-3 py-1 rounded"
+                          className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
                         >
                           Cancel
                         </button>
@@ -167,17 +180,23 @@ const CommentBox = ({ postId }) => {
                     <>
                       <p className="text-gray-400">{comment.content}</p>
 
-                      {currentUser?.id === comment.user_id && (
-                        <div className="mt-1 flex space-x-2">
+                      {currentUser && comment.user_id === currentUser.id && (
+                        <div className="flex gap-2 mt-1">
                           <button
-                            onClick={() => handleEditClick(comment.id, comment.content)}
-                            className="text-yellow-400 hover:underline text-sm"
+                            onClick={() => {
+                              setEditingCommentId(comment.id);
+                              setEditingContent((prev) => ({
+                                ...prev,
+                                [comment.id]: comment.content,
+                              }));
+                            }}
+                            className="text-yellow-400 text-sm"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteComment(comment.id)}
-                            className="text-red-500 hover:underline text-sm"
+                            className="text-red-400 text-sm"
                           >
                             Delete
                           </button>
@@ -191,7 +210,9 @@ const CommentBox = ({ postId }) => {
                     <input
                       type="text"
                       value={replyText[comment.id] || ""}
-                      onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+                      onChange={(e) =>
+                        handleReplyChange(comment.id, e.target.value)
+                      }
                       placeholder="Write a reply..."
                       className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded-md placeholder-gray-400"
                     />
@@ -208,8 +229,12 @@ const CommentBox = ({ postId }) => {
                     <div className="mt-3 ml-6 border-l border-gray-600 pl-4">
                       {comment.replies.map((reply) => (
                         <div key={reply.id} className="mb-2">
-                          <p className="text-sm text-gray-300 font-medium">{reply.username}</p>
-                          <p className="text-sm text-gray-400">{reply.content}</p>
+                          <p className="text-sm text-gray-300 font-medium">
+                            {reply.username}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {reply.content}
+                          </p>
                         </div>
                       ))}
                     </div>
