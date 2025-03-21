@@ -7,16 +7,14 @@ const CommentBox = ({ postId }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [replyText, setReplyText] = useState({});
+  const [editText, setEditText] = useState({});
   const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editedText, setEditedText] = useState("");
-  const [showComments, setShowComments] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/comments/${postId}`
-      );
+      const res = await axios.get(`http://localhost:5000/api/comments/${postId}`);
       setComments(res.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -29,8 +27,8 @@ const CommentBox = ({ postId }) => {
 
   const handleAddComment = async () => {
     if (!newComment.trim() || !currentUser) return;
-    setLoading(true);
 
+    setLoading(true);
     try {
       const res = await axios.post("http://localhost:5000/api/comment", {
         userId: currentUser.id,
@@ -47,135 +45,64 @@ const CommentBox = ({ postId }) => {
     }
   };
 
-  const handleReplySubmit = async (parentId) => {
-    const reply = replyText[parentId];
+  const handleReplyChange = (commentId, text) => {
+    setReplyText((prev) => ({ ...prev, [commentId]: text }));
+  };
+
+  const handleReplySubmit = async (parentCommentId) => {
+    const reply = replyText[parentCommentId];
     if (!reply || !currentUser) return;
 
     try {
-      const res = await axios.post("http://localhost:5000/api/reply", {
+      await axios.post("http://localhost:5000/api/reply", {
         userId: currentUser.id,
         postId,
         content: reply,
-        parentCommentId: parentId,
+        parentCommentId,
       });
 
-      setReplyText({ ...replyText, [parentId]: "" });
+      setReplyText((prev) => ({ ...prev, [parentCommentId]: "" }));
       fetchComments();
     } catch (error) {
       console.error("Error posting reply:", error);
     }
   };
 
-  const handleDelete = async (commentId) => {
-    if (!window.confirm("Are you sure you want to delete this comment?"))
-      return;
-
-    try {
-      await axios.delete(`http://localhost:5000/api/comment/${commentId}`);
-      setComments(comments.filter((c) => c.id !== commentId));
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-    }
+  const handleEditClick = (commentId, content) => {
+    setEditingCommentId(commentId);
+    setEditText((prev) => ({ ...prev, [commentId]: content }));
   };
 
-  const handleEdit = async (commentId) => {
-    if (!editedText.trim()) return;
+  const handleEditChange = (commentId, text) => {
+    setEditText((prev) => ({ ...prev, [commentId]: text }));
+  };
 
+  const handleSaveEdit = async (commentId) => {
+    const newContent = editingContent[commentId];
+    if (!newContent || !currentUser) return;
+  
     try {
-      const res = await axios.put(
-        `http://localhost:5000/api/comment/${commentId}`,
-        {
-          content: editedText,
-        }
-      );
-
-      const updated = comments.map((c) =>
-        c.id === commentId
-          ? { ...c, content: res.data.updatedComment.content }
-          : c
-      );
-      setComments(updated);
+      const res = await axios.put(`http://localhost:5000/api/comment/${commentId}`, {
+        userId: currentUser.id, // ✅ Add userId
+        content: newContent,
+      });
+  
+      fetchComments();
       setEditingCommentId(null);
     } catch (error) {
       console.error("Error updating comment:", error);
     }
   };
+  
 
-  const renderComment = (comment) => (
-    <div
-      key={comment.id}
-      className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2"
-    >
-      <p className="font-semibold text-gray-300">{comment.username}</p>
-
-      {editingCommentId === comment.id ? (
-        <>
-          <input
-            type="text"
-            value={editedText}
-            onChange={(e) => setEditedText(e.target.value)}
-            className="w-full p-1 rounded bg-gray-700 text-white"
-          />
-          <div className="flex gap-2 mt-1">
-            <button
-              onClick={() => handleEdit(comment.id)}
-              className="text-green-400 hover:underline"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => setEditingCommentId(null)}
-              className="text-red-400 hover:underline"
-            >
-              Cancel
-            </button>
-          </div>
-        </>
-      ) : (
-        <p className="text-gray-400">{comment.content}</p>
-      )}
-
-      {/* Edit/Delete Buttons (Only for author) */}
-      {currentUser?.id === comment.user_id && (
-        <div className="flex gap-3 mt-1">
-          <button
-            onClick={() => {
-              setEditingCommentId(comment.id);
-              setEditedText(comment.content);
-            }}
-            className="text-yellow-400 text-sm hover:underline"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDelete(comment.id)}
-            className="text-red-400 text-sm hover:underline"
-          >
-            Delete
-          </button>
-        </div>
-      )}
-
-      {/* Reply Input */}
-      <div className="mt-2 ml-3">
-        <input
-          type="text"
-          value={replyText[comment.id] || ""}
-          onChange={(e) =>
-            setReplyText((prev) => ({ ...prev, [comment.id]: e.target.value }))
-          }
-          placeholder="Write a reply..."
-          className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded-md"
-        />
-        <button
-          onClick={() => handleReplySubmit(comment.id)}
-          className="mt-1 text-blue-400 text-sm hover:underline"
-        >
-          Reply
-        </button>
-      </div>
-    </div>
-  );
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/comment/${commentId}`);
+      fetchComments();
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+    }
+  };
 
   return (
     <div className="mt-4 border-t border-gray-700 pt-4">
@@ -207,7 +134,88 @@ const CommentBox = ({ postId }) => {
 
           <div className="mt-4">
             {comments.length > 0 ? (
-              comments.map(renderComment)
+              comments.map((comment) => (
+                <div
+                  key={comment.id}
+                  className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2"
+                >
+                  <p className="font-semibold text-gray-300">{comment.username}</p>
+
+                  {editingCommentId === comment.id ? (
+                    <>
+                      <textarea
+                        className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded"
+                        value={editText[comment.id] || ""}
+                        onChange={(e) => handleEditChange(comment.id, e.target.value)}
+                      />
+                      <div className="mt-1 flex space-x-2">
+                        <button
+                          onClick={() => handleSaveEdit(comment.id)}
+                          className="bg-green-500 text-white px-3 py-1 rounded"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingCommentId(null)}
+                          className="bg-gray-500 text-white px-3 py-1 rounded"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-400">{comment.content}</p>
+
+                      {currentUser?.id === comment.user_id && (
+                        <div className="mt-1 flex space-x-2">
+                          <button
+                            onClick={() => handleEditClick(comment.id, comment.content)}
+                            className="text-yellow-400 hover:underline text-sm"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="text-red-500 hover:underline text-sm"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* ✅ Reply input */}
+                  <div className="mt-2 ml-4">
+                    <input
+                      type="text"
+                      value={replyText[comment.id] || ""}
+                      onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+                      placeholder="Write a reply..."
+                      className="w-full p-1 bg-gray-700 text-white border border-gray-600 rounded-md placeholder-gray-400"
+                    />
+                    <button
+                      onClick={() => handleReplySubmit(comment.id)}
+                      className="mt-1 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Reply
+                    </button>
+                  </div>
+
+                  {/* ✅ Replies */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="mt-3 ml-6 border-l border-gray-600 pl-4">
+                      {comment.replies.map((reply) => (
+                        <div key={reply.id} className="mb-2">
+                          <p className="text-sm text-gray-300 font-medium">{reply.username}</p>
+                          <p className="text-sm text-gray-400">{reply.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
             ) : (
               <p className="text-gray-500">No comments yet.</p>
             )}
