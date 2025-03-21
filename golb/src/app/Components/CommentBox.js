@@ -14,7 +14,9 @@ const CommentBox = ({ postId }) => {
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/${postId}`);
+      const res = await axios.get(
+        `http://localhost:5000/api/comments/${postId}`
+      );
       setComments(res.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -65,7 +67,8 @@ const CommentBox = ({ postId }) => {
   };
 
   const handleDelete = async (commentId) => {
-    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    if (!window.confirm("Are you sure you want to delete this comment?"))
+      return;
 
     try {
       await axios.delete(`http://localhost:5000/api/comment/${commentId}`);
@@ -79,12 +82,17 @@ const CommentBox = ({ postId }) => {
     if (!editedText.trim()) return;
 
     try {
-      const res = await axios.put(`http://localhost:5000/api/comment/${commentId}`, {
-        content: editedText,
-      });
+      const res = await axios.put(
+        `http://localhost:5000/api/comment/${commentId}`,
+        {
+          content: editedText,
+        }
+      );
 
       const updated = comments.map((c) =>
-        c.id === commentId ? { ...c, content: res.data.updatedComment.content } : c
+        c.id === commentId
+          ? { ...c, content: res.data.updatedComment.content }
+          : c
       );
       setComments(updated);
       setEditingCommentId(null);
@@ -94,7 +102,10 @@ const CommentBox = ({ postId }) => {
   };
 
   const renderComment = (comment) => (
-    <div key={comment.id} className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2">
+    <div
+      key={comment.id}
+      className="p-3 bg-gray-800 border border-gray-700 rounded-lg mb-2"
+    >
       <p className="font-semibold text-gray-300">{comment.username}</p>
 
       {editingCommentId === comment.id ? (
