@@ -1,44 +1,56 @@
+// Components/LikeButton.js
 import { useState, useEffect } from "react";
 import axios from "axios";
+import useCurrentUser from "../utils/useCurrentUser";
 
-const LikeButton = ({ postId, userId }) => {
-  const [liked, setLiked] = useState(false);
+const LikeButton = ({ postId }) => {
+  const currentUser = useCurrentUser();
   const [likes, setLikes] = useState(0);
-
-  const fetchStatus = async () => {
-    try {
-      const res1 = await axios.get(`http://localhost:5000/api/user-likes/${userId}/${postId}`);
-      const res2 = await axios.get(`http://localhost:5000/api/likes/${postId}`);
-      setLiked(res1.data.liked);
-      setLikes(res2.data.likes);
-    } catch (error) {
-      console.error("❌ Error fetching like status:", error);
-    }
-  };
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    fetchStatus();
-  }, [postId, userId]);
+    const fetchLikes = async () => {
+      if (!currentUser) return;
 
-  const toggleLike = async () => {
+      try {
+        const likeCountRes = await axios.get(`http://localhost:5000/api/likes/${postId}`);
+        setLikes(likeCountRes.data.likes);
+
+        const userLikeRes = await axios.get(
+          `http://localhost:5000/api/user-likes/${currentUser.id}/${postId}`
+        );
+        setLiked(userLikeRes.data.liked);
+      } catch (error) {
+        console.error("Error fetching likes:", error);
+      }
+    };
+
+    fetchLikes();
+  }, [postId, currentUser]);
+
+  const handleLike = async () => {
+    if (!currentUser) return;
+
     try {
       const endpoint = liked ? "unlike" : "like";
       const res = await axios.post(`http://localhost:5000/api/${endpoint}`, {
-        userId,
+        userId: currentUser.id,
         postId,
       });
 
       setLikes(res.data.likes);
       setLiked(!liked);
     } catch (error) {
-      console.error("❌ Error toggling like:", error);
+      console.error("Error updating like status:", error);
     }
   };
 
   return (
     <button
-      onClick={toggleLike}
-      className={`px-3 py-1 mt-2 rounded ${liked ? "bg-red-600 text-white" : "bg-gray-300 text-black"}`}
+      onClick={handleLike}
+      className={`px-4 py-2 rounded-md transition ${
+        liked ? "bg-red-500 text-white" : "bg-gray-300 text-black"
+      }`}
     >
       {liked ? "Unlike" : "Like"} ({likes})
     </button>
