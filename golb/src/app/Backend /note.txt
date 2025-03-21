@@ -24,6 +24,7 @@ golb=# \dt
 golb=# SELECT * FROM users;
 
 remember to create a utils to keep current user session (frontend)
+create models and utils fro both frontend and backend
 
 
 
