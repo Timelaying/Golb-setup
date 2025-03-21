@@ -49,6 +49,39 @@ router.post("/reply", async (req, res) => {
 });
 
 
+// ✅ Edit a comment
+router.put("/comment/:commentId", async (req, res) => {
+  const { commentId } = req.params;
+  const { userId, content } = req.body;
+
+  if (!userId || !content) {
+    return res.status(400).json({ message: "User ID and content are required" });
+  }
+
+  try {
+    // Ensure comment belongs to the user before allowing update
+    const checkQuery = `
+      SELECT * FROM comments WHERE id = $1 AND user_id = $2
+    `;
+    const check = await pool.query(checkQuery, [commentId, userId]);
+
+    if (check.rows.length === 0) {
+      return res.status(403).json({ message: "You can only edit your own comments" });
+    }
+
+    const updateQuery = `
+      UPDATE comments SET content = $1 WHERE id = $2 RETURNING *
+    `;
+    const result = await pool.query(updateQuery, [content, commentId]);
+
+    res.status(200).json({ message: "Comment updated", comment: result.rows[0] });
+  } catch (err) {
+    console.error("Error editing comment:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 
 // ✅ Get all comments and nested replies for a post
 router.get("/comments/:postId", async (req, res) => {
