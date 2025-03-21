@@ -1,19 +1,19 @@
+
+// backend route: DynamicProfile.js
 const express = require("express");
 const router = express.Router();
-const pool = require("./db"); // Import PostgreSQL pool
+const pool = require("./db");
 
 router.get("/users/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    console.log("Fetching profile for username:", username); // Debug log
 
     const userResult = await pool.query(
-      "SELECT id, name, username, bio, email FROM users WHERE username = $1",
+      "SELECT id, name, username, bio, email, profile_picture FROM users WHERE username = $1",
       [username]
     );
 
     if (userResult.rows.length === 0) {
-      console.log("User not found in database.");
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -24,14 +24,26 @@ router.get("/users/:username", async (req, res) => {
       [user.id]
     );
 
-    console.log("User profile fetched successfully:", user);
+    // Fetch followers and following counts
+    const followersCount = await pool.query(
+      "SELECT COUNT(*) FROM followers WHERE following_id = $1",
+      [user.id]
+    );
+    const followingCount = await pool.query(
+      "SELECT COUNT(*) FROM followers WHERE follower_id = $1",
+      [user.id]
+    );
 
-    res.json({ ...user, posts: postsResult.rows });
+    res.json({
+      ...user,
+      posts: postsResult.rows,
+      followersCount: parseInt(followersCount.rows[0].count, 10),
+      followingCount: parseInt(followingCount.rows[0].count, 10),
+    });
   } catch (error) {
     console.error("Error fetching profile:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 module.exports = router;
