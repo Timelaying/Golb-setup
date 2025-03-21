@@ -1,4 +1,3 @@
-// /routes/likes.js
 const express = require("express");
 const router = express.Router();
 const pool = require("./db");
@@ -13,7 +12,7 @@ router.post("/like", async (req, res) => {
       [userId, postId]
     );
 
-    if (existing.rowCount > 0) {
+    if (existing.rows.length > 0) {
       return res.status(400).json({ message: "Already liked" });
     }
 
@@ -22,15 +21,15 @@ router.post("/like", async (req, res) => {
       [userId, postId]
     );
 
-    const countRes = await pool.query(
+    const count = await pool.query(
       "SELECT COUNT(*) FROM likes WHERE post_id = $1",
       [postId]
     );
 
-    res.status(200).json({ likes: parseInt(countRes.rows[0].count) });
-  } catch (err) {
-    console.error("Like error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.json({ likes: parseInt(count.rows[0].count, 10) });
+  } catch (error) {
+    console.error("Like error:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -44,41 +43,49 @@ router.post("/unlike", async (req, res) => {
       [userId, postId]
     );
 
-    const countRes = await pool.query(
+    const count = await pool.query(
       "SELECT COUNT(*) FROM likes WHERE post_id = $1",
       [postId]
     );
 
-    res.status(200).json({ likes: parseInt(countRes.rows[0].count) });
-  } catch (err) {
-    console.error("Unlike error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.json({ likes: parseInt(count.rows[0].count, 10) });
+  } catch (error) {
+    console.error("Unlike error:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// Get like count for a post
+// Get total likes
 router.get("/likes/:postId", async (req, res) => {
+  const { postId } = req.params;
+
   try {
     const result = await pool.query(
       "SELECT COUNT(*) FROM likes WHERE post_id = $1",
-      [req.params.postId]
+      [postId]
     );
-    res.json({ likes: parseInt(result.rows[0].count) });
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching like count" });
+
+    res.json({ likes: parseInt(result.rows[0].count, 10) });
+  } catch (error) {
+    console.error("Fetch like count error:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-// Check if user has liked a post
-router.get("/liked/:userId/:postId", async (req, res) => {
+// Check if a user liked a post
+router.get("/user-likes/:userId/:postId", async (req, res) => {
+  const { userId, postId } = req.params;
+
   try {
-    const result = await pool.query(
+    const liked = await pool.query(
       "SELECT 1 FROM likes WHERE user_id = $1 AND post_id = $2",
-      [req.params.userId, req.params.postId]
+      [userId, postId]
     );
-    res.json({ liked: result.rowCount > 0 });
-  } catch (err) {
-    res.status(500).json({ message: "Error checking like status" });
+
+    res.json({ liked: liked.rows.length > 0 });
+  } catch (error) {
+    console.error("Check user like error:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
