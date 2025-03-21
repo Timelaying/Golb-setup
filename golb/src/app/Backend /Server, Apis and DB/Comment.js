@@ -5,29 +5,26 @@ const pool = require("./db");
 
 // Add a comment
 router.post("/comment", async (req, res) => {
-  const { userId, postId, content } = req.body;
+  const { userId, postId, content, parentCommentId = null } = req.body;
 
-  if (!userId || !postId || !content.trim()) {
-    return res.status(400).json({ message: "All fields are required" });
+  if (!userId || !postId || !content) {
+    return res.status(400).json({ message: "All fields are required." });
   }
 
   try {
-    const insertRes = await pool.query(
-      "INSERT INTO comments (user_id, post_id, content) VALUES ($1, $2, $3) RETURNING *",
-      [userId, postId, content]
-    );
-
-    const fullComment = await pool.query(
-      "SELECT comments.*, users.username FROM comments JOIN users ON comments.user_id = users.id WHERE comments.id = $1",
-      [insertRes.rows[0].id]
-    );
-
-    res.status(201).json(fullComment.rows[0]);
+    const query = `
+      INSERT INTO comments (user_id, post_id, content, parent_comment_id)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+    `;
+    const result = await pool.query(query, [userId, postId, content, parentCommentId]);
+    res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error("Comment error:", err);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error adding comment:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 // Get comments for a post
 router.get("/comments/:postId", async (req, res) => {
