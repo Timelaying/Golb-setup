@@ -88,13 +88,14 @@ export default function FeedPage() {
 
               <div className="flex items-center space-x-3 mt-2 mb-1">
                 <img
-                  src={profile.profile_picture ? `http://localhost:5000/uploads/users/${profile.username}/profile.jpg` : "/default-avatar.png"}
+                  src={post.profile_picture ? `http://localhost:5000${post.profile_picture}` : "/default-avatar.png"}
                   alt={post.username}
                   className="w-8 h-8 rounded-full border border-gray-600"
                 />
                 <span className="text-gray-300 text-sm font-medium">
                   Posted by @{post.username}
                 </span>
+
               </div>
 
 
