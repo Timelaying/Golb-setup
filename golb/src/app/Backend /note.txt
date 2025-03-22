@@ -49,7 +49,7 @@ manage application configuration in one module
 pass configuration around application
 
 Use models folder for database related operations
-// model
+// model and utils folders
 users.model.js
 findUserById
 findUserByUsername
