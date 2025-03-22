@@ -91,7 +91,7 @@ export default function FeedPage() {
               </p>
 
               <FollowButton userId={post.user_id} isFollowing={post.isFollowing} refreshUsers={fetchFeed} />
-              <LikeButton postId={post.id} isLiked={post.isLiked} refreshPosts={fetchFeed} />
+              <LikeButton postId={post.id} userId={currentUser?.id} isLiked={post.isLiked} refreshPosts={fetchFeed} />
               <CommentBox postId={post.id} refreshPosts={fetchFeed} />
             </div>
           ))
