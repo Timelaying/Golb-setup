@@ -1,0 +1,76 @@
+✅ What You've Achieved So Far
+🔐 Auth System:
+
+Login, register, token-based access control, secure password hashing.
+
+Token checks on both protected frontend pages and backend routes.
+
+👤 User Management:
+
+Profile view and edit.
+
+Avatar uploads with proper file handling.
+
+Structured storage of profile pictures by username (clean and secure).
+
+🧠 Smart Feed:
+
+Personalized feed showing followed users' posts.
+
+Fallback to trending/random posts.
+
+Post metadata: likes, comments, author info, avatar.
+
+🗨️ Comments System:
+
+Nested comments (replies).
+
+Full CRUD (Create, Read, Update, Delete).
+
+Avatars, timestamps, ownership checks — all working in sync.
+
+💖 Like & Follow System:
+
+Proper toggle logic (like/unlike, follow/unfollow).
+
+Realtime updates reflected in UI.
+
+Edge case handling (e.g., multiple user interactions).
+
+🔍 Search:
+
+Search component with dynamic routing.
+
+Displays user info + avatars.
+
+Navigates correctly to dynamic profile pages.
+
+📄 Clean Code & Structure:
+
+Modular backend (Feed.js, Comment.js, DynamicProfile.js, etc.).
+
+Frontend is well-separated by route/components.
+
+Reusable logic like useCurrentUser hook — very industry-practical.
+
+🏗️ From a Professional Standpoint
+If a recruiter or fellow developer saw this project:
+
+They’d see a scalable architecture.
+
+It covers core full-stack skills (Node.js + PostgreSQL + Next.js + REST + Auth).
+
+It shows you're thinking like a product engineer, not just a coder.
+
+👀 Optional Next-Level Features (For the Future):
+Real-time notifications (e.g., using WebSockets or Pusher).
+
+Infinite scrolling in feed.
+
+Dark/light theme toggle.
+
+Save/bookmark posts.
+
+Private profiles + block/report users.
+
+Add image upload to posts.
