@@ -68,7 +68,7 @@ export default function ProfilePage() {
         {/* Profile Header */}
         <div className="text-center">
           <img
-            src={profile.profile_picture || "/default-avatar.png"}
+            src={profile.profile_picture ? `http://localhost:5000/uploads/users/${profile.username}/profile.jpg` : "/default-avatar.png"}
             alt="Profile"
             className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
           />
