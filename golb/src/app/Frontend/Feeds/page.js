@@ -83,12 +83,20 @@ export default function FeedPage() {
         {feed.length > 0 ? (
           feed.map((post) => (
             <div key={post.id} className="border-b border-gray-700 p-4 bg-gray-800 rounded-lg shadow mb-4">
-              <h2 className="text-lg font-bold">{post.title}</h2>
-              <p className="text-gray-300">{post.content}</p>
+              <h2 className="text-lg font-semibold">{post.title}</h2>
+              <p className="text-sm text-gray-400">{post.content}</p>
 
-              <p className="text-sm text-gray-400 mt-1">
-                Posted by <span className="text-white font-medium">@{post.username}</span>
-              </p>
+              <div className="flex items-center space-x-3 mt-2 mb-1">
+                <img
+                  src={post.profile_picture || "/default-avatar.png"}
+                  alt={post.username}
+                  className="w-8 h-8 rounded-full border border-gray-600"
+                />
+                <span className="text-gray-300 text-sm font-medium">
+                  Posted by @{post.username}
+                </span>
+              </div>
+
 
               <FollowButton userId={post.user_id} isFollowing={post.isFollowing} refreshUsers={fetchFeed} />
               <LikeButton postId={post.id} userId={currentUser?.id} isLiked={post.isLiked} refreshPosts={fetchFeed} />
