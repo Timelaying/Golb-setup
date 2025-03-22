@@ -5,36 +5,32 @@ import axios from "axios";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import useCurrentUser from "@/app/utils/useCurrentUser";
 
 export default function PostsList() {
+  const currentUser = useCurrentUser();
   const [posts, setPosts] = useState([]);
   const [postCount, setPostCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [expandedPostId, setExpandedPostId] = useState(null);
   const [comments, setComments] = useState({});
   const [replyText, setReplyText] = useState({});
+  const [editText, setEditText] = useState({});
+  const [editingCommentId, setEditingCommentId] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
 
-        const response = await axios.get(
-          "http://localhost:5000/api/viewposts",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost:5000/api/viewposts", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
 
         setPosts(response.data.posts);
         setPostCount(response.data.count);
       } catch (error) {
-        console.error(
-          "Error fetching posts:",
-          error.response?.data?.error || error.message
-        );
+        console.error("Error fetching posts:", error.message);
       } finally {
         setLoading(false);
       }
@@ -44,22 +40,19 @@ export default function PostsList() {
   }, []);
 
   const fetchComments = async (postId) => {
-    console.log("Fetching comments for post:", postId); // ✅ Debugging log
     try {
       const response = await axios.get(`http://localhost:5000/api/viewcomments/${postId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
       });
-      console.log("Fetched comments:", response.data); // ✅ Log fetched data
       setComments((prev) => ({ ...prev, [postId]: response.data.comments }));
     } catch (error) {
-      console.error("Error fetching comments:", error.response?.data || error.message);
+      console.error("Error fetching comments:", error.message);
     }
   };
 
-
   const toggleComments = (postId) => {
     if (expandedPostId === postId) {
-      setExpandedPostId(null); // Collapse if already open
+      setExpandedPostId(null);
     } else {
       setExpandedPostId(postId);
       if (!comments[postId]) fetchComments(postId);
@@ -71,15 +64,16 @@ export default function PostsList() {
   };
 
   const submitReply = async (postId, parentCommentId) => {
-    if (!replyText[parentCommentId]) return;
+    const content = replyText[parentCommentId];
+    if (!content || !currentUser) return;
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/addcomment", // ✅ Ensure correct API path
+      await axios.post(
+        "http://localhost:5000/api/addcomment",
         {
-          userId: localStorage.getItem("userId"), // ✅ Ensure this exists
+          userId: currentUser.id,
           postId,
-          content: replyText[parentCommentId],
+          content,
           parentCommentId,
         },
         {
@@ -87,21 +81,114 @@ export default function PostsList() {
         }
       );
 
-
-      if (response.status === 200) {
-        setReplyText({}); // Clear input after submission
-        fetchComments(postId); // Reload comments
-      }
+      setReplyText({});
+      fetchComments(postId);
     } catch (error) {
-      console.error("Error submitting reply:", error);
+      console.error("Error submitting reply:", error.message);
     }
   };
 
-  const renderComments = (postId, commentsList) => {
-    return commentsList.map((comment) => (
-      <div key={comment.id} className="border border-gray-600 p-2 my-2 rounded bg-gray-800">
-        <strong className="text-gray-200">{comment.username}</strong>:{" "}
-        <span className="text-gray-300">{comment.content}</span>
+  const startEdit = (commentId, content) => {
+    setEditingCommentId(commentId);
+    setEditText({ ...editText, [commentId]: content });
+  };
+
+  const saveEdit = async (commentId, postId) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/comment/${commentId}`,
+        {
+          userId: currentUser.id,
+          content: editText[commentId],
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        }
+      );
+
+      setEditingCommentId(null);
+      fetchComments(postId);
+    } catch (error) {
+      console.error("Error saving edited comment:", error.message);
+    }
+  };
+
+  const deleteComment = async (commentId, postId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/comment/${commentId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      });
+
+      fetchComments(postId);
+    } catch (error) {
+      console.error("Error deleting comment:", error.message);
+    }
+  };
+
+  const renderComments = (postId, commentsList) =>
+    commentsList.map((comment) => (
+      <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
+        <div className="flex items-center space-x-2 mb-1">
+          <img
+            src={
+              comment.profile_picture
+                ? `http://localhost:5000/uploads/users/${comment.username}/profile.jpg`
+                : "/default-avatar.png"
+            }
+            alt="avatar"
+            className="w-8 h-8 rounded-full"
+          />
+          <div className="text-sm text-gray-700 font-medium">
+            @{comment.username}
+            <span className="ml-2 text-xs text-gray-500">
+              • {new Date(comment.created_at).toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        {editingCommentId === comment.id ? (
+          <div>
+            <textarea
+              value={editText[comment.id]}
+              onChange={(e) =>
+                setEditText((prev) => ({ ...prev, [comment.id]: e.target.value }))
+              }
+              className="w-full border p-1 mb-2"
+            />
+            <button
+              onClick={() => saveEdit(comment.id, postId)}
+              className="bg-green-600 text-white px-2 py-1 mr-2 rounded"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setEditingCommentId(null)}
+              className="bg-gray-500 text-white px-2 py-1 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <p className="text-gray-800">{comment.content}</p>
+        )}
+
+        {/* Owner controls */}
+        {currentUser && currentUser.id === comment.user_id && (
+          <div className="mt-1 text-sm space-x-2">
+            <button
+              onClick={() => startEdit(comment.id, comment.content)}
+              className="text-blue-600 hover:underline"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => deleteComment(comment.id, postId)}
+              className="text-red-600 hover:underline"
+            >
+              Delete
+            </button>
+          </div>
+        )}
 
         {/* Reply input */}
         <div className="ml-4 mt-2">
@@ -109,27 +196,25 @@ export default function PostsList() {
             type="text"
             value={replyText[comment.id] || ""}
             onChange={(e) => handleReplyChange(comment.id, e.target.value)}
-            className="border border-gray-500 bg-gray-900 text-white p-1 w-full rounded"
+            className="border p-1 w-full"
             placeholder="Reply..."
           />
           <button
             onClick={() => submitReply(postId, comment.id)}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 mt-1 rounded"
+            className="bg-blue-500 text-white px-2 py-1 mt-1"
           >
             Reply
           </button>
         </div>
 
-        {/* Render replies */}
-        {comment.replies.length > 0 && (
-          <div className="ml-6 border-l border-gray-600 pl-3 mt-3">
+        {/* Nested replies */}
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="ml-6 border-l pl-2 mt-2">
             {renderComments(postId, comment.replies)}
           </div>
         )}
       </div>
-
     ));
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 px-4">
@@ -164,12 +249,10 @@ export default function PostsList() {
                 <p className="text-sm text-gray-500 mt-2">
                   Created on: {new Date(post.created_at).toLocaleString()}
                 </p>
-                {/* Show likes and comments count */}
                 <p className="text-gray-400">
                   👍 {post.like_count} Likes | 💬 {post.comment_count} Comments
                 </p>
 
-                {/* Toggle Comments Button */}
                 <button
                   onClick={() => toggleComments(post.id)}
                   className="text-blue-400 hover:underline mt-2"
@@ -177,7 +260,6 @@ export default function PostsList() {
                   {expandedPostId === post.id ? "Hide Comments" : "View Comments"}
                 </button>
 
-                {/* Comments Section */}
                 {expandedPostId === post.id && (
                   <div className="mt-4 bg-gray-600 p-3 rounded">
                     <h3 className="text-white font-semibold">Comments</h3>
