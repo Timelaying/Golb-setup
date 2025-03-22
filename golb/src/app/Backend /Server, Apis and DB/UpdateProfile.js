@@ -10,11 +10,28 @@ router.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
-    destination: "./uploads/profile_pictures",
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    },
+  destination: async (req, file, cb) => {
+    const { userId } = req.body;
+
+    // Get the username using userId from the DB
+    const userResult = await pool.query("SELECT username FROM users WHERE id = $1", [userId]);
+    const username = userResult.rows[0]?.username;
+
+    if (!username) return cb(new Error("User not found."), null);
+
+    const userDir = path.join(__dirname, "uploads", "users", username);
+
+    // Ensure directory exists
+    fs.mkdirSync(userDir, { recursive: true });
+
+    req.usernameForFile = username; // save for use in filename or DB update
+    cb(null, userDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, "profile" + path.extname(file.originalname)); // always save as profile.jpg/png
+  },
 });
+
 const upload = multer({ storage });
 
 // Update Profile API
