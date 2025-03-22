@@ -19,7 +19,7 @@ create models for frontend
 
 3. profile showing the post well
 4. consistent styling and css
-15. the feeeds page should be populated randomly like a social media website
+15. the feeds page should be populated randomly like a social media website
 16. fixing the error from next
 6. minmizing comment and postion of likes
 14. refactoring and commenting code 
