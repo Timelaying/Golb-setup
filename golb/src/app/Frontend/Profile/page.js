@@ -92,7 +92,7 @@ export default function ProfilePage() {
                     <div className="space-y-4">
                         <div className="text-center">
                             <img
-                                src={profile.profile_picture || "/default-profile.png"} // Fallback image
+                                src={profile.profile_picture ? `http://localhost:5000/uploads/users/${profile.username}/profile.jpg` : "/default-avatar.png"} // Fallback image
                                 alt="Profile"
                                 className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
                             />
