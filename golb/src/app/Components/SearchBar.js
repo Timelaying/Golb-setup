@@ -50,7 +50,7 @@ export default function SearchBar() {
               onClick={() => router.push(`/Frontend/Profile/${user.username}`)} // Fixed
             >
               <img
-                src={user.profile_picture || "/default-avatar.png"}
+                src={user.profile_picture ? `http://localhost:5000/uploads/users/${user.username}/profile.jpg` : "/default-avatar.png"}
                 alt={user.username}
                 className="w-10 h-10 rounded-full"
               />
