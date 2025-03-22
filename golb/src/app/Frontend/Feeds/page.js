@@ -76,7 +76,7 @@ export default function FeedPage() {
         <SearchBar onSearchResults={setFeed} />
       </div>
 
-      
+
 
       {/* Feed List */}
       <main className="flex-1 p-4 overflow-y-auto">
@@ -85,6 +85,10 @@ export default function FeedPage() {
             <div key={post.id} className="border-b border-gray-700 p-4 bg-gray-800 rounded-lg shadow mb-4">
               <h2 className="text-lg font-bold">{post.title}</h2>
               <p className="text-gray-300">{post.content}</p>
+
+              <p className="text-sm text-gray-400 mt-1">
+                Posted by <span className="text-white font-medium">@{post.username}</span>
+              </p>
 
               <FollowButton userId={post.user_id} isFollowing={post.isFollowing} refreshUsers={fetchFeed} />
               <LikeButton postId={post.id} isLiked={post.isLiked} refreshPosts={fetchFeed} />
