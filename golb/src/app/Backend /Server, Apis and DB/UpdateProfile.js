@@ -67,8 +67,9 @@ router.put("/update-profile", upload.single("profile_picture"), async (req, res)
         // Ensure Express serves the updated profile picture
         res.json({
             ...result.rows[0],
-            profile_picture: `http://localhost:5000${result.rows[0].profile_picture}`, // Full URL
-        });
+            profile_picture: `http://localhost:5000${profilePictureUrl}`, // full URL
+          });
+          
         console.log("Updating user:", { userId, location, bio, profilePictureUrl });
 
     } catch (error) {
