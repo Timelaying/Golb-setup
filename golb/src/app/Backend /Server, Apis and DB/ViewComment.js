@@ -2,12 +2,8 @@ const express = require("express");
 const router = express.Router();
 const authenticateToken = require("./AuthenticateMiddleware");
 const pool = require("./db");
-const path = require("path");
 
-// ✅ Serve profile pictures
-router.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// ✅ Fetch comments and replies for a specific post
+// ✅ Fetch comments and replies for a specific post with profile pictures
 router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
   try {
     const { postId } = req.params;
@@ -17,11 +13,11 @@ router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
     }
 
     const commentsQuery = `
-      SELECT comments.id, comments.user_id, comments.post_id, comments.content, 
+      SELECT comments.id, comments.user_id, comments.post_id, comments.content,
              comments.parent_comment_id, comments.created_at, users.username, users.profile_picture
-      FROM comments 
-      JOIN users ON comments.user_id = users.id 
-      WHERE comments.post_id = $1 
+      FROM comments
+      JOIN users ON comments.user_id = users.id
+      WHERE comments.post_id = $1
       ORDER BY comments.created_at ASC
     `;
 
@@ -32,8 +28,8 @@ router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
     const rootComments = [];
 
     result.rows.forEach((comment) => {
-      comment.replies = []; // Initialize an empty replies array
-      commentMap[comment.id] = comment; // Store by ID
+      comment.replies = [];
+      commentMap[comment.id] = comment;
 
       if (comment.parent_comment_id) {
         if (commentMap[comment.parent_comment_id]) {
@@ -54,19 +50,20 @@ router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Add new comment or reply
+// ✅ Add comment or reply
 router.post("/addcomment", authenticateToken, async (req, res) => {
   try {
     const { postId, content, parentCommentId } = req.body;
     const userId = req.user.id;
 
-    if (!postId || !content || !userId) {
-      return res.status(400).json({ error: "Missing required fields." });
+    if (!userId || !postId || !content) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
     const insertQuery = `
-      INSERT INTO comments (user_id, post_id, content, parent_comment_id) 
-      VALUES ($1, $2, $3, $4) RETURNING *
+      INSERT INTO comments (user_id, post_id, content, parent_comment_id)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
     `;
 
     const result = await pool.query(insertQuery, [userId, postId, content, parentCommentId || null]);
