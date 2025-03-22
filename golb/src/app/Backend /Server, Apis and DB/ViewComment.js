@@ -2,8 +2,12 @@ const express = require("express");
 const router = express.Router();
 const authenticateToken = require("./AuthenticateMiddleware");
 const pool = require("./db");
+const path = require("path");
 
-// Fetch comments and replies for a specific post
+// ✅ Serve profile pictures
+router.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// ✅ Fetch comments and replies for a specific post
 router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
   try {
     const { postId } = req.params;
@@ -13,13 +17,13 @@ router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
     }
 
     const commentsQuery = `
-    SELECT comments.id, comments.user_id, comments.post_id, comments.content, 
-           comments.parent_comment_id, comments.created_at, users.username 
-    FROM comments 
-    JOIN users ON comments.user_id = users.id 
-    WHERE comments.post_id = $1 
-    ORDER BY comments.created_at ASC
-`;
+      SELECT comments.id, comments.user_id, comments.post_id, comments.content, 
+             comments.parent_comment_id, comments.created_at, users.username, users.profile_picture
+      FROM comments 
+      JOIN users ON comments.user_id = users.id 
+      WHERE comments.post_id = $1 
+      ORDER BY comments.created_at ASC
+    `;
 
     const result = await pool.query(commentsQuery, [postId]);
 
@@ -32,12 +36,10 @@ router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
       commentMap[comment.id] = comment; // Store by ID
 
       if (comment.parent_comment_id) {
-        // If it's a reply, push it under its parent
         if (commentMap[comment.parent_comment_id]) {
           commentMap[comment.parent_comment_id].replies.push(comment);
         }
       } else {
-        // If it's a top-level comment, add to root
         rootComments.push(comment);
       }
     });
@@ -48,6 +50,33 @@ router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching comments:", err.message);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+// ✅ Add new comment or reply
+router.post("/addcomment", authenticateToken, async (req, res) => {
+  try {
+    const { postId, content, parentCommentId } = req.body;
+    const userId = req.user.id;
+
+    if (!postId || !content || !userId) {
+      return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    const insertQuery = `
+      INSERT INTO comments (user_id, post_id, content, parent_comment_id) 
+      VALUES ($1, $2, $3, $4) RETURNING *
+    `;
+
+    const result = await pool.query(insertQuery, [userId, postId, content, parentCommentId || null]);
+
+    res.status(200).json({
+      message: "Comment added successfully!",
+      comment: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Error adding comment:", err.message);
     res.status(500).json({ error: "Internal server error." });
   }
 });
