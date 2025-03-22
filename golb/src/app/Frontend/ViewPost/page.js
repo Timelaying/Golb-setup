@@ -55,7 +55,7 @@ export default function PostsList() {
       console.error("Error fetching comments:", error.response?.data || error.message);
     }
   };
-  
+
 
   const toggleComments = (postId) => {
     if (expandedPostId === postId) {
@@ -79,14 +79,14 @@ export default function PostsList() {
         {
           userId: localStorage.getItem("userId"), // ✅ Ensure this exists
           postId,
-          content: replyText[parentCommentId], 
+          content: replyText[parentCommentId],
           parentCommentId,
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         }
       );
-      
+
 
       if (response.status === 200) {
         setReplyText({}); // Clear input after submission
@@ -99,9 +99,9 @@ export default function PostsList() {
 
   const renderComments = (postId, commentsList) => {
     return commentsList.map((comment) => (
-      <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
-       <strong>{comment.username}</strong>: {comment.content}
-
+      <div key={comment.id} className="border border-gray-600 p-2 my-2 rounded bg-gray-800">
+        <strong className="text-gray-200">{comment.username}</strong>:{" "}
+        <span className="text-gray-300">{comment.content}</span>
 
         {/* Reply input */}
         <div className="ml-4 mt-2">
@@ -109,12 +109,12 @@ export default function PostsList() {
             type="text"
             value={replyText[comment.id] || ""}
             onChange={(e) => handleReplyChange(comment.id, e.target.value)}
-            className="border p-1 w-full"
+            className="border border-gray-500 bg-gray-900 text-white p-1 w-full rounded"
             placeholder="Reply..."
           />
           <button
             onClick={() => submitReply(postId, comment.id)}
-            className="bg-blue-500 text-white px-2 py-1 mt-1"
+            className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 mt-1 rounded"
           >
             Reply
           </button>
@@ -122,11 +122,12 @@ export default function PostsList() {
 
         {/* Render replies */}
         {comment.replies.length > 0 && (
-          <div className="ml-6 border-l pl-2 mt-2">
+          <div className="ml-6 border-l border-gray-600 pl-3 mt-3">
             {renderComments(postId, comment.replies)}
           </div>
         )}
       </div>
+
     ));
   };
 
