@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import useCurrentUser from "@/app/utils/useCurrentUser"; // ✅ Add this
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import SearchBar from "@/app/Components/SearchBar";
@@ -9,16 +10,18 @@ import LikeButton from "@/app/Components/LikeButton";
 import CommentBox from "@/app/Components/CommentBox";
 
 export default function FeedPage() {
+  const currentUser = useCurrentUser(); // ✅ Use the hook
   const [feed, setFeed] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetchFeed();
-  }, []);
+    if (currentUser) {
+      fetchFeed(currentUser.id); // ✅ Fetch once user is available
+    }
+  }, [currentUser]);
 
-  const fetchFeed = async () => {
+  const fetchFeed = async (userId) => {
     try {
-      const userId = localStorage.getItem("userId");
       const response = await axios.get(`http://localhost:5000/api/feed/${userId}`);
       setFeed(response.data);
     } catch (error) {
