@@ -41,7 +41,8 @@ router.put("/update-profile", upload.single("profile_picture"), async (req, res)
         let profilePictureUrl = null;
 
         if (req.file) {
-            profilePictureUrl = `/uploads/profile_pictures/${req.file.filename}`;
+            profilePictureUrl = `/uploads/users/${req.usernameForFile}/${req.file.filename}`;
+
         }
 
         // Update user profile in the database
