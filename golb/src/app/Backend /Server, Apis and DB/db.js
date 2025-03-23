@@ -1,15 +1,15 @@
+// db.js
 const { Pool } = require("pg");
-require("dotenv").config();
+const config = require("./config");
 
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  user: config.db.user,
+  host: config.db.host,
+  database: config.db.name,
+  password: config.db.password,
+  port: config.db.port,
 });
 
-// Create tables for users and posts
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -28,7 +28,7 @@ const createTableQuery = `
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    image TEXT,  -- ✅ Added image column
+    image TEXT,
     user_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -49,25 +49,22 @@ const createTableQuery = `
     post_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-    UNIQUE (user_id, post_id)  -- Prevent duplicate likes
-);
-
+    UNIQUE (user_id, post_id)
+  );
 
   CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     post_id INT NOT NULL,
     content TEXT NOT NULL,
-    parent_comment_id INT DEFAULT NULL, -- ✅ Add parent_comment_id for replies
+    parent_comment_id INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-    FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE -- ✅ Self-referencing FK
-);
-
+    FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE
+  );
 `;
 
-// Create tables if they don't exist
 pool.query(createTableQuery)
   .then(() => console.log("Database tables are ready."))
   .catch((err) => console.error("Error creating tables:", err.message));
