@@ -5,27 +5,32 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const pool = require("../db");
+const pool = require("../db")
 const authenticateToken = require("../middleware/AuthenticateMiddleware"); // inporting middleware for token refresh
 
 
 router.get("/test", (req, res) => {
     res.send("Auth routes working");
-  });
-  
+});
+
 
 
 
 // Login route
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
+    console.log("Attempting login with username:", username);
+
 
     try {// Checking for user in the database table
         const result = await pool.query("SELECT * FROM users WHERE name = $1", [username]);
+        console.log("DB result:", result.rows);
+
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "User not found." });
         }
+
 
         const user = result.rows[0];
         const isPasswordValid = await bcrypt.compare(password, user.password); //checking for password
