@@ -21,6 +21,14 @@ const comment = require("./Comment");
 const dynamicprofile = require("./DynamicProfile");
 const viewcomments = require("./ViewComment");
 
+
+app.use("/api/users", require("./routes/users.route"));
+app.use("/api/posts", require("./routes/posts.route"));
+app.use("/api/comments", require("./routes/comments.route"));
+app.use("/api/auth", require("./routes/auth.route"));
+
+
+
 const app = express();
 const PORT = 5000;
 
