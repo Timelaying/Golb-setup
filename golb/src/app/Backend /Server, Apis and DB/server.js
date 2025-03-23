@@ -6,7 +6,7 @@ const path = require("path");
 
 // Import database and routes
 const pool = require("./db");
-const authRoutes = require("./AuthRoute");
+const authRoutes = require("./routes/auth.routes");
 const registerRoute = require("./RegisterRoute");
 const forgetandreset = require("./ForgetAndReset");
 const createPostRoute = require("./CreatePostRoute");

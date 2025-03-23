@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authenticateToken = require("./AuthenticateMiddleware");
+const authenticateToken = require("./routes/AuthenticateMiddleware");
 const pool = require("./db");
 
 // Fetch posts for a specific user

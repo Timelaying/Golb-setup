@@ -9,7 +9,7 @@ const pool = require("./db");
 
 // Import all routes
 const registerRoute = require("./routes/RegisterRoute");
-const authRoutes = require("./routes/AuthRoute");
+const authRoutes = require("./routes/auth.routes");
 const forgetAndReset = require("./routes/ForgetAndReset");
 const createPostRoute = require("./routes/CreatePostRoute");
 const viewPosts = require("./routes/ViewPostRoute");
