@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const pool = require("./db");
+const pool = require("../db");
 require("dotenv").config();
 
 // Nodemailer transporter

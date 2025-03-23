@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const authenticateToken = require("./routes/AuthenticateMiddleware");
-const pool = require("./db");
+const authenticateToken = require("./AuthenticateMiddleware");
+const pool = require("../db");
 
 // ✅ Fetch comments and replies for a specific post with profile pictures
 router.get("/viewcomments/:postId", authenticateToken, async (req, res) => {

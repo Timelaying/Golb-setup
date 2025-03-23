@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const pool = require("./db");
+const pool = require("../db");
 const fs = require("fs");
 
 // Serve static files for profile pictures
