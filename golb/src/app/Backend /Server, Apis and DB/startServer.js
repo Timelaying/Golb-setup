@@ -10,10 +10,10 @@ const pool = require("./db");
 // Import all routes
 const registerRoute = require("./routes/RegisterRoute");
 const authRoutes = require("./routes/auth.routes");
-const forgetAndReset = require("./routes/ForgetAndReset");
+const forgetAndReset = require("./routes/forgetReset.routes");
 const createPostRoute = require("./routes/createPost.routes");
 const viewPosts = require("./routes/ViewPostRoute");
-const profilePageRoute = require("./routes/ProfilePageRoute");
+const profilePageRoute = require("./routes/profilePage.routes");
 const updateProfile = require("./routes/UpdateProfileRoute");
 const search = require("./routes/SearchRoute");
 const feed = require("./routes/FeedRoute");
