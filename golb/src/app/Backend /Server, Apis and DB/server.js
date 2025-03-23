@@ -1,60 +1,50 @@
-require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
+const config = require("./config");
+const startServer = require("./startServer");
 
-// Import database and routes
-const pool = require("./db");
+// Import routes from the routes/ folder
 const authRoutes = require("./routes/auth.routes");
-const registerRoute = require("./RegisterRoute");
-const forgetandreset = require("./ForgetAndReset");
-const createPostRoute = require("./CreatePostRoute");
-const viewposts = require("./ViewPost");
-const profilepageroute = require("./ProfilePageRoute");
-const updateprofile = require("./UpdateProfile");
-const search = require("./Search");
-const feed = require("./Feed");
-const follow = require("./Follow");
-const likeunlike = require("./routes/likeUnlike.routes");
-const comment = require("./Comment");
-const dynamicprofile = require("./DynamicProfile");
-const viewcomments = require("./ViewComment");
-
-
-app.use("/api/users", require("./routes/users.route"));
-app.use("/api/posts", require("./routes/posts.route"));
-app.use("/api/comments", require("./routes/comments.route"));
-app.use("/api/auth", require("./routes/auth.route"));
-
-
+const registerRoutes = require("./routes/register.routes");
+const forgetResetRoutes = require("./routes/forgetReset.routes");
+const createPostRoutes = require("./routes/createPost.routes");
+const viewPostsRoutes = require("./routes/viewPosts.routes");
+const profilePageRoutes = require("./routes/profilePage.routes");
+const updateProfileRoutes = require("./routes/updateProfile.routes");
+const searchRoutes = require("./routes/search.routes");
+const feedRoutes = require("./routes/feed.routes");
+const followRoutes = require("./routes/follow.routes");
+const likeUnlikeRoutes = require("./routes/likeUnlike.routes");
+const commentRoutes = require("./routes/comment.routes");
+const dynamicProfileRoutes = require("./routes/dynamicProfile.routes");
+const viewCommentRoutes = require("./routes/viewComment.routes");
 
 const app = express();
-const PORT = 5000;
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Serve uploaded files statically
+// Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Mount API routes
-app.use("/api", registerRoute);
+// Mount routes
 app.use("/api", authRoutes);
-app.use("/api", forgetandreset);
-app.use("/api", createPostRoute);
-app.use("/api", viewposts);
-app.use("/api", profilepageroute);
-app.use("/api", updateprofile);
-app.use("/api", search);
-app.use("/api", feed);
-app.use("/api", follow);
-app.use("/api", likeunlike);
-app.use("/api", comment);
-app.use("/api", dynamicprofile);
-app.use("/api", viewcomments)
+app.use("/api", registerRoutes);
+app.use("/api", forgetResetRoutes);
+app.use("/api", createPostRoutes);
+app.use("/api", viewPostsRoutes);
+app.use("/api", profilePageRoutes);
+app.use("/api", updateProfileRoutes);
+app.use("/api", searchRoutes);
+app.use("/api", feedRoutes);
+app.use("/api", followRoutes);
+app.use("/api", likeUnlikeRoutes);
+app.use("/api", commentRoutes);
+app.use("/api", dynamicProfileRoutes);
+app.use("/api", viewCommentRoutes);
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Start server
+startServer(app, config.port);
