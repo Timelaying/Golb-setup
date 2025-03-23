@@ -2,7 +2,7 @@
 // backend route: DynamicProfile.js
 const express = require("express");
 const router = express.Router();
-const pool = require("./db");
+const pool = require("../db");
 
 router.get("/users/:username", async (req, res) => {
   try {

@@ -1,5 +1,5 @@
 const express = require("express");
-const pool = require("./db");
+const pool = require("../db");
 const router = express.Router();
 
 // ✅ GET /feed/:userId — Show posts from followed users or trending ones if not following anyone
