@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
-const authenticateToken = require("./AuthenticateMiddleware");
+const authenticateToken = require("../middleware/AuthenticateMiddleware");
 
 // Profile API: Fetch user data
 router.get("/profile", authenticateToken, async (req, res) => {

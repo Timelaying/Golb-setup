@@ -6,7 +6,7 @@ const config = require("./config");
 const startServer = require("./startServer");
 
 // Import routes from the routes/ folder
-const authRoutes = require("./routes/auth.routes");
+const authRoutes = require ("./routes/auth.routes");
 const registerRoutes = require("./routes/register.routes");
 const forgetResetRoutes = require("./routes/forgetReset.routes");
 const createPostRoutes = require("./routes/createPost.routes");

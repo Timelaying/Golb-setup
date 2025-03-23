@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const pool = require("../db");
-const authenticateUser = require("./AuthenticateMiddleware");
+const authenticateUser = require("../middleware/AuthenticateMiddleware");
 
 // Follow a user
 router.post("/follow/:userId", authenticateUser, async (req, res) => {
