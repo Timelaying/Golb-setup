@@ -10,7 +10,8 @@ const config = {
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
   },
-  baseURL: "http://localhost:5000", // For serving images and links
+  baseUrl: process.env.BASE_URL || "http://localhost:5000",
+  // For serving images and links
 };
 
 module.exports = config;
