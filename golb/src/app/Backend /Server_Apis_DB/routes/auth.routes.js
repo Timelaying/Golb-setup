@@ -9,6 +9,11 @@ const pool = require("../db");
 const authenticateToken = require("../middleware/AuthenticateMiddleware"); // inporting middleware for token refresh
 
 
+router.get("/test", (req, res) => {
+    res.send("Auth routes working");
+  });
+  
+
 
 
 // Login route
