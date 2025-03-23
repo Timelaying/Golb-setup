@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const pool = require("../db");
 
 async function getPostsByUser(userId, options = { orderBy: "created_at", sort: "DESC" }) {
   const { orderBy, sort } = options;
