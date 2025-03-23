@@ -46,5 +46,10 @@ app.use("/api", commentRoutes);
 app.use("/api", dynamicProfileRoutes);
 app.use("/api", viewCommentRoutes);
 
+
+app.get("/api/ping", (req, res) => {
+    res.send("pong");
+  });
+
 // Start server
 startServer(app, config.port);
