@@ -1,26 +1,22 @@
-require("dotenv").config();
-
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-const pool = require("../db");
+const { searchUsersByUsername } = require("../models/users.model");
 
+// GET /search?query=tim
 router.get("/search", async (req, res) => {
-    const { query } = req.query;
+  const { query } = req.query;
 
-    try {
-        const users = await pool.query(
-            "SELECT id, name, username, profile_picture FROM users WHERE username ILIKE $1",
-            [`%${query}%`]
-        );
-        res.json(users.rows);
-    } catch (error) {
-        console.error("Error searching users:", error);
-        res.status(500).json({ error: "Server error" });
-    }
+  if (!query || query.trim() === "") {
+    return res.status(400).json({ error: "Search query is required" });
+  }
+
+  try {
+    const users = await searchUsersByUsername(query);
+    res.json(users);
+  } catch (error) {
+    console.error("Error searching users:", error.message);
+    res.status(500).json({ error: "Server error" });
+  }
 });
-
 
 module.exports = router;
