@@ -33,9 +33,22 @@ async function getFollowersForUser(userId) {
   return res.rows;
 }
 
+async function getFollowerStats(userId) {
+  const result = await pool.query(
+    `SELECT 
+      (SELECT COUNT(*) FROM posts WHERE user_id = $1) AS post_count,
+      (SELECT COUNT(*) FROM followers WHERE following_id = $1) AS followers_count,
+      (SELECT COUNT(*) FROM followers WHERE follower_id = $1) AS following_count`,
+    [userId]
+  );
+  return result.rows[0];
+}
+
+
 module.exports = {
   isFollowing,
   followUser,
   unfollowUser,
   getFollowersForUser,
+  getFollowerStats,
 };
