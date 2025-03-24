@@ -83,9 +83,24 @@ async function getFeedForUser(userId) {
   return result.rows;
 }
 
+async function getPostsWithCountsByUser(userId) {
+  const result = await pool.query(
+    `SELECT posts.*, 
+            (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count,
+            (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count
+     FROM posts
+     WHERE posts.user_id = $1
+     ORDER BY posts.created_at DESC`,
+    [userId]
+  );
+  return result.rows;
+}
+
+
 module.exports = {
   getUserPosts,
   getPostsByUser,
   createPost,
   getFeedForUser,
+  getPostsWithCountsByUser,
 };
