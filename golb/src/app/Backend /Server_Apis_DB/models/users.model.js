@@ -22,42 +22,53 @@ async function createUser({ name, username, email, password }) {
 }
 
 async function updateUserProfile({ userId, location, bio, profilePicture }) {
-    const result = await pool.query(
-      `UPDATE users 
+  const result = await pool.query(
+    `UPDATE users 
        SET location = $1, bio = $2, profile_picture = COALESCE($3, profile_picture) 
        WHERE id = $4 RETURNING *`,
-      [location, bio, profilePicture, userId]
-    );
-    return result.rows[0];
-  }
+    [location, bio, profilePicture, userId]
+  );
+  return result.rows[0];
+}
 
-  async function getUserProfileWithStats(username) {
-    const userResult = await pool.query(
-      "SELECT id, name, username, bio, email, profile_picture FROM users WHERE username = $1",
-      [username]
-    );
-  
-    if (userResult.rows.length === 0) return null;
-  
-    const user = userResult.rows[0];
-  
-    const [followers, following] = await Promise.all([
-      pool.query("SELECT COUNT(*) FROM followers WHERE following_id = $1", [user.id]),
-      pool.query("SELECT COUNT(*) FROM followers WHERE follower_id = $1", [user.id]),
-    ]);
-  
-    return {
-      ...user,
-      followersCount: parseInt(followers.rows[0].count, 10),
-      followingCount: parseInt(following.rows[0].count, 10),
-    };
-  }
-  
+async function getUserProfile(userId) {
+  const result = await pool.query(
+    `SELECT id, name, username, email, location, bio, profile_picture 
+     FROM users 
+     WHERE id = $1`,
+    [userId]
+  );
+  return result.rows[0];
+}
+
+async function getUserProfileWithStats(username) {
+  const userResult = await pool.query(
+    "SELECT id, name, username, bio, email, profile_picture FROM users WHERE username = $1",
+    [username]
+  );
+
+  if (userResult.rows.length === 0) return null;
+
+  const user = userResult.rows[0];
+
+  const [followers, following] = await Promise.all([
+    pool.query("SELECT COUNT(*) FROM followers WHERE following_id = $1", [user.id]),
+    pool.query("SELECT COUNT(*) FROM followers WHERE follower_id = $1", [user.id]),
+  ]);
+
+  return {
+    ...user,
+    followersCount: parseInt(followers.rows[0].count, 10),
+    followingCount: parseInt(following.rows[0].count, 10),
+  };
+}
+
 
 module.exports = {
   findUserById,
   findUserByUsername,
   createUser,
   updateUserProfile,
+  getUserProfile,
   getUserProfileWithStats,
 };
