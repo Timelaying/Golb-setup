@@ -1,105 +1,76 @@
-require("dotenv").config();
-
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-const pool = require("../db");
 const authenticateUser = require("../middleware/AuthenticateMiddleware");
+
+const {
+  isFollowing,
+  followUser,
+  unfollowUser,
+  getFollowersForUser,
+} = require("../models/followers.model");
 
 // Follow a user
 router.post("/follow/:userId", authenticateUser, async (req, res) => {
-    const { userId } = req.params;
-    const followerId = req.user.id; // Authenticated user ID
+  const { userId } = req.params;
+  const followerId = req.user.id;
 
-    if (parseInt(userId) === followerId) {
-        return res.status(400).json({ message: "You cannot follow yourself." });
+  if (parseInt(userId) === followerId) {
+    return res.status(400).json({ message: "You cannot follow yourself." });
+  }
+
+  try {
+    const alreadyFollowing = await isFollowing(followerId, userId);
+    if (alreadyFollowing) {
+      return res.status(400).json({ message: "Already following this user." });
     }
 
-    try {
-        const existingFollow = await pool.query(
-            "SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2",
-            [followerId, userId]
-        );
-
-        if (existingFollow.rows.length > 0) {
-            return res.status(400).json({ message: "You are already following this user." });
-        }
-
-        await pool.query(
-            "INSERT INTO followers (follower_id, following_id) VALUES ($1, $2)",
-            [followerId, userId]
-        );
-
-        res.status(200).json({ message: "User followed successfully." });
-        console.log(req.user.id, req.params.userId);
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
+    await followUser(followerId, userId);
+    res.status(200).json({ message: "User followed successfully." });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 });
 
 // Unfollow a user
 router.delete("/unfollow/:userId", authenticateUser, async (req, res) => {
-    const { userId } = req.params;
-    const followerId = req.user.id;
+  const { userId } = req.params;
+  const followerId = req.user.id;
 
-    try {
-        const existingFollow = await pool.query(
-            "SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2",
-            [followerId, userId]
-        );
-
-        if (existingFollow.rows.length === 0) {
-            return res.status(400).json({ message: "You are not following this user." });
-        }
-
-        await pool.query(
-            "DELETE FROM followers WHERE follower_id = $1 AND following_id = $2",
-            [followerId, userId]
-        );
-
-        res.status(200).json({ message: "User unfollowed successfully." });
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
+  try {
+    const alreadyFollowing = await isFollowing(followerId, userId);
+    if (!alreadyFollowing) {
+      return res.status(400).json({ message: "You are not following this user." });
     }
+
+    await unfollowUser(followerId, userId);
+    res.status(200).json({ message: "User unfollowed successfully." });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 });
 
 // Get followers of a user
 router.get("/followers/:userId", async (req, res) => {
-    const { userId } = req.params;
-    try {
-        const followers = await pool.query(
-            "SELECT users.id, users.username, users.profile_picture FROM followers JOIN users ON followers.follower_id = users.id WHERE followers.following_id = $1",
-            [userId]
-        );
-        res.status(200).json(followers.rows);
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
+  const { userId } = req.params;
+  try {
+    const followers = await getFollowersForUser(userId);
+    res.status(200).json(followers);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 });
 
-// Get follow status (Check if user is following another user)
+// Check follow status
 router.get("/following/:userId", authenticateUser, async (req, res) => {
-    const { userId } = req.params;
-    const followerId = req.user.id; // The authenticated user
+  const { userId } = req.params;
+  const followerId = req.user.id;
 
-    try {
-        const following = await pool.query(
-            "SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2",
-            [followerId, userId]
-        );
-
-        if (following.rows.length > 0) {
-            return res.status(200).json({ isFollowing: true });
-        } else {
-            return res.status(200).json({ isFollowing: false });
-        }
-    } catch (error) {
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
+  try {
+    const following = await isFollowing(followerId, userId);
+    res.status(200).json({ isFollowing: following });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 });
-
 
 module.exports = router;
-
