@@ -9,10 +9,11 @@ async function getPostsByUser(userId, options = { orderBy: "created_at", sort: "
   return result.rows;
 }
 
-async function createPost(userId, title, content, image = null) {
+// Create a post
+async function createPost({ userId, title, content }) {
   const result = await pool.query(
-    `INSERT INTO posts (user_id, title, content, image) VALUES ($1, $2, $3, $4) RETURNING *`,
-    [userId, title, content, image]
+    "INSERT INTO posts (title, content, user_id) VALUES ($1, $2, $3) RETURNING *",
+    [title, content, userId]
   );
   return result.rows[0];
 }
