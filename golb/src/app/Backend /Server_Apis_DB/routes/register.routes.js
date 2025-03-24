@@ -1,13 +1,14 @@
 require("dotenv").config();
-
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+
+const { findUserByUsername } = require("../models/users.model");
+const { createUser } = require("../models/users.model");
 const pool = require("../db");
 
-// Email configuration using nodemailer
+// Setup email
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -16,7 +17,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// User registration route
+// ✅ Register endpoint
 router.post("/register", async (req, res) => {
   const { name, username, email, password } = req.body;
 
@@ -25,25 +26,24 @@ router.post("/register", async (req, res) => {
   }
 
   try {
-    // Check if the user already exists
+    // Check if email already exists
     const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
     if (userCheck.rows.length > 0) {
       return res.status(200).json({ message: "You are already registered!" });
     }
 
-    // Hash the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // 🔐 Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert the new user
-    const result = await pool.query(
-      "INSERT INTO users (name, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, name, username, email, created_at",
-      [name, username, email, hashedPassword]
-    );
+    // 👤 Create user using model
+    const newUser = await createUser({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+    });
 
-    const newUser = result.rows[0];
-
-    // Send welcome email
+    // 📧 Send welcome email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: newUser.email,
@@ -51,10 +51,8 @@ router.post("/register", async (req, res) => {
       text: `Hi ${newUser.name},\n\nThank you for registering on our platform. We are excited to have you on board!\n\nBest regards,\nYour Company`,
     };
 
-    transporter.sendMail(mailOptions, (error) => {
-      if (error) {
-        console.error("Error sending email:", error);
-      }
+    transporter.sendMail(mailOptions, (err) => {
+      if (err) console.error("Email sending failed:", err.message);
     });
 
     res.status(201).json({
@@ -69,7 +67,5 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ error: "Failed to register user." });
   }
 });
-
-
 
 module.exports = router;
