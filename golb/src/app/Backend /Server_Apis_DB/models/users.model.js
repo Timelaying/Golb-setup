@@ -72,6 +72,11 @@ async function searchUsersByUsername(query) {
   return result.rows;
 }
 
+// Get username by userId (for profile image upload)
+async function getUsernameById(userId) {
+  const result = await pool.query("SELECT username FROM users WHERE id = $1", [userId]);
+  return result.rows[0]?.username;
+}
 
 
 module.exports = {
@@ -82,4 +87,5 @@ module.exports = {
   getUserProfile,
   getUserProfileWithStats,
   searchUsersByUsername,
+  getUsernameById,
 };
