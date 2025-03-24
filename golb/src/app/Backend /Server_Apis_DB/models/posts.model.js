@@ -1,5 +1,14 @@
 const pool = require("../db");
 
+
+async function getUserPosts(userId) {
+  const result = await pool.query(
+    "SELECT id, title, content, image, created_at FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
+    [userId]
+  );
+  return result.rows;
+}
+
 async function getPostsByUser(userId, options = { orderBy: "created_at", sort: "DESC" }) {
   const { orderBy, sort } = options;
   const result = await pool.query(
@@ -19,6 +28,7 @@ async function createPost({ userId, title, content }) {
 }
 
 module.exports = {
+  getUserPosts,
   getPostsByUser,
   createPost,
 };
