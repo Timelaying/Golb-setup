@@ -43,7 +43,7 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
 
-    // 📧 Send welcome email
+    // 📧 Send welcome email //todo- add to utils
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: newUser.email,

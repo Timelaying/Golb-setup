@@ -64,6 +64,15 @@ async function getUserProfileWithStats(username) {
   };
 }
 
+async function searchUsersByUsername(query) {
+  const result = await pool.query(
+    "SELECT id, name, username, profile_picture FROM users WHERE username ILIKE $1",
+    [`%${query}%`]
+  );
+  return result.rows;
+}
+
+
 
 module.exports = {
   findUserById,
@@ -72,4 +81,5 @@ module.exports = {
   updateUserProfile,
   getUserProfile,
   getUserProfileWithStats,
+  searchUsersByUsername,
 };
