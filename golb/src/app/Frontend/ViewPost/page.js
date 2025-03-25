@@ -9,28 +9,29 @@ import useCurrentUser from "@/app/utils/useCurrentUser";
 
 export default function PostsList() {
   const currentUser = useCurrentUser();
+
   const [posts, setPosts] = useState([]);
   const [postCount, setPostCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [expandedPostId, setExpandedPostId] = useState(null);
+
   const [comments, setComments] = useState({});
   const [replyText, setReplyText] = useState({});
-  const [editText, setEditText] = useState({});
   const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editText, setEditText] = useState({});
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const accessToken = localStorage.getItem("accessToken");
-
+        const token = localStorage.getItem("accessToken");
         const response = await axios.get("http://localhost:5000/api/viewposts", {
-          headers: { Authorization: `Bearer ${accessToken}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         setPosts(response.data.posts);
         setPostCount(response.data.count);
-      } catch (error) {
-        console.error("Error fetching posts:", error.message);
+      } catch (err) {
+        console.error("Error fetching posts:", err.message);
       } finally {
         setLoading(false);
       }
@@ -41,30 +42,34 @@ export default function PostsList() {
 
   const fetchComments = async (postId) => {
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axios.get(`http://localhost:5000/api/viewcomments/${postId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       setComments((prev) => ({ ...prev, [postId]: response.data.comments }));
-    } catch (error) {
-      console.error("Error fetching comments:", error.message);
+    } catch (err) {
+      console.error("Error fetching comments:", err.message);
     }
   };
 
   const toggleComments = (postId) => {
-    if (expandedPostId === postId) {
-      setExpandedPostId(null);
-    } else {
-      setExpandedPostId(postId);
-      if (!comments[postId]) fetchComments(postId);
+    const alreadyExpanded = expandedPostId === postId;
+    setExpandedPostId(alreadyExpanded ? null : postId);
+
+    if (!alreadyExpanded && !comments[postId]) {
+      fetchComments(postId);
     }
   };
 
-  const handleReplyChange = (commentId, text) => {
-    setReplyText((prev) => ({ ...prev, [commentId]: text }));
+  const handleReplyChange = (commentId, value) => {
+    setReplyText((prev) => ({ ...prev, [commentId]: value }));
   };
 
   const submitReply = async (postId, parentCommentId) => {
+    const token = localStorage.getItem("accessToken");
     const content = replyText[parentCommentId];
+
     if (!content || !currentUser) return;
 
     try {
@@ -76,24 +81,24 @@ export default function PostsList() {
           content,
           parentCommentId,
         },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setReplyText({});
       fetchComments(postId);
-    } catch (error) {
-      console.error("Error submitting reply:", error.message);
+    } catch (err) {
+      console.error("Error submitting reply:", err.message);
     }
   };
 
   const startEdit = (commentId, content) => {
     setEditingCommentId(commentId);
-    setEditText({ ...editText, [commentId]: content });
+    setEditText((prev) => ({ ...prev, [commentId]: content }));
   };
 
   const saveEdit = async (commentId, postId) => {
+    const token = localStorage.getItem("accessToken");
+
     try {
       await axios.put(
         `http://localhost:5000/api/comment/${commentId}`,
@@ -101,33 +106,34 @@ export default function PostsList() {
           userId: currentUser.id,
           content: editText[commentId],
         },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setEditingCommentId(null);
       fetchComments(postId);
-    } catch (error) {
-      console.error("Error saving edited comment:", error.message);
+    } catch (err) {
+      console.error("Error saving edited comment:", err.message);
     }
   };
 
   const deleteComment = async (commentId, postId) => {
+    const token = localStorage.getItem("accessToken");
+
     try {
       await axios.delete(`http://localhost:5000/api/comment/${commentId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       fetchComments(postId);
-    } catch (error) {
-      console.error("Error deleting comment:", error.message);
+    } catch (err) {
+      console.error("Error deleting comment:", err.message);
     }
   };
 
   const renderComments = (postId, commentsList) =>
     commentsList.map((comment) => (
       <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
+        {/* Author Info */}
         <div className="flex items-center space-x-2 mb-1">
           <img
             src={
@@ -146,33 +152,34 @@ export default function PostsList() {
           </div>
         </div>
 
+        {/* Content / Edit Field */}
         {editingCommentId === comment.id ? (
           <div>
             <textarea
               value={editText[comment.id]}
-              onChange={(e) =>
-                setEditText((prev) => ({ ...prev, [comment.id]: e.target.value }))
-              }
+              onChange={(e) => setEditText((prev) => ({ ...prev, [comment.id]: e.target.value }))}
               className="w-full border p-1 mb-2"
             />
-            <button
-              onClick={() => saveEdit(comment.id, postId)}
-              className="bg-green-600 text-white px-2 py-1 mr-2 rounded"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => setEditingCommentId(null)}
-              className="bg-gray-500 text-white px-2 py-1 rounded"
-            >
-              Cancel
-            </button>
+            <div className="space-x-2">
+              <button
+                onClick={() => saveEdit(comment.id, postId)}
+                className="bg-green-600 text-white px-2 py-1 rounded"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setEditingCommentId(null)}
+                className="bg-gray-500 text-white px-2 py-1 rounded"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         ) : (
           <p className="text-gray-800">{comment.content}</p>
         )}
 
-        {/* Owner controls */}
+        {/* Actions */}
         {currentUser && currentUser.id === comment.user_id && (
           <div className="mt-1 text-sm space-x-2">
             <button
@@ -190,7 +197,7 @@ export default function PostsList() {
           </div>
         )}
 
-        {/* Reply input */}
+        {/* Reply Field */}
         <div className="ml-4 mt-2">
           <input
             type="text"
@@ -207,8 +214,8 @@ export default function PostsList() {
           </button>
         </div>
 
-        {/* Nested replies */}
-        {comment.replies && comment.replies.length > 0 && (
+        {/* Replies */}
+        {comment.replies?.length > 0 && (
           <div className="ml-6 border-l pl-2 mt-2">
             {renderComments(postId, comment.replies)}
           </div>
@@ -221,8 +228,7 @@ export default function PostsList() {
       <div className="max-w-3xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-semibold text-center mb-4">My Posts</h1>
         <p className="text-gray-400 text-center mb-6">
-          You have created{" "}
-          <span className="font-bold text-white">{postCount}</span> post(s).
+          You have created <span className="font-bold text-white">{postCount}</span> post(s).
         </p>
 
         {loading ? (
@@ -232,9 +238,7 @@ export default function PostsList() {
             <Skeleton className="h-4 w-2/3 mx-auto" />
           </div>
         ) : postCount === 0 ? (
-          <p className="text-center text-gray-400">
-            You haven’t created any posts yet.
-          </p>
+          <p className="text-center text-gray-400">You haven’t created any posts yet.</p>
         ) : (
           <ul className="space-y-5">
             {posts.map((post) => (
@@ -242,9 +246,7 @@ export default function PostsList() {
                 key={post.id}
                 className="p-4 border border-gray-700 rounded-lg bg-gray-700 shadow"
               >
-                <h2 className="text-xl font-semibold text-white">
-                  {post.title}
-                </h2>
+                <h2 className="text-xl font-semibold text-white">{post.title}</h2>
                 <p className="text-gray-300">{post.content}</p>
                 <p className="text-sm text-gray-500 mt-2">
                   Created on: {new Date(post.created_at).toLocaleString()}
@@ -263,7 +265,7 @@ export default function PostsList() {
                 {expandedPostId === post.id && (
                   <div className="mt-4 bg-gray-600 p-3 rounded">
                     <h3 className="text-white font-semibold">Comments</h3>
-                    {comments[post.id] && comments[post.id].length > 0 ? (
+                    {comments[post.id]?.length > 0 ? (
                       renderComments(post.id, comments[post.id])
                     ) : (
                       <p className="text-gray-300">No comments yet.</p>
