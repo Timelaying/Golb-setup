@@ -8,24 +8,27 @@ import { Button } from "@/components/ui/button";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setLoading(true);
+
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/forgot-password",
-        { email }
-      );
-      alert(response.data.message);
+      const response = await axios.post("http://localhost:5000/api/forgot-password", { email });
+      setMessage(response.data.message || "Reset link sent!");
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.error || "Failed to send reset link.";
-      alert(errorMessage);
+      const errorMessage = error.response?.data?.error || "Failed to send reset link.";
+      setMessage("❌ " + errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
       <div className="max-w-md w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
         <h1 className="text-3xl font-bold text-center text-gray-50">
           Forgot Your Password?
@@ -33,6 +36,16 @@ export default function ForgotPasswordForm() {
         <p className="text-sm text-gray-400 text-center">
           Enter your email, and we’ll send you a password reset link.
         </p>
+
+        {message && (
+          <p
+            className={`text-sm text-center ${
+              message.startsWith("❌") ? "text-red-400" : "text-green-400"
+            }`}
+          >
+            {message}
+          </p>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -52,9 +65,10 @@ export default function ForgotPasswordForm() {
           </div>
           <Button
             type="submit"
+            disabled={loading}
             className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300"
           >
-            Send Reset Link
+            {loading ? "Sending..." : "Send Reset Link"}
           </Button>
         </form>
 
