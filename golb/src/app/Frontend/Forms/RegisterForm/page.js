@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,9 @@ const formSchema = z.object({
 });
 
 export default function RegisterForm() {
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState("");
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,29 +39,37 @@ export default function RegisterForm() {
   });
 
   const onSubmit = async (data) => {
-    try {
-      const response = await axios.post("http://localhost:5000/api/register", {
-        name: data.name,
-        username: data.username,
-        email: data.email,
-        password: data.password,
-      });
+    setLoading(true);
+    setFeedback("");
 
-      alert("Registration successful! Welcome, " + (response.data.name || "user"));
+    try {
+      const response = await axios.post("http://localhost:5000/api/register", data);
+
+      setFeedback("✅ Registration successful! You can now log in.");
       form.reset();
     } catch (error) {
-      console.error("Registration failed:", error.response?.data || error.message);
-      alert("Registration failed: " + (error.response?.data?.error || error.message));
+      const errMsg = error.response?.data?.error || error.message || "Registration failed.";
+      setFeedback("❌ " + errMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
       <div className="max-w-lg w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
         <h1 className="text-3xl font-bold text-center text-gray-50">Create Your Account</h1>
-        <p className="text-sm text-gray-400 text-center">
-          Enter your details to get started!
-        </p>
+        <p className="text-sm text-gray-400 text-center">Enter your details to get started!</p>
+
+        {feedback && (
+          <p
+            className={`text-sm text-center ${
+              feedback.startsWith("✅") ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {feedback}
+          </p>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -140,8 +152,12 @@ export default function RegisterForm() {
             />
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300">
-              Register
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300"
+            >
+              {loading ? "Registering..." : "Register"}
             </Button>
           </form>
         </Form>
