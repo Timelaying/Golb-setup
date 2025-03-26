@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
 import axios from "axios";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,6 +18,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import PageWrapper from "@/app/components/PageWrapper";
+import CardContainer from "@/app/components/CardContainer";
+import PageHeader from "@/app/components/PageHeader";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -48,25 +52,31 @@ export default function LoginForm() {
       localStorage.setItem("accessToken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
-      setMessage("Login successful! Redirecting...");
+      setMessage("✅ Login successful! Redirecting...");
       router.push("/Frontend/Feeds");
     } catch (err) {
-      setMessage(err.response?.data?.error || "Login failed.");
+      setMessage("❌ " + (err.response?.data?.error || "Login failed."));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
-      <div className="max-w-md w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
-        <h1 className="text-2xl font-bold text-center">Welcome Back</h1>
+    <PageWrapper>
+      <CardContainer className="max-w-md space-y-6">
+        <PageHeader title="Welcome Back" />
         <p className="text-sm text-gray-400 text-center">
           Enter your credentials to access your account.
         </p>
 
         {message && (
-          <div className="text-sm text-center text-red-500">{message}</div>
+          <p
+            className={`text-sm text-center ${
+              message.startsWith("✅") ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {message}
+          </p>
         )}
 
         <Form {...form}>
@@ -116,7 +126,7 @@ export default function LoginForm() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300 transition"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300"
             >
               {loading ? "Logging in..." : "Login"}
             </Button>
@@ -131,7 +141,7 @@ export default function LoginForm() {
             </Button>
           </Link>
         </div>
-      </div>
-    </div>
+      </CardContainer>
+    </PageWrapper>
   );
 }
