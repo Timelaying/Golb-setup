@@ -5,6 +5,9 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import PageWrapper from "@/components/PageWrapper";
+import CardContainer from "@/components/CardContainer";
+import PageHeader from "@/components/PageHeader";
 
 export default function ResetPasswordForm() {
   const [token, setToken] = useState("");
@@ -42,9 +45,9 @@ export default function ResetPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
-      <div className="max-w-md w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-gray-50">Reset Your Password</h1>
+    <PageWrapper>
+      <CardContainer className="max-w-md space-y-6">
+        <PageHeader title="Reset Your Password" />
         <p className="text-sm text-gray-400 text-center">
           Enter the reset token and your new password.
         </p>
@@ -100,7 +103,7 @@ export default function ResetPasswordForm() {
             {loading ? "Resetting..." : "Reset Password"}
           </Button>
         </form>
-      </div>
-    </div>
+      </CardContainer>
+    </PageWrapper>
   );
 }
