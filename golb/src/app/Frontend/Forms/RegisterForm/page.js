@@ -16,6 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import PageWrapper from "@/components/PageWrapper";
+import CardContainer from "@/components/CardContainer";
+import PageHeader from "@/components/PageHeader";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters long." }),
@@ -44,7 +47,6 @@ export default function RegisterForm() {
 
     try {
       const response = await axios.post("http://localhost:5000/api/register", data);
-
       setFeedback("✅ Registration successful! You can now log in.");
       form.reset();
     } catch (error) {
@@ -56,10 +58,12 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
-      <div className="max-w-lg w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-gray-50">Create Your Account</h1>
-        <p className="text-sm text-gray-400 text-center">Enter your details to get started!</p>
+    <PageWrapper>
+      <CardContainer className="max-w-lg space-y-6">
+        <PageHeader title="Create Your Account" />
+        <p className="text-sm text-gray-400 text-center">
+          Enter your details to get started!
+        </p>
 
         {feedback && (
           <p
@@ -73,7 +77,6 @@ export default function RegisterForm() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Name Field */}
             <FormField
               control={form.control}
               name="name"
@@ -92,7 +95,6 @@ export default function RegisterForm() {
               )}
             />
 
-            {/* Username Field */}
             <FormField
               control={form.control}
               name="username"
@@ -111,7 +113,6 @@ export default function RegisterForm() {
               )}
             />
 
-            {/* Email Field */}
             <FormField
               control={form.control}
               name="email"
@@ -131,7 +132,6 @@ export default function RegisterForm() {
               )}
             />
 
-            {/* Password Field */}
             <FormField
               control={form.control}
               name="password"
@@ -151,7 +151,6 @@ export default function RegisterForm() {
               )}
             />
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={loading}
@@ -161,7 +160,7 @@ export default function RegisterForm() {
             </Button>
           </form>
         </Form>
-      </div>
-    </div>
+      </CardContainer>
+    </PageWrapper>
   );
 }
