@@ -5,6 +5,9 @@ import { useState } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import PageWrapper from "@/components/PageWrapper";
+import CardContainer from "@/components/CardContainer";
+import PageHeader from "@/components/PageHeader";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -28,11 +31,10 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
-      <div className="max-w-md w-full bg-gray-800 shadow-lg rounded-lg p-8 space-y-6">
-        <h1 className="text-3xl font-bold text-center text-gray-50">
-          Forgot Your Password?
-        </h1>
+    <PageWrapper>
+      <CardContainer className="max-w-md space-y-6">
+        <PageHeader title="Forgot Your Password?" />
+
         <p className="text-sm text-gray-400 text-center">
           Enter your email, and we’ll send you a password reset link.
         </p>
@@ -47,7 +49,6 @@ export default function ForgotPasswordForm() {
           </p>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm text-gray-400">
@@ -72,7 +73,6 @@ export default function ForgotPasswordForm() {
           </Button>
         </form>
 
-        {/* Reset Password Section */}
         <div className="space-y-4">
           <h2 className="text-lg text-center font-medium text-gray-50">
             Got the Reset Link?
@@ -83,7 +83,7 @@ export default function ForgotPasswordForm() {
             </Button>
           </Link>
         </div>
-      </div>
-    </div>
+      </CardContainer>
+    </PageWrapper>
   );
 }
