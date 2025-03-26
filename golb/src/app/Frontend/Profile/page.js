@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import PageWrapper from "@/app/components/PageWrapper";
+import CardContainer from "@/app/components/CardContainer";
+import PageHeader from "@/app/components/PageHeader";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -15,7 +18,6 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
-
   const { register, handleSubmit } = useForm();
 
   useEffect(() => {
@@ -43,7 +45,6 @@ export default function ProfilePage() {
   const onSubmit = async (data) => {
     try {
       const token = localStorage.getItem("accessToken");
-
       const formData = new FormData();
       formData.append("userId", profile.id);
       formData.append("location", data.location);
@@ -59,13 +60,13 @@ export default function ProfilePage() {
         },
       });
 
-      // Update with fresh values & bust image cache
       setProfile((prev) => ({
         ...prev,
         location: data.location,
         bio: data.bio,
         profile_picture: `${res.data.profile_picture}?t=${Date.now()}`,
       }));
+
       setIsEditing(false);
     } catch (err) {
       console.error("Error updating profile:", err);
@@ -78,13 +79,13 @@ export default function ProfilePage() {
   if (!profile) return <p className="text-center text-gray-400">No profile data available.</p>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4 py-8">
-      <div className="w-full max-w-2xl bg-gray-800 rounded-lg shadow-md p-6">
-        <h1 className="text-3xl font-semibold text-center mb-6">Profile</h1>
+    <PageWrapper>
+      <CardContainer>
+        <PageHeader title="Profile" />
 
         {!isEditing ? (
           <div className="space-y-4">
-            {/* Avatar and Info */}
+            {/* Avatar */}
             <div className="text-center">
               <img
                 src={
@@ -99,7 +100,7 @@ export default function ProfilePage() {
               <p className="text-gray-400">@{profile.username}</p>
             </div>
 
-            {/* About */}
+            {/* About Me */}
             <div>
               <h3 className="text-lg font-semibold">About Me</h3>
               <p className="text-gray-400">{profile.bio || "No bio yet."}</p>
@@ -121,19 +122,16 @@ export default function ProfilePage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" encType="multipart/form-data">
-            {/* Location */}
             <div>
               <label className="block text-sm mb-1 text-gray-300">Location</label>
               <Input {...register("location")} defaultValue={profile.location} className="text-black" />
             </div>
 
-            {/* Bio */}
             <div>
               <label className="block text-sm mb-1 text-gray-300">Bio</label>
               <Textarea {...register("bio")} defaultValue={profile.bio} rows={3} className="text-black" />
             </div>
 
-            {/* Profile Picture */}
             <div>
               <label className="block text-sm mb-1 text-gray-300">Profile Picture</label>
               <Input type="file" {...register("profile_picture")} className="text-black" />
@@ -150,6 +148,7 @@ export default function ProfilePage() {
           </form>
         )}
 
+        {/* Navigation */}
         <div className="flex justify-between mt-6">
           <Link href="/Frontend/Feeds">
             <Button className="bg-gray-700 hover:bg-gray-600">⬅ Back to Feeds</Button>
@@ -158,7 +157,7 @@ export default function ProfilePage() {
             <Button className="bg-blue-600 hover:bg-blue-700">📄 View Posts</Button>
           </Link>
         </div>
-      </div>
-    </div>
+      </CardContainer>
+    </PageWrapper>
   );
 }
