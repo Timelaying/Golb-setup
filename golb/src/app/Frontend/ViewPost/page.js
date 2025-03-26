@@ -6,6 +6,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useCurrentUser from "@/app/utils/useCurrentUser";
+import PageWrapper from "@/app/components/PageWrapper";
+import CardContainer from "@/app/components/CardContainer";
+import PageHeader from "@/app/components/PageHeader";
 
 export default function PostsList() {
   const currentUser = useCurrentUser();
@@ -14,7 +17,6 @@ export default function PostsList() {
   const [postCount, setPostCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [expandedPostId, setExpandedPostId] = useState(null);
-
   const [comments, setComments] = useState({});
   const [replyText, setReplyText] = useState({});
   const [editingCommentId, setEditingCommentId] = useState(null);
@@ -27,7 +29,6 @@ export default function PostsList() {
         const response = await axios.get("http://localhost:5000/api/viewposts", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         setPosts(response.data.posts);
         setPostCount(response.data.count);
       } catch (err) {
@@ -36,7 +37,6 @@ export default function PostsList() {
         setLoading(false);
       }
     };
-
     fetchPosts();
   }, []);
 
@@ -46,7 +46,6 @@ export default function PostsList() {
       const response = await axios.get(`http://localhost:5000/api/viewcomments/${postId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setComments((prev) => ({ ...prev, [postId]: response.data.comments }));
     } catch (err) {
       console.error("Error fetching comments:", err.message);
@@ -56,10 +55,7 @@ export default function PostsList() {
   const toggleComments = (postId) => {
     const alreadyExpanded = expandedPostId === postId;
     setExpandedPostId(alreadyExpanded ? null : postId);
-
-    if (!alreadyExpanded && !comments[postId]) {
-      fetchComments(postId);
-    }
+    if (!alreadyExpanded && !comments[postId]) fetchComments(postId);
   };
 
   const handleReplyChange = (commentId, value) => {
@@ -69,21 +65,14 @@ export default function PostsList() {
   const submitReply = async (postId, parentCommentId) => {
     const token = localStorage.getItem("accessToken");
     const content = replyText[parentCommentId];
-
     if (!content || !currentUser) return;
-
     try {
-      await axios.post(
-        "http://localhost:5000/api/addcomment",
-        {
-          userId: currentUser.id,
-          postId,
-          content,
-          parentCommentId,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      await axios.post("http://localhost:5000/api/addcomment", {
+        userId: currentUser.id,
+        postId,
+        content,
+        parentCommentId,
+      }, { headers: { Authorization: `Bearer ${token}` } });
       setReplyText({});
       fetchComments(postId);
     } catch (err) {
@@ -98,17 +87,11 @@ export default function PostsList() {
 
   const saveEdit = async (commentId, postId) => {
     const token = localStorage.getItem("accessToken");
-
     try {
-      await axios.put(
-        `http://localhost:5000/api/comment/${commentId}`,
-        {
-          userId: currentUser.id,
-          content: editText[commentId],
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      await axios.put(`http://localhost:5000/api/comment/${commentId}`, {
+        userId: currentUser.id,
+        content: editText[commentId],
+      }, { headers: { Authorization: `Bearer ${token}` } });
       setEditingCommentId(null);
       fetchComments(postId);
     } catch (err) {
@@ -118,12 +101,10 @@ export default function PostsList() {
 
   const deleteComment = async (commentId, postId) => {
     const token = localStorage.getItem("accessToken");
-
     try {
       await axios.delete(`http://localhost:5000/api/comment/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       fetchComments(postId);
     } catch (err) {
       console.error("Error deleting comment:", err.message);
@@ -133,14 +114,9 @@ export default function PostsList() {
   const renderComments = (postId, commentsList) =>
     commentsList.map((comment) => (
       <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
-        {/* Author Info */}
         <div className="flex items-center space-x-2 mb-1">
           <img
-            src={
-              comment.profile_picture
-                ? `http://localhost:5000/uploads/users/${comment.username}/profile.jpg`
-                : "/default-avatar.png"
-            }
+            src={comment.profile_picture ? `http://localhost:5000/uploads/users/${comment.username}/profile.jpg` : "/default-avatar.png"}
             alt="avatar"
             className="w-8 h-8 rounded-full"
           />
@@ -151,8 +127,6 @@ export default function PostsList() {
             </span>
           </div>
         </div>
-
-        {/* Content / Edit Field */}
         {editingCommentId === comment.id ? (
           <div>
             <textarea
@@ -161,43 +135,19 @@ export default function PostsList() {
               className="w-full border p-1 mb-2"
             />
             <div className="space-x-2">
-              <button
-                onClick={() => saveEdit(comment.id, postId)}
-                className="bg-green-600 text-white px-2 py-1 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setEditingCommentId(null)}
-                className="bg-gray-500 text-white px-2 py-1 rounded"
-              >
-                Cancel
-              </button>
+              <button onClick={() => saveEdit(comment.id, postId)} className="bg-green-600 text-white px-2 py-1 rounded">Save</button>
+              <button onClick={() => setEditingCommentId(null)} className="bg-gray-500 text-white px-2 py-1 rounded">Cancel</button>
             </div>
           </div>
         ) : (
           <p className="text-gray-800">{comment.content}</p>
         )}
-
-        {/* Actions */}
-        {currentUser && currentUser.id === comment.user_id && (
+        {currentUser?.id === comment.user_id && (
           <div className="mt-1 text-sm space-x-2">
-            <button
-              onClick={() => startEdit(comment.id, comment.content)}
-              className="text-blue-600 hover:underline"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => deleteComment(comment.id, postId)}
-              className="text-red-600 hover:underline"
-            >
-              Delete
-            </button>
+            <button onClick={() => startEdit(comment.id, comment.content)} className="text-blue-600 hover:underline">Edit</button>
+            <button onClick={() => deleteComment(comment.id, postId)} className="text-red-600 hover:underline">Delete</button>
           </div>
         )}
-
-        {/* Reply Field */}
         <div className="ml-4 mt-2">
           <input
             type="text"
@@ -206,15 +156,8 @@ export default function PostsList() {
             className="border p-1 w-full"
             placeholder="Reply..."
           />
-          <button
-            onClick={() => submitReply(postId, comment.id)}
-            className="bg-blue-500 text-white px-2 py-1 mt-1"
-          >
-            Reply
-          </button>
+          <button onClick={() => submitReply(postId, comment.id)} className="bg-blue-500 text-white px-2 py-1 mt-1">Reply</button>
         </div>
-
-        {/* Replies */}
         {comment.replies?.length > 0 && (
           <div className="ml-6 border-l pl-2 mt-2">
             {renderComments(postId, comment.replies)}
@@ -224,9 +167,9 @@ export default function PostsList() {
     ));
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 px-4">
-      <div className="max-w-3xl w-full bg-gray-800 p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-semibold text-center mb-4">My Posts</h1>
+    <PageWrapper>
+      <CardContainer>
+        <PageHeader title="My Posts" />
         <p className="text-gray-400 text-center mb-6">
           You have created <span className="font-bold text-white">{postCount}</span> post(s).
         </p>
@@ -242,10 +185,7 @@ export default function PostsList() {
         ) : (
           <ul className="space-y-5">
             {posts.map((post) => (
-              <li
-                key={post.id}
-                className="p-4 border border-gray-700 rounded-lg bg-gray-700 shadow"
-              >
+              <li key={post.id} className="p-4 border border-gray-700 rounded-lg bg-gray-700 shadow">
                 <h2 className="text-xl font-semibold text-white">{post.title}</h2>
                 <p className="text-gray-300">{post.content}</p>
                 <p className="text-sm text-gray-500 mt-2">
@@ -254,14 +194,9 @@ export default function PostsList() {
                 <p className="text-gray-400">
                   👍 {post.like_count} Likes | 💬 {post.comment_count} Comments
                 </p>
-
-                <button
-                  onClick={() => toggleComments(post.id)}
-                  className="text-blue-400 hover:underline mt-2"
-                >
+                <button onClick={() => toggleComments(post.id)} className="text-blue-400 hover:underline mt-2">
                   {expandedPostId === post.id ? "Hide Comments" : "View Comments"}
                 </button>
-
                 {expandedPostId === post.id && (
                   <div className="mt-4 bg-gray-600 p-3 rounded">
                     <h3 className="text-white font-semibold">Comments</h3>
@@ -284,7 +219,7 @@ export default function PostsList() {
             </Button>
           </Link>
         </div>
-      </div>
-    </div>
+      </CardContainer>
+    </PageWrapper>
   );
 }
