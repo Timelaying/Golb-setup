@@ -77,7 +77,7 @@ export default function FeedPage() {
       <main className="flex-1 p-4 overflow-y-auto">
         {feed.length > 0 ? (
           feed.map((post) => (
-            <CardContainer key={post.id} className="mb-4">
+            <CardContainer key={post.id} className="max-w-5xl">
               <h2 className="text-lg font-semibold">{post.title}</h2>
               <p className="text-sm text-gray-400">{post.content}</p>
               <div className="flex items-center space-x-3 mt-2 mb-1">
