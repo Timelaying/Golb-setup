@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 import PostCard from "@/app/Components/PostCard";
 import FollowButton from "@/app/Components/FollowButton";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import PageWrapper from "@/app/components/PageWrapper";
+import CardContainer from "@/app/components/CardContainer";
+import PageHeader from "@/app/components/PageHeader";
 
 export default function ProfilePage() {
   const pathname = usePathname();
@@ -52,8 +55,8 @@ export default function ProfilePage() {
   if (!profile) return <p className="text-center text-gray-400 mt-10">No profile data found.</p>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4 py-8 flex justify-center">
-      <div className="w-full max-w-2xl bg-gray-800 rounded-lg shadow-md p-6">
+    <PageWrapper>
+      <CardContainer>
         {/* Profile Header */}
         <div className="text-center">
           <img
@@ -65,12 +68,11 @@ export default function ProfilePage() {
             alt={`${profile.username}'s avatar`}
             className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
           />
-          <h1 className="text-3xl font-bold">{profile.name}</h1>
+          <PageHeader title={profile.name} />
           <p className="text-gray-400 text-sm">@{profile.username}</p>
           <p className="text-gray-300 mt-2">{profile.bio || "No bio available."}</p>
           <p className="text-gray-400 text-sm">📧 {profile.email}</p>
 
-          {/* Follow Button */}
           {currentUser && currentUser.id !== profile.id && (
             <div className="mt-4">
               <FollowButton userId={profile.id} currentUserId={currentUser.id} />
@@ -88,7 +90,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Posts Section */}
+        {/* Posts */}
         <div className="mt-8">
           <h2 className="text-xl font-semibold text-gray-200 mb-4">Posts</h2>
           {profile.posts.length === 0 ? (
@@ -108,7 +110,7 @@ export default function ProfilePage() {
             <Button className="bg-gray-700 hover:bg-gray-600">⬅ Back to Feeds</Button>
           </Link>
         </div>
-      </div>
-    </div>
+      </CardContainer>
+    </PageWrapper>
   );
 }
