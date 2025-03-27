@@ -1,66 +1,65 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import useCurrentUser from "@/app/utils/useCurrentUser";
 
-const FollowButton = ({ userId }) => {
+export default function FollowButton({ userId }) {
+  const currentUser = useCurrentUser();
   const [isFollowing, setIsFollowing] = useState(false);
-  const accessToken = localStorage.getItem("accessToken");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkFollowStatus = async () => {
-      if (!accessToken) {
-        console.error("❌ No access token found. Please log in.");
-        return;
-      }
-
+    const fetchFollowStatus = async () => {
+      if (!currentUser?.id) return;
       try {
-        const response = await axios.get(
+        const res = await axios.get(
           `http://localhost:5000/api/following/${userId}`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
         );
-
-        setIsFollowing(response.data.isFollowing); // ✅ Use the new API response
-      } catch (error) {
-        console.error("❌ Error checking follow status:", error.response?.data || error.message);
+        setIsFollowing(res.data.isFollowing);
+      } catch (err) {
+        console.error("Error fetching follow status:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    checkFollowStatus();
-  }, [userId, accessToken]);
+    fetchFollowStatus();
+  }, [userId, currentUser?.id]);
 
-  const handleFollow = async () => {
-    if (!accessToken) {
-      console.error("❌ No access token found. Please log in.");
-      return;
-    }
-  
+  const handleToggleFollow = async () => {
+    if (!currentUser?.id) return;
     try {
       const endpoint = isFollowing ? `/unfollow/${userId}` : `/follow/${userId}`;
-      const method = isFollowing ? "delete" : "post"; // ✅ Use DELETE for unfollow
-  
-      const response = await axios({
+      const method = isFollowing ? "delete" : "post";
+
+      await axios({
         method,
         url: `http://localhost:5000/api${endpoint}`,
-        headers: { Authorization: `Bearer ${accessToken}` },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
-  
-      console.log("✅ Follow action successful:", response.data);
-      setIsFollowing(!isFollowing); // ✅ Toggle button state
-    } catch (error) {
-      console.error("❌ Error updating follow status:", error.response?.data || error.message);
+
+      setIsFollowing((prev) => !prev);
+    } catch (err) {
+      console.error("Follow/unfollow failed:", err);
     }
   };
-  
+
+  if (loading || currentUser?.id === userId) return null;
 
   return (
     <button
-      onClick={handleFollow}
-      className={`px-4 py-2 rounded-lg text-white transition-all duration-300 ${
-        isFollowing ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
+      onClick={handleToggleFollow}
+      className={`mt-2 px-4 py-1 rounded text-white text-sm transition-all duration-200 ${
+        isFollowing ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
       }`}
     >
       {isFollowing ? "Unfollow" : "Follow"}
     </button>
   );
-};
-
-export default FollowButton;
+}
