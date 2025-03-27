@@ -39,9 +39,10 @@ export default function FeedPage() {
       <header className="w-full max-w-5xl mx-auto px-6 py-4 bg-gray-800 shadow-md rounded-lg flex justify-between items-center relative z-20">
         <h1 className="text-2xl font-bold">Feed</h1>
 
-        <div className="relative">
+        {/* Add NotificationsDropdown here */}
+        {/*<div className="relative">
           <NotificationsDropdown />
-        </div>
+        </div>*/}
 
         <div className="relative">
           <button
