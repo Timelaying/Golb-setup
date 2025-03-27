@@ -5,9 +5,9 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import PageWrapper from "@/components/PageWrapper";
-import CardContainer from "@/components/CardContainer";
-import PageHeader from "@/components/PageHeader";
+import PageWrapper from "@/app/components/PageWrapper";
+import CardContainer from "@/app/components/CardContainer";
+import PageHeader from "@/app/components/PageHeader";
 
 export default function ResetPasswordForm() {
   const [token, setToken] = useState("");
@@ -63,7 +63,6 @@ export default function ResetPasswordForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Reset Token */}
           <div>
             <label htmlFor="token" className="block text-sm text-gray-400">
               Reset Token
@@ -79,7 +78,6 @@ export default function ResetPasswordForm() {
             />
           </div>
 
-          {/* New Password */}
           <div>
             <label htmlFor="newPassword" className="block text-sm text-gray-400">
               New Password
