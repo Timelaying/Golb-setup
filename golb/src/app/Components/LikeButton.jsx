@@ -1,4 +1,7 @@
-// Components/LikeButton.js
+// components/LikeButton.jsx
+
+"use client";
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useCurrentUser from "../utils/useCurrentUser";
@@ -48,8 +51,8 @@ const LikeButton = ({ postId }) => {
   return (
     <button
       onClick={handleLike}
-      className={`px-4 py-2 rounded-md transition ${
-        liked ? "bg-red-500 text-white" : "bg-gray-300 text-black"
+      className={`px-4 py-2 rounded-md transition duration-300 text-sm font-medium shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+        liked ? "bg-red-500 text-white hover:bg-red-600" : "bg-gray-300 text-black hover:bg-gray-400"
       }`}
     >
       {liked ? "Unlike" : "Like"} ({likes})
