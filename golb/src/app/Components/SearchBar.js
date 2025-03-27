@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -6,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [hasSearched, setHasSearched] = useState(false); // ✅ New state
+  const [hasSearched, setHasSearched] = useState(false);
   const router = useRouter();
 
   const handleSearch = async () => {
@@ -21,7 +22,7 @@ export default function SearchBar() {
       console.error("Search error:", error);
       setSearchResults([]);
     } finally {
-      setHasSearched(true); // ✅ Mark that search has been performed
+      setHasSearched(true);
     }
   };
 
@@ -43,7 +44,6 @@ export default function SearchBar() {
         </button>
       </div>
 
-      {/* Display search results */}
       {hasSearched && (
         <div className="mt-4 bg-gray-800 p-4 rounded">
           {searchResults.length > 0 ? (
@@ -63,8 +63,8 @@ export default function SearchBar() {
                   className="w-10 h-10 rounded-full"
                 />
                 <div>
-                  <p className="text-white font-bold">{user.username}</p>
-                  <p className="text-gray-400">{user.name}</p>
+                  <p className="text-white font-bold">@{user.username}</p>
+                  <p className="text-gray-400 text-sm">{user.name}</p>
                 </div>
               </div>
             ))
