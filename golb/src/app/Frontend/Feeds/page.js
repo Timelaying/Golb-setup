@@ -10,6 +10,7 @@ import LikeButton from "@/app/Components/LikeButton";
 import CommentBox from "@/app/Components/CommentBox";
 import PageWrapper from "@/app/Components/PageWrapper";
 import CardContainer from "@/app/Components/CardContainer";
+import NotificationsDropdown from "@/app/Components/NotificationsDropdown";
 import PageHeader from "@/app/Components/PageHeader";
 
 export default function FeedPage() {
@@ -37,6 +38,11 @@ export default function FeedPage() {
       {/* Header */}
       <header className="w-full max-w-5xl mx-auto px-6 py-4 bg-gray-800 shadow-md rounded-lg flex justify-between items-center relative z-20">
         <h1 className="text-2xl font-bold">Feed</h1>
+
+        <div className="relative">
+          <NotificationsDropdown />
+        </div>
+
         <div className="relative">
           <button
             className="bg-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition"
