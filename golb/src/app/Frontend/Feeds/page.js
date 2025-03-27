@@ -103,3 +103,6 @@ export default function FeedPage() {
     </PageWrapper>
   );
 }
+
+
+// todo infinate scrolling for frontrnd as the offset is done at abckend
