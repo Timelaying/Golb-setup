@@ -27,8 +27,8 @@ async function createPost({ userId, title, content }) {
   return result.rows[0];
 }
 
-// Fetch posts for feed (either followed or trending)
-async function getFeedForUser(userId) {
+// Fetch posts for feed with pagination
+async function getFeedForUser(userId, limit = 10, offset = 0) {
   // Step 1: Who are they following?
   const followingRes = await pool.query(
     `SELECT following_id FROM followers WHERE follower_id = $1`,
@@ -37,7 +37,7 @@ async function getFeedForUser(userId) {
 
   const followingIds = followingRes.rows.map(row => row.following_id);
 
-  // Step 2: Followed feed
+  // Step 2: Followed feed (with pagination)
   const followedPostsQuery = `
     SELECT 
       posts.*,
@@ -54,10 +54,10 @@ async function getFeedForUser(userId) {
     WHERE posts.user_id = ANY($2::int[])
     GROUP BY posts.id, users.id
     ORDER BY posts.created_at DESC
-    LIMIT 50;
+    LIMIT $3 OFFSET $4;
   `;
 
-  // Step 3: Fallback feed
+  // Step 3: Fallback trending feed (with pagination)
   const fallbackQuery = `
     SELECT 
       posts.*,
@@ -73,15 +73,16 @@ async function getFeedForUser(userId) {
     LEFT JOIN likes ON likes.post_id = posts.id
     GROUP BY posts.id, users.id
     ORDER BY likes_count DESC, posts.created_at DESC
-    LIMIT 50;
+    LIMIT $2 OFFSET $3;
   `;
 
   const result = followingIds.length > 0
-    ? await pool.query(followedPostsQuery, [userId, followingIds])
-    : await pool.query(fallbackQuery, [userId]);
+    ? await pool.query(followedPostsQuery, [userId, followingIds, limit, offset])
+    : await pool.query(fallbackQuery, [userId, limit, offset]);
 
   return result.rows;
 }
+
 
 async function getPostsWithCountsByUser(userId) {
   const result = await pool.query(
