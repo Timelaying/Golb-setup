@@ -78,4 +78,25 @@ router.get("/comments/:postId", async (req, res) => {
   }
 });
 
+// ✅ Reply to a comment
+router.post("/reply", async (req, res) => {
+  const { userId, postId, content, parentCommentId } = req.body;
+
+  if (!userId || !postId || !content || !parentCommentId) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    const query = `
+      INSERT INTO comments (user_id, post_id, content, parent_comment_id)
+      VALUES ($1, $2, $3, $4) RETURNING *;
+    `;
+    const result = await pool.query(query, [userId, postId, content, parentCommentId]);
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error posting reply:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 module.exports = router;
