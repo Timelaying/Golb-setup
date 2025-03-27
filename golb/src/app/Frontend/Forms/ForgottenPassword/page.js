@@ -5,9 +5,9 @@ import { useState } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import PageWrapper from "@/components/PageWrapper";
-import CardContainer from "@/components/CardContainer";
-import PageHeader from "@/components/PageHeader";
+import PageWrapper from "@/app/components/PageWrapper";
+import CardContainer from "@/app/components/CardContainer";
+import PageHeader from "@/app/components/PageHeader";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -32,16 +32,15 @@ export default function ForgotPasswordForm() {
 
   return (
     <PageWrapper>
-      <CardContainer className="max-w-md space-y-6">
+      <CardContainer>
         <PageHeader title="Forgot Your Password?" />
-
-        <p className="text-sm text-gray-400 text-center">
+        <p className="text-sm text-gray-400 text-center mb-4">
           Enter your email, and we’ll send you a password reset link.
         </p>
 
         {message && (
           <p
-            className={`text-sm text-center ${
+            className={`text-sm text-center mb-2 ${
               message.startsWith("❌") ? "text-red-400" : "text-green-400"
             }`}
           >
@@ -73,10 +72,8 @@ export default function ForgotPasswordForm() {
           </Button>
         </form>
 
-        <div className="space-y-4">
-          <h2 className="text-lg text-center font-medium text-gray-50">
-            Got the Reset Link?
-          </h2>
+        <div className="space-y-4 mt-6">
+          <h2 className="text-lg text-center font-medium text-gray-50">Got the Reset Link?</h2>
           <Link href="./ResetPassword">
             <Button className="w-full bg-green-600 hover:bg-green-500 focus:ring focus:ring-green-300">
               Reset Password
