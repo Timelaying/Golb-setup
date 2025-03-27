@@ -52,10 +52,10 @@ export default function LoginForm() {
       localStorage.setItem("accessToken", res.data.accessToken);
       localStorage.setItem("refreshToken", res.data.refreshToken);
 
-      setMessage("✅ Login successful! Redirecting...");
+      setMessage("Login successful! Redirecting...");
       router.push("/Frontend/Feeds");
     } catch (err) {
-      setMessage("❌ " + (err.response?.data?.error || "Login failed."));
+      setMessage(err.response?.data?.error || "Login failed.");
     } finally {
       setLoading(false);
     }
@@ -63,27 +63,19 @@ export default function LoginForm() {
 
   return (
     <PageWrapper>
-      <CardContainer className="max-w-md space-y-6">
+      <CardContainer className="max-w-md">
         <PageHeader title="Welcome Back" />
-        <p className="text-sm text-gray-400 text-center">
+
+        <p className="text-sm text-gray-400 text-center mb-2">
           Enter your credentials to access your account.
         </p>
 
         {message && (
-          <p
-            className={`text-sm text-center ${
-              message.startsWith("✅") ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            {message}
-          </p>
+          <div className="text-sm text-center text-red-500 mb-4">{message}</div>
         )}
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 text-gray-50"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 text-gray-50">
             <FormField
               control={form.control}
               name="username"
@@ -126,14 +118,14 @@ export default function LoginForm() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 focus:ring focus:ring-indigo-300 transition"
             >
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
         </Form>
 
-        <div className="text-center">
+        <div className="text-center mt-6">
           <h2 className="text-sm text-gray-400">Forgot your password?</h2>
           <Link href="/Frontend/Forms/ForgottenPassword">
             <Button className="mt-2 bg-green-600 hover:bg-green-500 focus:ring focus:ring-green-300">
