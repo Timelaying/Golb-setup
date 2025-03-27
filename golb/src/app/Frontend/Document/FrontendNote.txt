@@ -18,5 +18,6 @@ we need to create components  for frontend
 create models for frontend
 
 4. consistent styling and css
+5. seeing the folloers and following, making it clickable 
 6. minmizing comment and postion of likes
 14. refactoring and commenting code 
