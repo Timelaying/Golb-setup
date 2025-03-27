@@ -87,10 +87,10 @@ router.post("/reply", async (req, res) => {
   if (!userId || !postId || !content || !parentCommentId) {
     return res.status(400).json({ message: "All fields are required." });
   }
-
+// todo :- modeling
   try {
     const query = `
-      INSERT INTO comments (user_id, post_id, content, parent_comment_id)
+      INSERT INTO comments (user_id, post_id, content, parent_comment_id) 
       VALUES ($1, $2, $3, $4) RETURNING *;
     `;
     const result = await pool.query(query, [userId, postId, content, parentCommentId]);
