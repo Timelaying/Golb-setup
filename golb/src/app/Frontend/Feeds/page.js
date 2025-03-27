@@ -1,5 +1,3 @@
-// golb/src/app/Frontend/Feeds/page.js
-
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -37,7 +35,7 @@ export default function FeedPage() {
   return (
     <PageWrapper>
       {/* Header */}
-      <header className="flex justify-between items-center px-6 py-4 bg-gray-800 shadow-md relative z-20">
+      <header className="w-full max-w-5xl mx-auto px-6 py-4 bg-gray-800 shadow-md rounded-lg flex justify-between items-center relative z-20">
         <h1 className="text-2xl font-bold">Feed</h1>
         <div className="relative">
           <button
@@ -68,19 +66,20 @@ export default function FeedPage() {
         </div>
       </header>
 
-      {/* Search */}
-      <div className="relative z-10 px-6 py-2">
+      {/* Search Bar */}
+      <div className="w-full max-w-5xl px-6 py-4">
         <SearchBar onSearchResults={setFeed} />
       </div>
 
       {/* Feed List */}
-      <main className="flex-1 p-4 overflow-y-auto">
+      <main className="w-full max-w-5xl px-4 pb-10">
         {feed.length > 0 ? (
           feed.map((post) => (
-            <CardContainer key={post.id} className="max-w-5xl">
-              <h2 className="text-lg font-semibold">{post.title}</h2>
+            <CardContainer key={post.id} className="mb-6">
+              <h2 className="text-lg font-semibold mb-1">{post.title}</h2>
               <p className="text-sm text-gray-400">{post.content}</p>
-              <div className="flex items-center space-x-3 mt-2 mb-1">
+
+              <div className="flex items-center space-x-3 mt-4 mb-2">
                 <img
                   src={post.profile_picture ? `http://localhost:5000${post.profile_picture}` : "/default-avatar.png"}
                   alt={post.username}
@@ -88,13 +87,17 @@ export default function FeedPage() {
                 />
                 <span className="text-gray-300 text-sm font-medium">Posted by @{post.username}</span>
               </div>
-              <FollowButton userId={post.user_id} currentUserId={currentUser.id} />
-              <LikeButton postId={post.id} userId={currentUser.id} />
+
+              <div className="flex gap-4 mt-2 mb-2">
+                <FollowButton userId={post.user_id} currentUserId={currentUser.id} />
+                <LikeButton postId={post.id} userId={currentUser.id} />
+              </div>
+
               <CommentBox postId={post.id} />
             </CardContainer>
           ))
         ) : (
-          <p className="text-center text-gray-400">No posts found</p>
+          <p className="text-center text-gray-400 mt-10">No posts found</p>
         )}
       </main>
     </PageWrapper>
