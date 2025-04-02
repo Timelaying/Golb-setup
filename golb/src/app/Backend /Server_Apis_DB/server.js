@@ -25,6 +25,11 @@ const likeUnlikeRoutes = require("./routes/likeUnlike.routes");
 const commentRoutes = require("./routes/comment.routes");
 const dynamicProfileRoutes = require("./routes/dynamicProfile.routes");
 const viewCommentRoutes = require("./routes/viewComment.routes");
+const errorHandler = require("./utils/errorCodes");
+
+// After all route mounts:
+app.use(errorHandler);
+
 
 const app = express();
 
