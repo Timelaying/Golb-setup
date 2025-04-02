@@ -34,9 +34,6 @@ const app = express();
 // ✅ Logging middleware from utils
 app.use(requestLogger);
 
-// After all route mounts:
-app.use(errorHandler);
-
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -63,6 +60,7 @@ app.use("/api", viewCommentRoutes);
 app.get("/api/ping", (req, res) => {
   res.send("pong");
 });
+
 
 // Start server
 startServer(app, config.port);
