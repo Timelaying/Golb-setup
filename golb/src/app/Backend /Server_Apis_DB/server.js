@@ -1,3 +1,6 @@
+//server.js
+
+require("express-async-errors"); // ✅ Global async error handling
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
