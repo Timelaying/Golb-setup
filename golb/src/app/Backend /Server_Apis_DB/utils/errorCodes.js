@@ -1,5 +1,7 @@
 // errorCodes.js
 
+// to integrate later 
+
 module.exports = {
     // General errors
     INTERNAL_SERVER_ERROR: {
