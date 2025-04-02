@@ -27,14 +27,15 @@ const dynamicProfileRoutes = require("./routes/dynamicProfile.routes");
 const viewCommentRoutes = require("./routes/viewComment.routes");
 const errorHandler = require("./utils/errorCodes");
 
-// After all route mounts:
-app.use(errorHandler);
 
 
 const app = express();
 
 // ✅ Logging middleware from utils
 app.use(requestLogger);
+
+// After all route mounts:
+app.use(errorHandler);
 
 // Middleware
 app.use(cors());
