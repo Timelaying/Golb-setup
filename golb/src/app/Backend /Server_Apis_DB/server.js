@@ -25,7 +25,7 @@ const viewCommentRoutes = require("./routes/viewComment.routes");
 
 const app = express();
 
-// ✅ Logging middleware
+// ✅ Logging middleware from utils
 app.use(requestLogger);
 
 // Middleware
