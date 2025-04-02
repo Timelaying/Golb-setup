@@ -5,8 +5,10 @@ const path = require("path");
 const config = require("./config");
 const startServer = require("./startServer");
 
+const { requestLogger } = require("./utils/logger") // ✅ Import request logger
+
 // Import routes from the routes/ folder
-const authRoutes = require ("./routes/auth.routes"); console.log("✅ Auth route loaded");
+const authRoutes = require("./routes/auth.routes"); console.log("✅ Auth route loaded");
 const registerRoutes = require("./routes/register.routes");
 const forgetResetRoutes = require("./routes/forgetReset.routes");
 const createPostRoutes = require("./routes/createPost.routes");
@@ -22,6 +24,9 @@ const dynamicProfileRoutes = require("./routes/dynamicProfile.routes");
 const viewCommentRoutes = require("./routes/viewComment.routes");
 
 const app = express();
+
+// ✅ Logging middleware
+app.use(requestLogger);
 
 // Middleware
 app.use(cors());
@@ -46,10 +51,9 @@ app.use("/api", commentRoutes);
 app.use("/api", dynamicProfileRoutes);
 app.use("/api", viewCommentRoutes);
 
-
 app.get("/api/ping", (req, res) => {
-    res.send("pong");
-  });
+  res.send("pong");
+});
 
 // Start server
 startServer(app, config.port);
