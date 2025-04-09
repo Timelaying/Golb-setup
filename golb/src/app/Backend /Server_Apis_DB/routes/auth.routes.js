@@ -1,23 +1,19 @@
+// routes/auth.routes.js
 const express = require("express");
 const router = express.Router();
 const authenticateToken = require("../middleware/AuthenticateMiddleware");
 const {
-  loginUser,
-  refreshAccessToken,
+  login,
+  refreshToken,
   getCurrentUser,
-  testAuth,
-  protectedRoute
+  getProtected,
+  testAuth // 👇 We'll add this next
 } = require("../controllers/auth.controller");
 
-// Test Route
 router.get("/test", testAuth);
-
-// Auth Routes
-router.post("/login", loginUser);
-router.post("/refresh-token", refreshAccessToken);
+router.post("/login", login);
+router.post("/refresh-token", refreshToken);
 router.get("/current-user", authenticateToken, getCurrentUser);
-
-// Example Protected Route
-router.get("/protected", authenticateToken, protectedRoute);
+router.get("/protected", authenticateToken, getProtected);
 
 module.exports = router;

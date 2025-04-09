@@ -53,3 +53,7 @@ exports.getCurrentUser = async (req, res) => {
   const { id, name, username, email } = user;
   res.status(200).json({ id, name, username, email });
 };
+
+exports.testAuth = (req, res) => {
+  res.send("✅ Auth route working");
+};

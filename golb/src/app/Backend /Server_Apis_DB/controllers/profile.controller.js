@@ -30,7 +30,7 @@ const handleGetProfile = async (req, res) => {
   });
 };
 
-exports.handleProfileUpdate = async (req, res) => {
+const handleProfileUpdate = async (req, res) => {
   const { userId, location, bio } = req.body;
 
   const profilePicturePath = req.file
@@ -54,4 +54,5 @@ exports.handleProfileUpdate = async (req, res) => {
 
 module.exports = {
   handleGetProfile,
+  handleProfileUpdate,
 };

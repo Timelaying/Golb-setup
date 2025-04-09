@@ -6,7 +6,7 @@ const authenticateToken = require("../middleware/AuthenticateMiddleware");
 const {
   handleFetchComments,
   handleAddComment,
-} = require("../controllers/comment.viewController");
+} = require("../controllers/viewComment.controller");
 
 // ✅ Fetch nested comments
 router.get("/viewcomments/:postId", authenticateToken, handleFetchComments);
