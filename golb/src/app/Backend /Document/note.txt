@@ -39,13 +39,14 @@ we also need a dynamic route at the backend for the front end
 
 npm install --save-dev jest supertest cross-env       // for test
 
-"npx jest"  run test 
-add the following in our pacckage.json(
+add the following in our pacckage.json
+(
     "scripts": {
   "test": "cross-env NODE_ENV=test jest --runInBand"
 }
-
 )
+
+"npx jest"  run test 
 
 
 
