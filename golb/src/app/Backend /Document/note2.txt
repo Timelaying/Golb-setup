@@ -23,7 +23,10 @@
 │   ├── /uploads               # ✅ Store static files (profile pics, images)
 │   │   └── /users
 │   │       └── [username]/profile.jpg
-│
+│   |
+|   |--/tests
+|   |       |--
+
 ├── /Frontend
 │   ├── /Components
 │   ├── /Pages

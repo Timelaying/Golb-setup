@@ -37,6 +37,13 @@ Adding app.use(cors()); fixes this issue.
 we also need a dynamic route at the backend for the front end
 
 
+"npx jest"  run test 
+add the following in our pacckage.json(
+    "scripts": {
+  "test": "cross-env NODE_ENV=test jest --runInBand"
+}
+
+)
 
 
 
