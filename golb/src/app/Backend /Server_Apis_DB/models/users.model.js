@@ -1,26 +1,26 @@
 //models/user.model.js
 
-const pool = require("../db");
+let db = require("../db");
 
 function setDb(mockDb) {
-  db = pool;
+  db = mockDb;
 } // for test
 
 // Find user by ID
 async function findUserById(id) {
-  const result = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+  const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
   return result.rows[0];
 }
 
 // Find user by username
 async function findUserByUsername(username) {
-  const result = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+  const result = await db.query("SELECT * FROM users WHERE username = $1", [username]);
   return result.rows[0];
 }
 
 // Create a new user
 async function createUser({ name, username, email, password }) {
-  const result = await pool.query(
+  const result = await db.query(
     "INSERT INTO users (name, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, name, username, email, created_at",
     [name, username, email, password]
   );
@@ -29,7 +29,7 @@ async function createUser({ name, username, email, password }) {
 
 
 async function updateUserProfile({ userId, location, bio, profilePicture }) {
-  const result = await pool.query(
+  const result = await db.query(
     `UPDATE users 
        SET location = $1, bio = $2, profile_picture = COALESCE($3, profile_picture) 
        WHERE id = $4 RETURNING *`,
@@ -39,7 +39,7 @@ async function updateUserProfile({ userId, location, bio, profilePicture }) {
 }
 
 async function getUserProfile(userId) {
-  const result = await pool.query(
+  const result = await db.query(
     `SELECT id, name, username, email, location, bio, profile_picture 
      FROM users 
      WHERE id = $1`,
@@ -49,7 +49,7 @@ async function getUserProfile(userId) {
 }
 
 async function getUserProfileWithStats(username) {
-  const userResult = await pool.query(
+  const userResult = await db.query(
     "SELECT id, name, username, bio, email, profile_picture FROM users WHERE username = $1",
     [username]
   );
@@ -59,8 +59,8 @@ async function getUserProfileWithStats(username) {
   const user = userResult.rows[0];
 
   const [followers, following] = await Promise.all([
-    pool.query("SELECT COUNT(*) FROM followers WHERE following_id = $1", [user.id]),
-    pool.query("SELECT COUNT(*) FROM followers WHERE follower_id = $1", [user.id]),
+    db.query("SELECT COUNT(*) FROM followers WHERE following_id = $1", [user.id]),
+    db.query("SELECT COUNT(*) FROM followers WHERE follower_id = $1", [user.id]),
   ]);
 
   return {
@@ -71,7 +71,7 @@ async function getUserProfileWithStats(username) {
 }
 
 async function searchUsersByUsername(query) {
-  const result = await pool.query(
+  const result = await db.query(
     "SELECT id, name, username, profile_picture FROM users WHERE username ILIKE $1",
     [`%${query}%`]
   );
@@ -80,7 +80,7 @@ async function searchUsersByUsername(query) {
 
 // Get username by userId (for profile image upload)
 async function getUsernameById(userId) {
-  const result = await pool.query("SELECT username FROM users WHERE id = $1", [userId]);
+  const result = await db.query("SELECT username FROM users WHERE id = $1", [userId]);
   return result.rows[0]?.username;
 }
 
