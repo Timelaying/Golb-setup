@@ -1,3 +1,5 @@
+//middleware/AuthenticateMiddleware.js
+
 const jwt = require("jsonwebtoken");
 
 // Middleware to verify the access token

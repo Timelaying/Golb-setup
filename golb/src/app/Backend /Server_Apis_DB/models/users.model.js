@@ -1,3 +1,5 @@
+//models/user.model.js
+
 const pool = require("../db");
 
 function setDb(mockDb) {
