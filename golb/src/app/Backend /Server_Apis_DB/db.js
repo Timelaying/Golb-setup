@@ -88,8 +88,10 @@ const createTableQuery = `
   );
 `;
 
-pool.query(createTableQuery)
-  .then(() => console.log("Database tables are ready."))
-  .catch((err) => console.error("Error creating tables:", err.message));
+if (process.env.NODE_ENV !== 'test') {
+    pool.query(createTableQuery)
+      .then(() => console.log("Database tables are ready."))
+      .catch((err) => console.error("Error creating tables:", err.message));
+}
 
 module.exports = pool;
