@@ -92,4 +92,6 @@ module.exports = {
   getUserProfileWithStats,
   searchUsersByUsername,
   getUsernameById,
+  setDb, // 🔁 expose for injection in tests
+
 };
