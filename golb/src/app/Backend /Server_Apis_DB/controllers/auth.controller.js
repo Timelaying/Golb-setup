@@ -1,16 +1,23 @@
 // controllers/auth.controller.js
+let db = require("../db");
 const bcrypt = require("bcrypt");
 const {
   findUserByUsername,
   findUserById,
 } = require("../models/users.model");
-const pool = require("../db");
 const {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
 } = require("../utils/token.utils");
 const ERROR = require("../utils/errorCodes");
+
+// Allow test to inject mock db
+function setDb(mockDb) {
+  db = mockDb;
+}
+
+exports.setDb = setDb;
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
@@ -23,7 +30,7 @@ exports.login = async (req, res) => {
   const accessToken = generateAccessToken({ id: user.id, username: user.name });
   const refreshToken = generateRefreshToken({ id: user.id, username: user.name });
 
-  await pool.query("UPDATE users SET refresh_token = $1 WHERE id = $2", [refreshToken, user.id]);
+  await db.query("UPDATE users SET refresh_token = $1 WHERE id = $2", [refreshToken, user.id]);
 
   res.status(200).json({ message: "Login successful!", accessToken, refreshToken });
 };
@@ -36,7 +43,7 @@ exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) throw { status: 401, error: "Refresh token required." };
 
-  const result = await pool.query("SELECT * FROM users WHERE refresh_token = $1", [refreshToken]);
+  const result = await db.query("SELECT * FROM users WHERE refresh_token = $1", [refreshToken]);
   if (result.rows.length === 0) throw { status: 403, error: "Invalid refresh token." };
 
   const user = result.rows[0];
