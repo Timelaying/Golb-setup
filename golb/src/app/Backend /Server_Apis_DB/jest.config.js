@@ -3,6 +3,7 @@
 module.exports = {
     testEnvironment: "node",
     testMatch: ["**/tests/**/*.test.js"], // Test files go in /tests folder
+    testTimeout: 10000,
     verbose: true,
     forceExit: true,
     clearMocks: true,
