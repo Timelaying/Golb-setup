@@ -3,7 +3,7 @@
 const pool = require("../db");
 
 function setDb(mockDb) {
-  db = mockDb;
+  db = pool;
 } // for test
 
 // Find user by ID
