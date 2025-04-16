@@ -94,3 +94,5 @@ need to create some tables
 // autocatch npm - controller automatic try catch
 // refactor remaining pool repitition
 
+
+for testing, jest is mostly for backend, while cypress is mostly for frontend 

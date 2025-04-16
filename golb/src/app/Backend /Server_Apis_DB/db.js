@@ -1,6 +1,8 @@
 // db.js
 const { Pool } = require("pg");
 const config = require("./config");
+const { databaseUrl } = require("./config"); // using databas url for testing
+
 
 const pool = new Pool({
   user: config.db.user,
@@ -8,6 +10,7 @@ const pool = new Pool({
   database: config.db.name,
   password: config.db.password,
   port: config.db.port,
+  connectionString: databaseUrl,
 });
 
 const createTableQuery = `
