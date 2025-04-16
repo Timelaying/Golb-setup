@@ -1,3 +1,5 @@
+//models/comments.model.js
+
 const pool = require("../db");
 
 async function addComment(userId, postId, content, parentCommentId = null) {
