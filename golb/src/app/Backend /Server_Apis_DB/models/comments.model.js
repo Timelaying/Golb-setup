@@ -79,4 +79,5 @@ module.exports = {
   updateComment,
   deleteComment,
   getNestedComments,
+  setDb,
 };
