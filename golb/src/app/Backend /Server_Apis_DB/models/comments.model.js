@@ -2,13 +2,6 @@
 
 const pool = require("../db");
 
-let db = require("../db");
-
-function setDb(mockDb) {
-  db = mockDb;
-} // for testing 
-
-
 async function addComment(userId, postId, content, parentCommentId = null) {
   const res = await pool.query(
     `INSERT INTO comments (user_id, post_id, content, parent_comment_id) 
@@ -79,5 +72,4 @@ module.exports = {
   updateComment,
   deleteComment,
   getNestedComments,
-  setDb,
 };
