@@ -88,7 +88,7 @@ destructing variables
 need to create some tables 
 
 
-// logging and monitoring - pino logger etc // measuring how long a route last etc
+// logging and monitoring - pino logger etc // measuring how long a route last etc, expoorting this to a dashboard for deployment
 // Standardize errors  // USER_NOT_FOUND, INTERNAL_SRVER_ERROR
 // separate controllers into individual functions
 // autocatch npm - controller automatic try catch
