@@ -131,3 +131,9 @@ Controllers `throw { status, ...ERROR_CODE }` and `errorHandler` middleware form
 
 *Next Steps*: Review, then begin CI/CD setup.
 
+Next Steps
+Secrets & Config: Store DB credentials, JWT secrets in Kubernetes Secrets or GitHub Actions Secrets.
+
+Terraform: Define AWS EKS cluster, RDS instance, IAM roles, and deploy these manifests via a CI job.
+
+Helm: Optionally wrap the K8s YAMLs into a Helm chart for templating.
