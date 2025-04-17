@@ -137,3 +137,5 @@ Secrets & Config: Store DB credentials, JWT secrets in Kubernetes Secrets or Git
 Terraform: Define AWS EKS cluster, RDS instance, IAM roles, and deploy these manifests via a CI job.
 
 Helm: Optionally wrap the K8s YAMLs into a Helm chart for templating.
+
+
