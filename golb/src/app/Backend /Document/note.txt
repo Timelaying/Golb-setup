@@ -37,6 +37,16 @@ Adding app.use(cors()); fixes this issue.
 we also need a dynamic route at the backend for the front end
 
 
+npm install --save-dev jest supertest cross-env       // for test
+
+add the following in our pacckage.json
+(
+    "scripts": {
+  "test": "cross-env NODE_ENV=test jest --runInBand"
+}
+)
+
+"npx jest"  run test 
 
 
 
@@ -78,9 +88,36 @@ destructing variables
 need to create some tables 
 
 
-// logging and monitoring - pino logger etc // measuring how long a route last etc
+// logging and monitoring - pino logger etc // measuring how long a route last etc, expoorting this to a dashboard for deployment
 // Standardize errors  // USER_NOT_FOUND, INTERNAL_SRVER_ERROR
 // separate controllers into individual functions
 // autocatch npm - controller automatic try catch
 // refactor remaining pool repitition
 
+
+for testing, jest is mostly for backend, while cypress is mostly for frontend 
+
+
+
+
+//Deployment notes 
+
+What’s next?
+Drop these files into your repo exactly as shown.
+
+Replace all placeholder image names (my-backend, my-frontend) with your real registry names.
+
+Uncomment and fill in the AWS blocks in both GitHub Actions and Terraform when you’re ready to wire up AWS.
+
+Run the CI pipeline (ci.yml) to make sure lint/tests pass on your stack.
+
+Smoke‑test your Dockerfiles locally:
+
+bash
+Copy
+Edit
+docker build -f Dockerfile.backend . && docker run -p5000:5000 my-backend
+docker build -f Dockerfile.frontend . && docker run -p8080:80 my-frontend
+Deploy to a local K8s (kind/minikube) by kubectl apply -f k8s/ and verify services.
+
+we can circle back to wire up the AWS bits (ECR/EKS/RDS) and finish your CD pipeline.

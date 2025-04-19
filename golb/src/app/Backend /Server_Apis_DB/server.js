@@ -1,3 +1,6 @@
+//server.js
+
+require("express-async-errors"); // ✅ Global async error handling
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -22,6 +25,9 @@ const likeUnlikeRoutes = require("./routes/likeUnlike.routes");
 const commentRoutes = require("./routes/comment.routes");
 const dynamicProfileRoutes = require("./routes/dynamicProfile.routes");
 const viewCommentRoutes = require("./routes/viewComment.routes");
+const errorHandler = require("./utils/errorCodes");
+
+
 
 const app = express();
 
@@ -54,6 +60,7 @@ app.use("/api", viewCommentRoutes);
 app.get("/api/ping", (req, res) => {
   res.send("pong");
 });
+
 
 // Start server
 startServer(app, config.port);

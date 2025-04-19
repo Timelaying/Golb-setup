@@ -5,6 +5,7 @@
 │   ├── startServer.js         # Function to start server
 │   ├── config.js              # ✅ Centralized config (e.g., port, JWT secret)
 │   ├── db.js                  # ✅ Database pool connection
+|   |-- jest.config.js         # jest test config file
 │   ├── /routes
 │   │   ├── /api
 │   │   │   ├── auth.js
@@ -23,7 +24,10 @@
 │   ├── /uploads               # ✅ Store static files (profile pics, images)
 │   │   └── /users
 │   │       └── [username]/profile.jpg
-│
+│   |
+|   |--/tests
+|   |       |--
+
 ├── /Frontend
 │   ├── /Components
 │   ├── /Pages

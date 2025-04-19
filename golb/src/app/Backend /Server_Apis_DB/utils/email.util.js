@@ -20,6 +20,17 @@ async function sendResetEmail(to, resetLink) {
   return transporter.sendMail(mailOptions);
 }
 
+exports.sendWelcomeEmail = async (to, name) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to,
+    subject: "Welcome to Our Service!",
+    text: `Hi ${name},\n\nThank you for registering on our platform. We are excited to have you on board!\n\nBest regards,\nYour Company`,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
 module.exports = {
   sendResetEmail,
 };
