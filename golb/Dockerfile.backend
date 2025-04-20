@@ -1,15 +1,23 @@
 # Stage 1: build
 FROM node:18-alpine AS builder
 WORKDIR /app
-COPY src/Backend/package*.json ./
+
+# Install dependencies
+COPY src/app/Backend/package*.json ./
 RUN npm ci
-COPY src/app/Backend .
-RUN npm run build   # if you have a build step
+
+# Copy source & build
+COPY src/app/Backend ./
+RUN npm run build    # if you have a build step
 
 # Stage 2: runtime
 FROM node:18-alpine
 WORKDIR /app
-COPY --from=builder /app .
+
+# Copy built artifacts from builder
+COPY --from=builder /app ./
+
+# Configure & run
 ENV NODE_ENV=production
 EXPOSE 5000
 CMD ["node", "server.js"]
