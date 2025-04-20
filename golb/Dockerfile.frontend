@@ -1,13 +1,26 @@
-# build
+# Stage 1: build
 FROM node:18-alpine AS builder
 WORKDIR /app
-COPY src/Frontend/package*.json ./
+
+# Install dependencies
+COPY src/app/Frontend/package*.json ./
 RUN npm ci
-COPY src/Frontend .
+
+# Copy application & build
+COPY src/app/Frontend ./
 RUN npm run build
 
-# serve
-FROM nginx:stable-alpine
-COPY --from=builder /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Stage 2: runtime
+FROM node:18-alpine
+WORKDIR /app
+
+# Only bring in what's needed to run
+ENV NODE_ENV=production
+
+COPY --from=builder /app/.next .next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/next.config.js ./
+
+EXPOSE 3000
+CMD ["npm", "run", "start"]
