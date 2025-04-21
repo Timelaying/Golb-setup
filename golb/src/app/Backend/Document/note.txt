@@ -121,3 +121,34 @@ docker build -f Dockerfile.frontend . && docker run -p8080:80 my-frontend
 Deploy to a local K8s (kind/minikube) by kubectl apply -f k8s/ and verify services.
 
 we can circle back to wire up the AWS bits (ECR/EKS/RDS) and finish your CD pipeline.
+
+
+
+//docker (because we have 2 docker file, hence the specification for thr buld command )
+# 1) Build the backend image
+docker build -t backend \
+  -f Dockerfile.backend \
+  .
+
+# 2) Tag & push backend to ECR
+docker tag backend:latest \
+  $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+
+aws ecr get-login-password --region eu-west-2 \
+  | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com
+
+docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+
+# 3) Build the frontend image
+docker build -t frontend \
+  -f Dockerfile.frontend \
+  .
+
+# 4) Tag & push frontend to ECR
+docker tag frontend:latest \
+  $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
+
+aws ecr get-login-password --region eu-west-2 \
+  | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com
+
+docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
