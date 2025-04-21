@@ -1,0 +1,28 @@
+# ───── STAGE 1: build assets ─────
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+# 1. Copy lockfiles and install
+COPY package*.json ./
+RUN npm ci
+
+# 2. Copy only frontend source
+COPY src/app/Frontend ./
+
+# 3. Build your app (CRA, Next.js, etc.)
+RUN npm run build
+
+# ───── STAGE 2: serve ─────
+FROM node:18-alpine
+WORKDIR /app
+
+# Copy only what’s needed
+COPY --from=builder /app/build       ./build
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+ENV NODE_ENV=production
+EXPOSE 3000
+
+# Start the frontend server
+CMD ["npm", "start"]
