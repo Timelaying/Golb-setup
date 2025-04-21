@@ -1,23 +1,27 @@
-# Stage 1: build
+# ───── STAGE 1: build dependencies ─────
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Install dependencies
+# Copy only package files and install
 COPY src/app/Backend/package*.json ./
 RUN npm ci
 
-# Copy source & build
+# Copy the rest of your backend code
 COPY src/app/Backend ./
-RUN npm run build    # if you have a build step
 
-# Stage 2: runtime
+# (Optional) if you ever add a build step (e.g. TypeScript), uncomment:
+# RUN npm run build
+
+# ───── STAGE 2: runtime ─────
 FROM node:18-alpine
 WORKDIR /app
 
-# Copy built artifacts from builder
+# Pull in everything from the builder
 COPY --from=builder /app ./
 
-# Configure & run
+# Run in production mode
 ENV NODE_ENV=production
 EXPOSE 5000
-CMD ["node", "server.js"]
+
+# Launch your server entrypoint (adjust the path if yours is different)
+CMD ["node", "Server_Apis_DB/server.js"]
