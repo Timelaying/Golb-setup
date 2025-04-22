@@ -1,27 +1,29 @@
-# ───── STAGE 1: build assets ─────
+# ─── STAGE 1: install & build ───
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# 1. Copy lockfiles and install
+# 1) Copy lockfiles & install deps
 COPY package*.json ./
 RUN npm ci
 
-# 2. Copy only frontend source
-COPY src/app/Frontend ./
+# 2) Copy the *entire* project into the image
+COPY . .
 
-# 3. Build your app (CRA, Next.js, etc.)
-#RUN npm run build
+# 3) Build for production (finds your app/ directory)
+RUN npm run build
 
-# ───── STAGE 2: serve ─────
-FROM node:18-alpine
+# ─── STAGE 2: runtime ───
+FROM node:18-alpine AS runner
 WORKDIR /app
 
-# Copy only what’s needed
-COPY --from=builder /app ./
-
+# Copy only what's needed to run SSR
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next      ./.next
+COPY --from=builder /app/public     ./public
 
 ENV NODE_ENV=production
 EXPOSE 3000
 
-# Start the frontend server
+# Start Next.js in SSR mode
 CMD ["npm", "start"]
