@@ -130,6 +130,12 @@ docker build -t backend \
   -f Dockerfile.backend \
   .
 
+  .b create ERC repo
+  aws ecr create-repository \
+  --repository-name backend \
+  --region eu-west-2
+
+
 # 2) Tag & push backend to ECR
 docker tag backend:latest \
   $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
@@ -143,6 +149,12 @@ docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
 docker build -t frontend \
   -f Dockerfile.frontend \
   .
+
+.b create ECR repo
+aws ecr create-repository \
+  --repository-name frontend \
+  --region eu-west-2
+
 
 # 4) Tag & push frontend to ECR
 docker tag frontend:latest \
