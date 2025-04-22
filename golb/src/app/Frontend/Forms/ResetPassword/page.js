@@ -1,15 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import PageWrapper from "@/app/components/PageWrapper";
 import CardContainer from "@/app/components/CardContainer";
 import PageHeader from "@/app/components/PageHeader";
 
-export default function ResetPasswordForm() {
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading reset form…</div>}>
+      <ResetPasswordFormInner />
+    </Suspense>
+  );
+}
+
+function ResetPasswordFormInner() {
   const [token, setToken] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -19,26 +27,22 @@ export default function ResetPasswordForm() {
 
   useEffect(() => {
     const queryToken = searchParams.get("token");
-    if (queryToken) {
-      setToken(queryToken);
-    }
+    if (queryToken) setToken(queryToken);
   }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setLoading(true);
-
     try {
-      const response = await axios.post("http://localhost:5000/api/reset-password", {
-        token,
-        newPassword,
-      });
-
+      const response = await axios.post(
+        "http://localhost:5000/api/reset-password",
+        { token, newPassword }
+      );
       setMessage(response.data.message || "Password reset successfully!");
     } catch (error) {
-      const errorMessage = error.response?.data?.error || "Failed to reset password.";
-      setMessage("❌ " + errorMessage);
+      const err = error.response?.data?.error || "Failed to reset password.";
+      setMessage("❌ " + err);
     } finally {
       setLoading(false);
     }
