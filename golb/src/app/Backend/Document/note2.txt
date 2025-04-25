@@ -1,0 +1,39 @@
+/golb
+│
+├── /Backend
+│   ├── server.js              # Main app entry point
+│   ├── startServer.js         # Function to start server
+│   ├── config.js              # ✅ Centralized config (e.g., port, JWT secret)
+│   ├── db.js                  # ✅ Database pool connection
+|   |-- jest.config.js         # jest test config file
+│   ├── /routes
+│   │   ├── /api
+│   │   │   ├── auth.js
+│   │   │   ├── users.js
+│   │   │   ├── posts.js
+│   │   │   ├── comments.js
+│   │   │   ├── likes.js
+│   │   │   └── followers.js
+│   ├── /models                # ✅ Reusable DB logic
+│   │   ├── users.model.js
+│   │   ├── posts.model.js
+│   │   ├── comments.model.js
+│   │   └── likes.model.js
+│   ├── /utils                 # Optional utility functions
+│   │   └── formatDate.js
+│   ├── /uploads               # ✅ Store static files (profile pics, images)
+│   │   └── /users
+│   │       └── [username]/profile.jpg
+│   |
+|   |--/tests
+|   |       |--
+
+├── /Frontend
+│   ├── /Components
+│   ├── /Pages
+│   ├── /utils
+│   │   └── useCurrentUser.js
+│
+├── .env                       # ✅ Environment config (db, jwt secret, etc.)
+├── .gitignore
+└── README.md
