@@ -1,0 +1,56 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'   # on version tags, e.g. v1.2.3
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Build backend image
+        run: docker build -f Dockerfile.backend -t my-backend:${{ github.ref }} .
+
+      - name: Build frontend image
+        run: docker build -f Dockerfile.frontend -t my-frontend:${{ github.ref }} .
+
+      # ─── Push to registry ─────────────────────────────
+      # TODO: uncomment & fill in your registry details
+      #- name: Log in to ECR
+      #  run: aws ecr get-login-password --region ${{ secrets.AWS_REGION }} \
+      #        | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+      #
+      #- name: Tag & push backend
+      #  run: |
+      #    docker tag my-backend:${{ github.ref }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-backend:latest
+      #    docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-backend:latest
+      #
+      #- name: Tag & push frontend
+      #  run: |
+      #    docker tag my-frontend:${{ github.ref }} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-frontend:latest
+      #    docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-frontend:latest
+
+      # ─── Deploy to Kubernetes ───────────────────────────
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.27.0'
+
+      # TODO: configure kubeconfig to point at your cluster (could be via aws-actions/configure-aws-credentials + eks update-kubeconfig)
+      #- name: Configure kubeconfig
+      #  run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      - name: Deploy manifests
+        run: |
+          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f k8s/backend-service.yaml
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl apply -f k8s/frontend-service.yaml

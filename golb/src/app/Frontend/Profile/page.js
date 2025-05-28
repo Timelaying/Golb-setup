@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
-import PageWrapper from "@/app/components/PageWrapper";
-import CardContainer from "@/app/components/CardContainer";
-import PageHeader from "@/app/components/PageHeader";
+import PageWrapper from "@/app/Components2/PageWrapper";
+import CardContainer from "@/app/Components2/CardContainer";
+import PageHeader from "@/app/Components2/PageHeader";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
