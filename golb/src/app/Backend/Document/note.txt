@@ -12,6 +12,8 @@ look at the was the authentication token was exported to export const variables 
 
 DBpostgress terminal cmmands, remember i added the referesh token  column from th terminal
 
+psql postgres # the start command to start sostgres
+
 postgres=# CREATE DATABASE Golb;
 ERROR:  database "golb" already exists
 postgres=# \c golb
