@@ -1,0 +1,64 @@
+AWS & Docker Deployment Steps
+
+1. Configure AWS CLI
+---------------------
+Run:
+  aws configure
+Enter:
+  AWS Access Key ID [None]: <YOUR_AWS_ACCESS_KEY_ID>
+  AWS Secret Access Key [None]: <YOUR_AWS_SECRET_ACCESS_KEY>
+  Default region name [None]: <YOUR_AWS_REGION>     # e.g. eu-west-2
+  Default output format [None]: json
+
+2. Create IAM user for programmatic access
+-------------------------------------------
+In the AWS Console (IAM → Users → Add user):
+  - User name: deploy-bot
+  - Access type: Programmatic access
+  - Permissions: Attach "AdministratorAccess" or least-privilege policies.
+  OR via CLI:
+  aws iam create-user --user-name deploy-bot
+  aws iam attach-user-policy --user-name deploy-bot \
+    --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+
+3. Create ECR repositories
+---------------------------
+Run:
+  aws ecr create-repository --repository-name backend --region <YOUR_AWS_REGION>
+  aws ecr create-repository --repository-name frontend --region <YOUR_AWS_REGION>
+
+4. Authenticate Docker to ECR
+------------------------------
+Run:
+  aws ecr get-login-password --region <YOUR_AWS_REGION> \
+    | docker login --username AWS --password-stdin <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_AWS_REGION>.amazonaws.com
+
+5. Build Docker images
+-----------------------
+From the project root:
+
+# Backend
+docker build -t backend \
+  -f Dockerfile.backend \
+  .
+
+# Frontend
+docker build -t frontend \
+  -f Dockerfile.frontend \
+  .
+
+6. Tag Docker images for ECR
+-----------------------------
+Run:
+  docker tag backend:latest \
+    <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_AWS_REGION>.amazonaws.com/backend:latest
+  docker tag frontend:latest \
+    <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_AWS_REGION>.amazonaws.com/frontend:latest
+
+7. Push images to ECR
+----------------------
+Run:
+  docker push <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_AWS_REGION>.amazonaws.com/backend:latest
+  docker push <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.<YOUR_AWS_REGION>.amazonaws.com/frontend:latest
+
+Replace placeholders (<...>) with your actual values.

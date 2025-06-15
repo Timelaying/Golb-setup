@@ -16,9 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import PageWrapper from "@/app/components/PageWrapper";
-import CardContainer from "@/app/components/CardContainer";
-import PageHeader from "@/app/components/PageHeader";
+import PageWrapper from "@/app/Components2/PageWrapper";
+import CardContainer from "@/app/Components2/CardContainer";
+import PageHeader from "@/app/Components2/PageHeader";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters long." }),

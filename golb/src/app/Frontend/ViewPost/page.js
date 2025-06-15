@@ -6,9 +6,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useCurrentUser from "@/app/utils/useCurrentUser";
-import PageWrapper from "@/app/components/PageWrapper";
-import CardContainer from "@/app/components/CardContainer";
-import PageHeader from "@/app/components/PageHeader";
+import PageWrapper from "@/app/Components2/PageWrapper";
+import CardContainer from "@/app/Components2/CardContainer";
+import PageHeader from "@/app/Components2/PageHeader";
 
 export default function PostsList() {
   const currentUser = useCurrentUser();

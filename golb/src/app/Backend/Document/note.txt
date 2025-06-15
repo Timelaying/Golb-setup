@@ -1,0 +1,171 @@
+
+
+the env file as to be in same directory it is required from
+
+you need to run the backend server as well.
+use express router for modularity 
+
+i included the refresh token manually  from the terminal
+
+
+look at the was the authentication token was exported to export const variables next time 
+
+DBpostgress terminal cmmands, remember i added the referesh token  column from th terminal
+
+psql postgres # the start command to start sostgres
+
+postgres=# CREATE DATABASE Golb;
+ERROR:  database "golb" already exists
+postgres=# \c golb
+You are now connected to database "golb" as user "postgres".
+golb=# \dt
+         List of relations
+ Schema | Name  | Type  |  Owner   
+--------+-------+-------+----------
+ public | users | table | postgres
+(1 row)
+
+golb=# SELECT * FROM users;
+
+remember to create a utils to keep current user session (frontend)
+create models and utils fro both frontend and backend
+
+
+
+If your React frontend is running on http://localhost:3000 
+and your Express backend is running on http://localhost:5000, your frontend might face a *CORS* error when trying to make requests to the backend because the origins don't match. 
+Adding app.use(cors()); fixes this issue.
+
+we also need a dynamic route at the backend for the front end
+
+
+npm install --save-dev jest supertest cross-env       // for test
+
+add the following in our pacckage.json
+(
+    "scripts": {
+  "test": "cross-env NODE_ENV=test jest --runInBand"
+}
+)
+
+"npx jest"  run test 
+
+
+
+
+Read about Pooling in postgres db
+downsides and advantages of each
+singleton connections
+Pooling
+
+
+manage application configuration in one module
+pass configuration around application
+
+Use models folder for database related operations
+// model and utils folders
+users.model.js
+findUserById
+findUserByUsername
+
+
+likes.model.js
+
+
+CORS - limit your requests to your api domain
+Group APIs - /api/users /api/admin etc
+
+Start server on a separate function, make it accept multiple ports for tests
+
+Make model functions reusable by using options
+function findByUserId(userId, options = { orderBy, sortby }) {
+    return pool.query(
+        "SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
+        [userId]
+    );
+}
+
+
+destructing variables
+need to create some tables 
+
+
+// logging and monitoring - pino logger etc // measuring how long a route last etc, expoorting this to a dashboard for deployment
+// Standardize errors  // USER_NOT_FOUND, INTERNAL_SRVER_ERROR
+// separate controllers into individual functions
+// autocatch npm - controller automatic try catch
+// refactor remaining pool repitition
+
+
+for testing, jest is mostly for backend, while cypress is mostly for frontend 
+
+
+
+
+//Deployment notes 
+
+What’s next?
+Drop these files into your repo exactly as shown.
+
+Replace all placeholder image names (my-backend, my-frontend) with your real registry names.
+
+Uncomment and fill in the AWS blocks in both GitHub Actions and Terraform when you’re ready to wire up AWS.
+
+Run the CI pipeline (ci.yml) to make sure lint/tests pass on your stack.
+
+Smoke‑test your Dockerfiles locally:
+
+bash
+Copy
+Edit
+docker build -f Dockerfile.backend . && docker run -p5000:5000 my-backend
+docker build -f Dockerfile.frontend . && docker run -p8080:80 my-frontend
+Deploy to a local K8s (kind/minikube) by kubectl apply -f k8s/ and verify services.
+
+we can circle back to wire up the AWS bits (ECR/EKS/RDS) and finish your CD pipeline.
+
+
+
+//docker (because we have 2 docker file, hence the specification for thr buld command )
+# 1) Build the backend image
+docker build -t backend \
+  -f Dockerfile.backend \
+  .
+
+  .b create ERC repo
+  aws ecr create-repository \
+  --repository-name backend \
+  --region eu-west-2
+
+
+# 2) Tag & push backend to ECR
+docker tag backend:latest \
+  $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+
+aws ecr get-login-password --region eu-west-2 \
+  | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com
+
+docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+
+# 3) Build the frontend image
+docker build -t frontend \
+  -f Dockerfile.frontend \
+  .
+
+.b create ECR repo
+aws ecr create-repository \
+  --repository-name frontend \
+  --region eu-west-2
+
+
+# 4) Tag & push frontend to ECR
+docker tag frontend:latest \
+  $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
+
+aws ecr get-login-password --region eu-west-2 \
+  | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com
+
+docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/frontend:latest
+
+
+#naming convention si important in docker
