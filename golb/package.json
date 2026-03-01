@@ -8,7 +8,9 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "test": "cross-env NODE_ENV=test jest --runInBand",
-    "export": "next export"
+    "export": "next export",
+    "backend": "node src/app/Backend/Server_Apis_DB/server.js",
+    "db:check": "node src/app/Backend/Server_Apis_DB/testEnv.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

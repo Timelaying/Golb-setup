@@ -1,17 +1,34 @@
 // db.js
 const { Pool } = require("pg");
 const config = require("./config");
-const { databaseUrl } = require("./config"); // using databas url for testing
 
+const requiredDbEnv = ["user", "host", "name", "password"];
 
-const pool = new Pool({
-  user: config.db.user,
-  host: config.db.host,
-  database: config.db.name,
-  password: config.db.password,
-  port: config.db.port,
-  connectionString: databaseUrl,
-});
+if (!config.db.url) {
+  const missingDbEnv = requiredDbEnv.filter((field) => !config.db[field]);
+
+  if (missingDbEnv.length > 0) {
+    console.error(
+      `Missing DB environment values: ${missingDbEnv
+        .map((field) => `DB_${field.toUpperCase()}`)
+        .join(", ")}. Add them to src/app/Backend/Server_Apis_DB/.env or project root .env.`
+    );
+  }
+}
+
+const poolConfig = config.db.url
+  ? {
+      connectionString: config.db.url,
+    }
+  : {
+      user: config.db.user,
+      host: config.db.host,
+      database: config.db.name,
+      password: config.db.password,
+      port: Number(config.db.port) || 5432,
+    };
+
+const pool = new Pool(poolConfig);
 
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS users (
@@ -94,7 +111,7 @@ const createTableQuery = `
 if (process.env.NODE_ENV !== 'test') {
     pool.query(createTableQuery)
       .then(() => console.log("Database tables are ready."))
-      .catch((err) => console.error("Error creating tables:", err.message));
+      .catch((err) => console.error("Error creating tables:", err.message || err));
 }
 
 module.exports = pool;
