@@ -62,3 +62,36 @@ Also make sure the backend server is running when testing login/register:
 ```bash
 node src/app/Backend/Server_Apis_DB/server.js
 ```
+
+## Backend database setup
+
+The Express backend reads database credentials from either:
+
+1. `src/app/Backend/Server_Apis_DB/.env` (preferred for backend-only secrets), or
+2. project root `.env`
+
+Example backend `.env`:
+
+```bash
+PORT=5000
+DB_USER=postgres
+DB_HOST=localhost
+DB_NAME=golb
+DB_PASSWORD=your_password
+DB_PORT=5432
+# Optional alternative to individual DB_* values
+# DATABASE_URL=postgres://postgres:your_password@localhost:5432/golb
+```
+
+Helpful commands:
+
+```bash
+npm run db:check   # verify env values are being loaded
+npm run backend    # start the backend API server
+```
+
+If Postgres says `database "<name>" does not exist`, create it first:
+
+```bash
+createdb -h localhost -p 5432 -U postgres golb
+```
