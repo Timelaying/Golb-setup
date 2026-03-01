@@ -1,0 +1,153 @@
+Golb Project Deployment Steps
+===============================
+
+1. Configure AWS CLI
+--------------------
+Run on your local machine:
+  aws configure
+Provide:
+  AWS Access Key ID: <YOUR_ACCESS_KEY_ID>
+  AWS Secret Access Key: <YOUR_SECRET_ACCESS_KEY>
+  Default region: eu-west-2
+  Default output format: json
+
+2. Create IAM user for CI/CD
+-----------------------------
+In AWS Console (IAM > Users > Add user):
+  - Username: deploy-bot
+  - Access type: Programmatic access
+  - Attach policies: AdministratorAccess or least-privilege including:
+      * AmazonEC2ContainerRegistryFullAccess
+      * AmazonS3FullAccess
+      * CloudFrontFullAccess
+  OR via CLI:
+  aws iam create-user --user-name deploy-bot
+  aws iam attach-user-policy --user-name deploy-bot --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+  aws iam attach-user-policy --user-name deploy-bot --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess
+  aws iam attach-user-policy --user-name deploy-bot --policy-arn arn:aws:iam::aws:policy/CloudFrontFullAccess
+
+3. Create ECR Repositories
+--------------------------
+Run locally:
+  aws ecr create-repository --repository-name backend --region eu-west-2
+  aws ecr create-repository --repository-name frontend-ssr --region eu-west-2
+
+4. Build & Push Docker Images
+-----------------------------
+From project root:
+
+# Backend
+docker build -t backend -f Dockerfile.backend .
+docker tag backend:latest 202331653095.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 202331653095.dkr.ecr.eu-west-2.amazonaws.com
+docker push 202331653095.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+
+# Frontend SSR
+docker build -t frontend-ssr -f Dockerfile.frontend-ssr .
+docker tag frontend-ssr:latest 202331653095.dkr.ecr.eu-west-2.amazonaws.com/frontend-ssr:latest
+aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin 202331653095.dkr.ecr.eu-west-2.amazonaws.com
+docker push 202331653095.dkr.ecr.eu-west-2.amazonaws.com/frontend-ssr:latest
+
+5. Deploy Static Assets to S3 & CloudFront (Optional)
+------------------------------------------------------
+# Create S3 bucket & sync
+aws s3 mb s3://golb-public-assets --region eu-west-2
+aws s3 website s3://golb-public-assets --index-document index.html
+aws s3 sync public/ s3://golb-public-assets/ --acl public-read
+
+# Create CloudFront distribution
+- Origin: golb-public-assets.s3-website.eu-west-2.amazonaws.com
+- Default root object: index.html
+- Cache policy: CachingOptimized
+
+6. Launch EC2 Instance
+----------------------
+In AWS Console (EC2 > Launch Instance):
+  - AMI: Ubuntu Server 22.04 LTS
+  - Instance type: t3.micro (for dev)
+  - Key pair: <your .pem file>
+  - Security group inbound rules: SSH (22), HTTP (80), HTTPS (443), Custom TCP (3000, 5000)
+
+7. SSH & Prepare EC2
+--------------------
+# On your Mac, move and secure the key:
+mkdir -p ~/.ssh
+mv ~/Downloads/golb_key.pem ~/.ssh/
+chmod 400 ~/.ssh/golb_key.pem
+
+# SSH into EC2
+ssh -i ~/.ssh/golb_key.pem ubuntu@<EC2_PUBLIC_IP>
+
+8. Install Docker & AWS CLI on EC2
+----------------------------------
+# Update and install Docker and unzip/curl
+sudo apt update
+sudo apt install -y docker.io unzip curl
+
+# Start and enable Docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add ubuntu user to Docker group
+sudo usermod -aG docker ubuntu
+exit && ssh -i ~/.ssh/golb_key.pem ubuntu@<EC2_PUBLIC_IP>
+
+# Install AWS CLI v2
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+rm -rf awscliv2.zip aws/
+
+# Configure CLI (unless using IAM role)
+aws configure
+  AWS Access Key ID: <YOUR_ACCESS_KEY_ID>
+  AWS Secret Access Key: <YOUR_SECRET_ACCESS_KEY>
+  Default region: eu-west-2
+  Default output format: json
+
+9. Pull & Run Docker Containers on EC2
+---------------------------------------
+# Login to ECR
+aws ecr get-login-password --region eu-west-2   | docker login --username AWS --password-stdin 202331653095.dkr.ecr.eu-west-2.amazonaws.com
+
+# Pull & run backend
+docker pull 202331653095.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+docker run -d --name golb-backend -p 5000:5000 202331653095.dkr.ecr.eu-west-2.amazonaws.com/backend:latest
+
+# Pull & run frontend SSR
+docker pull 202331653095.dkr.ecr.eu-west-2.amazonaws.com/frontend-ssr:latest
+docker run -d --name golb-frontend -p 3000:3000 202331653095.dkr.ecr.eu-west-2.amazonaws.com/frontend-ssr:latest
+
+10. Verify & Expose Ports
+-------------------------
+# On EC2:
+curl -I http://localhost:3000
+curl -I http://localhost:5000
+
+# On Mac (after updating SG rules):
+curl -I http://<EC2_PUBLIC_IP>:3000
+curl -I http://<EC2_PUBLIC_IP>:5000
+
+11. (Optional) NGINX Reverse-Proxy & HTTPS
+------------------------------------------
+sudo apt install -y nginx certbot python3-certbot-nginx
+# Configure /etc/nginx/sites-available/default with proxy_pass to localhost:3000 and 5000
+sudo systemctl restart nginx
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+12. Logging & Monitoring
+------------------------
+# Ensure EC2 IAM role or user has CloudWatchLogsFullAccess
+# Pino CloudWatch integration in your backend code
+import pino from "pino";
+import { CloudWatchStream } from "pino-cloudwatch";
+const logger = pino({ level: "info" }, new CloudWatchStream({
+  logGroupName: "/golb/backend",
+  logStreamName: "app-logs",
+  awsRegion: "eu-west-2"
+}));
+export default logger;
+
+# Create CloudWatch dashboard and metric filters for tracing errors and latency.
+
+Replace placeholders (<...>) with your actual values.

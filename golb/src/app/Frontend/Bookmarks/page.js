@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import PageWrapper from "@/app/Components/PageWrapper";
-import CardContainer from "@/app/Components/CardContainer";
-import PageHeader from "@/app/Components/PageHeader";
-import LikeButton from "@/app/Components/LikeButton";
-import CommentBox from "@/app/Components/CommentBox";
-import FollowButton from "@/app/Components/FollowButton";
+import PageWrapper from "@/app/Components2/PageWrapper";
+import CardContainer from "@/app/Components2/CardContainer";
+import PageHeader from "@/app/Components2/PageHeader";
+import LikeButton from "@/app/Components2/LikeButton";
+import CommentBox from "@/app/Components2/CommentBox";
+import FollowButton from "@/app/Components2/FollowButton";
 import useCurrentUser from "@/app/utils/useCurrentUser";
 
 export default function BookmarksPage() {

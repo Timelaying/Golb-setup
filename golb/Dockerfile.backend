@@ -1,0 +1,26 @@
+# ───── STAGE 1: install deps ─────
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+# 1. Copy lockfiles from root and install
+COPY package*.json ./
+RUN npm ci
+
+# 2. Copy only backend source
+COPY src/app/Backend ./
+
+# (Optional) build step
+# RUN npm run build
+
+# ───── STAGE 2: runtime ─────
+FROM node:18-alpine
+WORKDIR /app
+
+# Copy built app + node_modules
+COPY --from=builder /app ./
+
+ENV NODE_ENV=production
+EXPOSE 5000
+
+# Launch your server
+CMD ["node", "Server_Apis_DB/server.js"]

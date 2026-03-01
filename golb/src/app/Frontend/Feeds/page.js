@@ -4,14 +4,14 @@ import axios from "axios";
 import useCurrentUser from "@/app/utils/useCurrentUser";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import SearchBar from "@/app/Components/SearchBar";
-import FollowButton from "@/app/Components/FollowButton";
-import LikeButton from "@/app/Components/LikeButton";
-import CommentBox from "@/app/Components/CommentBox";
-import PageWrapper from "@/app/Components/PageWrapper";
-import CardContainer from "@/app/Components/CardContainer";
-import NotificationsDropdown from "@/app/Components/NotificationsDropdown";
-import PageHeader from "@/app/Components/PageHeader";
+import SearchBar from "@/app/Components2/SearchBar";
+import FollowButton from "@/app/Components2/FollowButton";
+import LikeButton from "@/app/Components2/LikeButton";
+import CommentBox from "@/app/Components2/CommentBox";
+import PageWrapper from "@/app/Components2/PageWrapper";
+import CardContainer from "@/app/Components2/CardContainer";
+import NotificationsDropdown from "@/app/Components2/NotificationsDropdown";
+import PageHeader from "@/app/Components2/PageHeader";
 
 export default function FeedPage() {
   const currentUser = useCurrentUser();

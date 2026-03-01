@@ -1,4 +1,4 @@
-// utils/useCurrentUser.js
+// utils/useCurrentUser.js    to keep track of the user and session during thier lifetime 
 import { useEffect, useState } from "react";
 import axios from "axios";
 
