@@ -1,17 +1,15 @@
 // db.js
 const { Pool } = require("pg");
 const config = require("./config");
-const { databaseUrl } = require("./config"); // using databas url for testing
-
-
-const pool = new Pool({
+const poolConfig = {
   user: config.db.user,
   host: config.db.host,
   database: config.db.name,
   password: config.db.password,
   port: config.db.port,
-  connectionString: databaseUrl,
-});
+};
+
+const pool = new Pool(poolConfig);
 
 const createTableQuery = `
   CREATE TABLE IF NOT EXISTS users (
@@ -94,7 +92,24 @@ const createTableQuery = `
 if (process.env.NODE_ENV !== 'test') {
     pool.query(createTableQuery)
       .then(() => console.log("Database tables are ready."))
-      .catch((err) => console.error("Error creating tables:", err.message));
+      .catch((err) => {
+        const nestedMessage = Array.isArray(err?.errors)
+          ? err.errors.map((e) => e.message).filter(Boolean).join("; ")
+          : "";
+        const message = err?.message || nestedMessage || "Unknown database error";
+        const code = err?.code || err?.errors?.[0]?.code;
+
+        console.error("Error creating tables:", message);
+
+        if (code === "3D000") {
+          console.error(
+            `Database "${config.db.name}" does not exist. Create it first, then restart the backend.`
+          );
+          console.error(
+            `Example: createdb -h ${config.db.host} -p ${config.db.port} -U ${config.db.user} ${config.db.name}`
+          );
+        }
+      });
 }
 
 module.exports = pool;

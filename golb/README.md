@@ -43,3 +43,47 @@ i used shadcn UI
 Next
 express router
 tailwind
+
+## Backend API configuration
+
+Auth forms call the backend API. By default, the frontend now resolves the API URL to:
+
+- `NEXT_PUBLIC_API_BASE_URL` (if set), otherwise
+- `http://<current-host>:5000`
+
+If your backend runs on another host/port, add an environment file with:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+```
+
+Also make sure the backend server is running when testing login/register:
+
+```bash
+node src/app/Backend/Server_Apis_DB/server.js
+```
+
+## Run backend locally
+
+1. Create a `.env` file in the project root (`golb/.env`) with your database settings:
+
+```bash
+DB_USER=postgres
+DB_HOST=localhost
+DB_NAME=postgres
+DB_PASSWORD=your_password
+DB_PORT=5432
+PORT=5000
+```
+
+2. Start backend:
+
+```bash
+npm run backend
+```
+
+3. If you see `database "..." does not exist`, create it and restart backend:
+
+```bash
+createdb -h localhost -p 5432 -U postgres postgres
+```
