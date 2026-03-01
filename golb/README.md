@@ -43,3 +43,22 @@ i used shadcn UI
 Next
 express router
 tailwind
+
+## Backend API configuration
+
+Auth forms call the backend API. By default, the frontend now resolves the API URL to:
+
+- `NEXT_PUBLIC_API_BASE_URL` (if set), otherwise
+- `http://<current-host>:5000`
+
+If your backend runs on another host/port, add an environment file with:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+```
+
+Also make sure the backend server is running when testing login/register:
+
+```bash
+node src/app/Backend/Server_Apis_DB/server.js
+```
