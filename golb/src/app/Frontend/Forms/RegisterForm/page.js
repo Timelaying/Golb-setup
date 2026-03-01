@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters long." }),
@@ -44,14 +45,19 @@ export default function RegisterForm() {
   const onSubmit = async (data) => {
     setLoading(true);
     setFeedback("");
+    const apiBaseUrl = getApiBaseUrl();
 
     try {
-      const response = await axios.post("http://localhost:5000/api/register", data);
+      await axios.post(`${apiBaseUrl}/api/register`, data);
       setFeedback("✅ Registration successful! You can now log in.");
       form.reset();
     } catch (error) {
-      const errMsg = error.response?.data?.error || error.message || "Registration failed.";
-      setFeedback("❌ " + errMsg);
+      if (!error.response) {
+        setFeedback(`❌ Could not connect to the API at ${apiBaseUrl}. Make sure the backend server is running.`);
+      } else {
+        const errMsg = error.response?.data?.error || error.message || "Registration failed.";
+        setFeedback("❌ " + errMsg);
+      }
     } finally {
       setLoading(false);
     }

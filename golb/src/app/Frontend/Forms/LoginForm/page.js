@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -43,8 +44,10 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    const apiBaseUrl = getApiBaseUrl();
+
     try {
-      const res = await axios.post("http://localhost:5000/api/login", {
+      const res = await axios.post(`${apiBaseUrl}/api/login`, {
         username: data.username,
         password: data.password,
       });
@@ -55,7 +58,11 @@ export default function LoginForm() {
       setMessage("Login successful! Redirecting...");
       router.push("/Frontend/Feeds");
     } catch (err) {
-      setMessage(err.response?.data?.error || "Login failed.");
+      if (!err.response) {
+        setMessage(`Could not connect to the API at ${apiBaseUrl}. Make sure the backend server is running.`);
+      } else {
+        setMessage(err.response?.data?.error || "Login failed.");
+      }
     } finally {
       setLoading(false);
     }
