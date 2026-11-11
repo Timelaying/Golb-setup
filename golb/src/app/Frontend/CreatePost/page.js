@@ -10,6 +10,8 @@ import Link from "next/link";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
@@ -21,7 +23,7 @@ export default function CreatePost() {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.post(
-        "http://localhost:5000/api/posts",
+        `${API_BASE}/api/posts`,
         { title, content },
         {
           headers: {

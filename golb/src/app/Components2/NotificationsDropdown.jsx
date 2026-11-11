@@ -4,6 +4,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function NotificationsDropdown({ userId }) {
   const [notifications, setNotifications] = useState([]);
@@ -15,7 +17,7 @@ export default function NotificationsDropdown({ userId }) {
 
   const fetchNotifications = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/notifications/${userId}`);
+      const res = await axios.get(`${API_BASE}/api/notifications/${userId}`);
       setNotifications(res.data);
     } catch (err) {
       console.error("Error fetching notifications:", err);
@@ -24,7 +26,7 @@ export default function NotificationsDropdown({ userId }) {
 
   const markAsRead = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/notifications/${id}/read`);
+      await axios.put(`${API_BASE}/api/notifications/${id}/read`);
       setNotifications((prev) =>
         prev.map((notif) => (notif.id === id ? { ...notif, is_read: true } : notif))
       );

@@ -12,6 +12,8 @@ import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import NotificationsDropdown from "@/app/Components2/NotificationsDropdown";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function FeedPage() {
   const currentUser = useCurrentUser();
@@ -26,7 +28,7 @@ export default function FeedPage() {
 
   const fetchFeed = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/feed/${userId}`);
+      const response = await axios.get(`${API_BASE}/api/feed/${userId}`);
       setFeed(response.data);
     } catch (error) {
       console.error("Error fetching feed:", error);
@@ -88,7 +90,7 @@ export default function FeedPage() {
 
               <div className="flex items-center space-x-3 mt-4 mb-2">
                 <img
-                  src={post.profile_picture ? `http://localhost:5000${post.profile_picture}` : "/default-avatar.png"}
+                  src={post.profile_picture ? `${API_BASE}${post.profile_picture}` : "/default-avatar.png"}
                   alt={post.username}
                   className="w-8 h-8 rounded-full border border-gray-600"
                 />

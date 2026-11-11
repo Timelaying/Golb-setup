@@ -1,6 +1,8 @@
 // utils/useCurrentUser.js    to keep track of the user and session during thier lifetime 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function useCurrentUser() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -11,7 +13,7 @@ export default function useCurrentUser() {
         const token = localStorage.getItem("accessToken");
         if (!token) return;
 
-        const res = await axios.get("http://localhost:5000/api/current-user", {
+        const res = await axios.get(`${API_BASE}/api/current-user`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

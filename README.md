@@ -65,8 +65,18 @@ npm run dev       # Next.js on http://localhost:3000
 | `EMAIL_USER`, `EMAIL_PASS` | Account used by nodemailer to send password reset emails |
 | `BASE_URL` | Base URL used in emailed links |
 | `NEXT_PUBLIC_API_BASE_URL` | API URL used by the frontend |
+| `CORS_ORIGINS` | Comma-separated list of frontend origins allowed to call the API (default `http://localhost:3000`) |
+| `FRONTEND_URL` | Frontend URL used in password reset links |
 
 Never commit a real `.env` file.
+
+## Deploy (Render + Vercel + Neon)
+
+- **Database:** a free Postgres database from Neon. The API creates its tables on startup.
+- **API (Render web service):** root directory `golb`, runtime Node, build command `npm ci --omit=dev`, start command `npm run backend`. Set `DATABASE_URL`, `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET`, `CORS_ORIGINS` (the Vercel URL, no trailing slash) and `BASE_URL` (the Render URL).
+- **Frontend (Vercel):** root directory `golb`, framework Next.js, environment variable `NEXT_PUBLIC_API_BASE_URL` set to the Render URL.
+
+Uploaded profile pictures are written to the API's local disk, which is cleared on every deploy on Render's free plan. Password reset emails only work when `EMAIL_USER` and `EMAIL_PASS` are set.
 
 ## Scripts
 
