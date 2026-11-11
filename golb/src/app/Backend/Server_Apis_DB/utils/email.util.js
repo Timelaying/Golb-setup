@@ -9,6 +9,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const emailEnabled = () => Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+
 async function sendResetEmail(to, resetLink) {
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -20,7 +22,10 @@ async function sendResetEmail(to, resetLink) {
   return transporter.sendMail(mailOptions);
 }
 
-exports.sendWelcomeEmail = async (to, name) => {
+// The welcome email is a courtesy: registration must still succeed when email
+// is not configured or the mail server is unavailable.
+async function sendWelcomeEmail(to, name) {
+  if (!emailEnabled()) return null;
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
@@ -28,9 +33,16 @@ exports.sendWelcomeEmail = async (to, name) => {
     text: `Hi ${name},\n\nThank you for registering on our platform. We are excited to have you on board!\n\nBest regards,\nYour Company`,
   };
 
-  return transporter.sendMail(mailOptions);
-};
+  try {
+    return await transporter.sendMail(mailOptions);
+  } catch (err) {
+    console.error("Welcome email failed:", err.message);
+    return null;
+  }
+}
 
 module.exports = {
   sendResetEmail,
+  sendWelcomeEmail,
+  emailEnabled,
 };
