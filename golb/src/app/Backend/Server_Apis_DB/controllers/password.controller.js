@@ -1,12 +1,16 @@
 // controllers/password.controller.js
 const jwt = require("jsonwebtoken");
 const pool = require("../db");
-const { sendResetEmail } = require("../utils/email.util");
+const { sendResetEmail, emailEnabled } = require("../utils/email.util");
 const { hashPassword } = require("../utils/hash.util");
 const errorCodes = require("../utils/errorCodes");
 
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
+
+  if (!emailEnabled()) {
+    return res.status(503).json({ message: "Password reset email is not configured on this server." });
+  }
 
   const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
   if (userCheck.rows.length === 0) {
