@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+import { pictureUrl } from "@/app/utils/pictureUrl";
 const API_BASE = getApiBaseUrl();
 
 export default function SearchBar() {
@@ -56,11 +57,7 @@ export default function SearchBar() {
                 onClick={() => router.push(`/Frontend/Profile/${user.username}`)}
               >
                 <img
-                  src={
-                    user.profile_picture
-                      ? `${API_BASE}/uploads/users/${user.username}/profile.jpg`
-                      : "/default-avatar.png"
-                  }
+                  src={pictureUrl(user.profile_picture)}
                   alt={user.username}
                   className="w-10 h-10 rounded-full"
                 />

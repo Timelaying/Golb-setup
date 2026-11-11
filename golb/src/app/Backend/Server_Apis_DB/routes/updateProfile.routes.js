@@ -6,6 +6,7 @@ const path = require("path");
 
 const { getUploadPathForUser } = require("../utils/uploads");
 const { handleProfileUpdate } = require("../controllers/profile.controller");
+const { blobEnabled } = require("../utils/blobStorage");
 
 // Multer storage config
 const storage = multer.diskStorage({
@@ -23,7 +24,11 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+// With Blob configured, keep the upload in memory and send it to Blob in the controller.
+const upload = multer({
+  storage: blobEnabled() ? multer.memoryStorage() : storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 // Profile update route
 router.put("/update-profile", upload.single("profile_picture"), handleProfileUpdate);

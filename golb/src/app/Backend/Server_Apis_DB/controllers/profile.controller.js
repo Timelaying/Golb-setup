@@ -7,6 +7,8 @@ const path = require("path");
 const { getUploadPathForUser } = require("../utils/uploads");
 const { updateUserProfile } = require("../models/users.model");
 const ERROR_CODES = require("../utils/errorCodes");
+const { getUsernameById } = require("../models/users.model");
+const { blobEnabled, uploadProfilePicture, toPublicUrl } = require("../utils/blobStorage");
 
 const handleGetProfile = async (req, res) => {
   const userId = req.user.id;
@@ -18,7 +20,7 @@ const handleGetProfile = async (req, res) => {
   }
 
   if (user.profile_picture) {
-    user.profile_picture = `${config.baseUrl}${user.profile_picture}`;
+    user.profile_picture = toPublicUrl(user.profile_picture, config.baseUrl);
   }
 
   const stats = await getFollowerStats(userId);
@@ -34,9 +36,15 @@ const handleGetProfile = async (req, res) => {
 const handleProfileUpdate = async (req, res) => {
   const { userId, location, bio } = req.body;
 
-  const profilePicturePath = req.file
-    ? `/uploads/users/${req.usernameForFile}/${req.file.filename}`
-    : null;
+  let profilePicturePath = null;
+  if (req.file) {
+    if (blobEnabled()) {
+      const username = await getUsernameById(userId);
+      profilePicturePath = await uploadProfilePicture(username, req.file);
+    } else {
+      profilePicturePath = `/uploads/users/${req.usernameForFile}/${req.file.filename}`;
+    }
+  }
 
   const updatedUser = await updateUserProfile({
     userId,
@@ -46,10 +54,10 @@ const handleProfileUpdate = async (req, res) => {
   });
 
   if (!updatedUser) {
-    return res.status(404).json(errorCodes.USER_NOT_FOUND);
+    return res.status(404).json(ERROR_CODES.USER_NOT_FOUND);
   }
 
-  updatedUser.profile_picture = `${config.baseUrl}${updatedUser.profile_picture}`;
+  updatedUser.profile_picture = toPublicUrl(updatedUser.profile_picture, config.baseUrl);
   res.status(200).json(updatedUser);
 };
 
