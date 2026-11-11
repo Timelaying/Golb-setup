@@ -9,6 +9,8 @@ import useCurrentUser from "@/app/utils/useCurrentUser";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function PostsList() {
   const currentUser = useCurrentUser();
@@ -26,7 +28,7 @@ export default function PostsList() {
     const fetchPosts = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await axios.get("http://localhost:5000/api/viewposts", {
+        const response = await axios.get(`${API_BASE}/api/viewposts`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPosts(response.data.posts);
@@ -43,7 +45,7 @@ export default function PostsList() {
   const fetchComments = async (postId) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get(`http://localhost:5000/api/viewcomments/${postId}`, {
+      const response = await axios.get(`${API_BASE}/api/viewcomments/${postId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setComments((prev) => ({ ...prev, [postId]: response.data.comments }));
@@ -67,7 +69,7 @@ export default function PostsList() {
     const content = replyText[parentCommentId];
     if (!content || !currentUser) return;
     try {
-      await axios.post("http://localhost:5000/api/addcomment", {
+      await axios.post(`${API_BASE}/api/addcomment`, {
         userId: currentUser.id,
         postId,
         content,
@@ -88,7 +90,7 @@ export default function PostsList() {
   const saveEdit = async (commentId, postId) => {
     const token = localStorage.getItem("accessToken");
     try {
-      await axios.put(`http://localhost:5000/api/comment/${commentId}`, {
+      await axios.put(`${API_BASE}/api/comment/${commentId}`, {
         userId: currentUser.id,
         content: editText[commentId],
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -102,7 +104,7 @@ export default function PostsList() {
   const deleteComment = async (commentId, postId) => {
     const token = localStorage.getItem("accessToken");
     try {
-      await axios.delete(`http://localhost:5000/api/comment/${commentId}`, {
+      await axios.delete(`${API_BASE}/api/comment/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchComments(postId);
@@ -116,7 +118,7 @@ export default function PostsList() {
       <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
         <div className="flex items-center space-x-2 mb-1">
           <img
-            src={comment.profile_picture ? `http://localhost:5000/uploads/users/${comment.username}/profile.jpg` : "/default-avatar.png"}
+            src={comment.profile_picture ? `${API_BASE}/uploads/users/${comment.username}/profile.jpg` : "/default-avatar.png"}
             alt="avatar"
             className="w-8 h-8 rounded-full"
           />

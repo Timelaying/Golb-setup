@@ -35,7 +35,12 @@ const app = express();
 app.use(requestLogger);
 
 // Middleware
-app.use(cors());
+// Only the listed frontends may call the API from a browser (comma-separated).
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+app.use(cors({ origin: allowedOrigins }));
 app.use(bodyParser.json());
 
 // Serve static files

@@ -11,6 +11,8 @@ import Link from "next/link";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
@@ -26,7 +28,7 @@ export default function ProfilePage() {
         const token = localStorage.getItem("accessToken");
         if (!token) throw new Error("Access token not found.");
 
-        const res = await axios.get("http://localhost:5000/api/profile", {
+        const res = await axios.get(`${API_BASE}/api/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -53,7 +55,7 @@ export default function ProfilePage() {
         formData.append("profile_picture", data.profile_picture[0]);
       }
 
-      const res = await axios.put("http://localhost:5000/api/update-profile", formData, {
+      const res = await axios.put(`${API_BASE}/api/update-profile`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -90,7 +92,7 @@ export default function ProfilePage() {
               <img
                 src={
                   profile.profile_picture
-                    ? `http://localhost:5000/uploads/users/${profile.username}/profile.jpg`
+                    ? `${API_BASE}/uploads/users/${profile.username}/profile.jpg`
                     : "/default-avatar.png"
                 }
                 alt="Profile"

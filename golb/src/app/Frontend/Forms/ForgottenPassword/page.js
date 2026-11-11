@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -20,7 +22,7 @@ export default function ForgotPasswordForm() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/forgot-password", { email });
+      const response = await axios.post(`${API_BASE}/api/forgot-password`, { email });
       setMessage(response.data.message || "Reset link sent!");
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Failed to send reset link.";

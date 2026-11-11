@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import useCurrentUser from "@/app/utils/useCurrentUser";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function FollowButton({ userId }) {
   const currentUser = useCurrentUser();
@@ -12,7 +14,7 @@ export default function FollowButton({ userId }) {
       if (!currentUser?.id) return;
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/following/${userId}`,
+          `${API_BASE}/api/following/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -38,7 +40,7 @@ export default function FollowButton({ userId }) {
 
       await axios({
         method,
-        url: `http://localhost:5000/api${endpoint}`,
+        url: `${API_BASE}/api${endpoint}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },

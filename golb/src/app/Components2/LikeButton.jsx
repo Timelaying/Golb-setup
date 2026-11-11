@@ -5,6 +5,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useCurrentUser from "../utils/useCurrentUser";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 const LikeButton = ({ postId }) => {
   const currentUser = useCurrentUser();
@@ -16,11 +18,11 @@ const LikeButton = ({ postId }) => {
       if (!currentUser) return;
 
       try {
-        const likeCountRes = await axios.get(`http://localhost:5000/api/likes/${postId}`);
+        const likeCountRes = await axios.get(`${API_BASE}/api/likes/${postId}`);
         setLikes(likeCountRes.data.likes);
 
         const userLikeRes = await axios.get(
-          `http://localhost:5000/api/user-likes/${currentUser.id}/${postId}`
+          `${API_BASE}/api/user-likes/${currentUser.id}/${postId}`
         );
         setLiked(userLikeRes.data.liked);
       } catch (error) {
@@ -36,7 +38,7 @@ const LikeButton = ({ postId }) => {
 
     try {
       const endpoint = liked ? "unlike" : "like";
-      const res = await axios.post(`http://localhost:5000/api/${endpoint}`, {
+      const res = await axios.post(`${API_BASE}/api/${endpoint}`, {
         userId: currentUser.id,
         postId,
       });

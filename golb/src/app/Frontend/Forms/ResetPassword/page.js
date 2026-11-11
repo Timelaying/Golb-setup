@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function ResetPasswordPage() {
   return (
@@ -36,7 +38,7 @@ function ResetPasswordFormInner() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/reset-password",
+        `${API_BASE}/api/reset-password`,
         { token, newPassword }
       );
       setMessage(response.data.message || "Password reset successfully!");

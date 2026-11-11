@@ -1,3 +1,4 @@
+const config = require("../config");
 // controllers/profile.controller.js
 
 const { getUserProfile } = require("../models/users.model");
@@ -17,7 +18,7 @@ const handleGetProfile = async (req, res) => {
   }
 
   if (user.profile_picture) {
-    user.profile_picture = `http://localhost:5000${user.profile_picture}`;
+    user.profile_picture = `${config.baseUrl}${user.profile_picture}`;
   }
 
   const stats = await getFollowerStats(userId);
@@ -48,7 +49,7 @@ const handleProfileUpdate = async (req, res) => {
     return res.status(404).json(errorCodes.USER_NOT_FOUND);
   }
 
-  updatedUser.profile_picture = `http://localhost:5000${updatedUser.profile_picture}`;
+  updatedUser.profile_picture = `${config.baseUrl}${updatedUser.profile_picture}`;
   res.status(200).json(updatedUser);
 };
 

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function ProfilePage() {
   const pathname = usePathname();
@@ -25,7 +27,7 @@ export default function ProfilePage() {
 
     const fetchData = async () => {
       try {
-        const profileRes = await axios.get(`http://localhost:5000/api/users/${username}`);
+        const profileRes = await axios.get(`${API_BASE}/api/users/${username}`);
         setProfile(profileRes.data);
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -35,7 +37,7 @@ export default function ProfilePage() {
       const token = localStorage.getItem("accessToken");
       if (token) {
         try {
-          const currentRes = await axios.get("http://localhost:5000/api/current-user", {
+          const currentRes = await axios.get(`${API_BASE}/api/current-user`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setCurrentUser(currentRes.data);
@@ -62,7 +64,7 @@ export default function ProfilePage() {
           <img
             src={
               profile.profile_picture
-                ? `http://localhost:5000/uploads/users/${profile.username}/profile.jpg`
+                ? `${API_BASE}/uploads/users/${profile.username}/profile.jpg`
                 : "/default-avatar.png"
             }
             alt={`${profile.username}'s avatar`}

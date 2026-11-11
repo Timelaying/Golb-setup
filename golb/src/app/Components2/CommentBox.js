@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import useCurrentUser from "@/app/utils/useCurrentUser";
 import CommentItem from "./CommentItem";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function CommentBox({ postId }) {
   const currentUser = useCurrentUser();
@@ -14,7 +16,7 @@ export default function CommentBox({ postId }) {
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/comments/${postId}`);
+      const res = await axios.get(`${API_BASE}/api/comments/${postId}`);
       setComments(res.data);
     } catch (error) {
       console.error("Error fetching comments:", error);
@@ -29,7 +31,7 @@ export default function CommentBox({ postId }) {
     if (!newComment.trim() || !currentUser) return;
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/comment", {
+      const res = await axios.post(`${API_BASE}/api/comment`, {
         userId: currentUser.id,
         postId,
         content: newComment,
@@ -46,7 +48,7 @@ export default function CommentBox({ postId }) {
   const handleReplySubmit = async (parentCommentId, content) => {
     if (!content || !currentUser) return;
     try {
-      await axios.post("http://localhost:5000/api/reply", {
+      await axios.post(`${API_BASE}/api/reply`, {
         userId: currentUser.id,
         postId,
         content,
@@ -60,7 +62,7 @@ export default function CommentBox({ postId }) {
 
   const handleEditSubmit = async (commentId, content) => {
     try {
-      await axios.put(`http://localhost:5000/api/comment/${commentId}`, {
+      await axios.put(`${API_BASE}/api/comment/${commentId}`, {
         userId: currentUser.id,
         content,
       });
@@ -72,7 +74,7 @@ export default function CommentBox({ postId }) {
 
   const handleDelete = async (commentId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/comment/${commentId}`);
+      await axios.delete(`${API_BASE}/api/comment/${commentId}`);
       fetchComments();
     } catch (err) {
       console.error("Error deleting comment:", err);

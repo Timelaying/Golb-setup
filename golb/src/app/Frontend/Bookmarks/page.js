@@ -10,6 +10,8 @@ import LikeButton from "@/app/Components2/LikeButton";
 import CommentBox from "@/app/Components2/CommentBox";
 import FollowButton from "@/app/Components2/FollowButton";
 import useCurrentUser from "@/app/utils/useCurrentUser";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function BookmarksPage() {
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
@@ -20,7 +22,7 @@ export default function BookmarksPage() {
     const fetchBookmarks = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const response = await axios.get("http://localhost:5000/api/bookmarks", {
+        const response = await axios.get(`${API_BASE}/api/bookmarks`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setBookmarkedPosts(response.data);
@@ -51,7 +53,7 @@ export default function BookmarksPage() {
 
               <div className="flex items-center space-x-3 mt-4 mb-2">
                 <img
-                  src={post.profile_picture ? `http://localhost:5000${post.profile_picture}` : "/default-avatar.png"}
+                  src={post.profile_picture ? `${API_BASE}${post.profile_picture}` : "/default-avatar.png"}
                   alt={post.username}
                   className="w-8 h-8 rounded-full border border-gray-600"
                 />

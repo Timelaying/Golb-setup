@@ -3,6 +3,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+const API_BASE = getApiBaseUrl();
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,7 +17,7 @@ export default function SearchBar() {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/search?query=${encodeURIComponent(searchQuery)}`
+        `${API_BASE}/api/search?query=${encodeURIComponent(searchQuery)}`
       );
       setSearchResults(response.data);
     } catch (error) {
@@ -56,7 +58,7 @@ export default function SearchBar() {
                 <img
                   src={
                     user.profile_picture
-                      ? `http://localhost:5000/uploads/users/${user.username}/profile.jpg`
+                      ? `${API_BASE}/uploads/users/${user.username}/profile.jpg`
                       : "/default-avatar.png"
                   }
                   alt={user.username}
