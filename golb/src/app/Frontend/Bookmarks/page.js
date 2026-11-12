@@ -11,6 +11,7 @@ import CommentBox from "@/app/Components2/CommentBox";
 import FollowButton from "@/app/Components2/FollowButton";
 import useCurrentUser from "@/app/utils/useCurrentUser";
 import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+import { pictureUrl } from "@/app/utils/pictureUrl";
 const API_BASE = getApiBaseUrl();
 
 export default function BookmarksPage() {
@@ -53,7 +54,7 @@ export default function BookmarksPage() {
 
               <div className="flex items-center space-x-3 mt-4 mb-2">
                 <img
-                  src={post.profile_picture ? `${API_BASE}${post.profile_picture}` : "/default-avatar.png"}
+                  src={pictureUrl(post.profile_picture)}
                   alt={post.username}
                   className="w-8 h-8 rounded-full border border-gray-600"
                 />

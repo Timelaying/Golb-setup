@@ -66,6 +66,7 @@ npm run dev       # Next.js on http://localhost:3000
 | `BASE_URL` | Base URL used in emailed links |
 | `NEXT_PUBLIC_API_BASE_URL` | API URL used by the frontend |
 | `CORS_ORIGINS` | Comma-separated list of frontend origins allowed to call the API (default `http://localhost:3000`) |
+| `BLOB_READ_WRITE_TOKEN` | Optional. Vercel Blob token; when set, profile pictures are stored in Blob and survive redeploys. Without it they are written to local disk |
 | `FRONTEND_URL` | Frontend URL used in password reset links |
 
 Never commit a real `.env` file.
@@ -76,7 +77,7 @@ Never commit a real `.env` file.
 - **API (Render web service):** root directory `golb`, runtime Node, build command `npm ci --omit=dev`, start command `npm run backend`. Set `DATABASE_URL`, `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET`, `CORS_ORIGINS` (the Vercel URL, no trailing slash) and `BASE_URL` (the Render URL).
 - **Frontend (Vercel):** root directory `golb`, framework Next.js, environment variable `NEXT_PUBLIC_API_BASE_URL` set to the Render URL.
 
-Uploaded profile pictures are written to the API's local disk, which is cleared on every deploy on Render's free plan. Password reset emails only work when `EMAIL_USER` and `EMAIL_PASS` are set.
+Profile pictures are stored in Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set on the API. Without it they are written to the API's local disk, which is cleared on every deploy on Render's free plan. Password reset emails only work when `EMAIL_USER` and `EMAIL_PASS` are set.
 
 ## Scripts
 

@@ -10,6 +10,7 @@ import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
 import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+import { pictureUrl } from "@/app/utils/pictureUrl";
 const API_BASE = getApiBaseUrl();
 
 export default function PostsList() {
@@ -118,7 +119,7 @@ export default function PostsList() {
       <div key={comment.id} className="border p-2 my-2 rounded bg-gray-100">
         <div className="flex items-center space-x-2 mb-1">
           <img
-            src={comment.profile_picture ? `${API_BASE}/uploads/users/${comment.username}/profile.jpg` : "/default-avatar.png"}
+            src={pictureUrl(comment.profile_picture)}
             alt="avatar"
             className="w-8 h-8 rounded-full"
           />

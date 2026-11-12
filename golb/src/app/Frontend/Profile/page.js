@@ -12,6 +12,7 @@ import PageWrapper from "@/app/Components2/PageWrapper";
 import CardContainer from "@/app/Components2/CardContainer";
 import PageHeader from "@/app/Components2/PageHeader";
 import { getApiBaseUrl } from "@/app/utils/apiBaseUrl";
+import { pictureUrl } from "@/app/utils/pictureUrl";
 const API_BASE = getApiBaseUrl();
 
 export default function ProfilePage() {
@@ -90,11 +91,7 @@ export default function ProfilePage() {
             {/* Avatar */}
             <div className="text-center">
               <img
-                src={
-                  profile.profile_picture
-                    ? `${API_BASE}/uploads/users/${profile.username}/profile.jpg`
-                    : "/default-avatar.png"
-                }
+                src={pictureUrl(profile.profile_picture)}
                 alt="Profile"
                 className="w-24 h-24 rounded-full mx-auto mb-3 border border-gray-500"
               />
