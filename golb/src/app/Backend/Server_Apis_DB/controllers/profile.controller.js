@@ -58,7 +58,9 @@ const handleProfileUpdate = async (req, res) => {
   }
 
   updatedUser.profile_picture = toPublicUrl(updatedUser.profile_picture, config.baseUrl);
-  res.status(200).json(updatedUser);
+  // Never return credentials or tokens to the client.
+  const { password, refresh_token, reset_token, reset_token_expiry, ...safeUser } = updatedUser;
+  res.status(200).json(safeUser);
 };
 
 module.exports = {
